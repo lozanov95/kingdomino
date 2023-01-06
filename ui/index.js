@@ -40,16 +40,26 @@ document.querySelector("#joinChat").addEventListener("click", ()=>{
             
             ws.send(msg.value)
             let p = document.createElement("p")
-            p.textContent = "Sent: " + msg.value
+            p.textContent = "You: " + msg.value
             msg.value = ""
             msgDiv.appendChild(p)
         })
 
         ws.onmessage=(ev) =>{
             let p  = document.createElement("p")
-            p.textContent = "Received: " + ev.data
+            p.textContent = "Other player: " + ev.data
             msgDiv.appendChild(p)
         }      
+    }
+
+    ws.onclose = ()=>{
+        joinedChat = false
+        updateHiddenState()
+    }
+
+    ws.onerror = () =>{
+        joinedChat = false
+        updateHiddenState()
     }
 })
 
