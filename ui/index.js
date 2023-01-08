@@ -27,12 +27,14 @@ document.querySelector("#joinChat").addEventListener("click", ()=>{
     const ws = new WebSocket("ws://localhost:8080/ws")
     console.log("joining chat")
     ws.onopen = ()=>{
-        joinedChat = true
-        updateHiddenState()
         const msgDiv = document.querySelector("#msgDiv")
         const chatForm = document.querySelector("#chatForm")
-
         const msg = document.querySelector("#msg")
+        
+        joinedChat = true
+        updateHiddenState()
+        msgDiv.innerHTML = ""
+
         chatForm.addEventListener("submit", (ev)=>{
             ev.preventDefault()
             if (msg.value === "")
