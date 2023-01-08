@@ -2,7 +2,7 @@ package game
 
 import "fmt"
 
-func main() {
+func TestGame() {
 	g := NewGame("Vasko", "Didi")
 	g.p1.board.Print()
 	d := g.RollDice()

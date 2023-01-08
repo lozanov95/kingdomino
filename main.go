@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -24,8 +23,4 @@ func main() {
 	if err := http.ListenAndServe(PORT, nil); err != nil {
 		log.Fatal("failed to serve", err)
 	}
-}
-
-func Home(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "welcome")
 }
