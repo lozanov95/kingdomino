@@ -1,18 +1,23 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net/http"
+	"strconv"
 
-	"github.com/lozanov95/kingdomino/cmd/server"
+	"github.com/lozanov95/kingdomino/backend/cmd/server"
 	"golang.org/x/net/websocket"
 )
 
-const (
-	PORT = ":8080"
+var (
+	PORT int
 )
 
 func main() {
+	flag.IntVar(&PORT, "port", 80, "Specify the server's port")
+	flag.Parse()
+
 	srv := server.NewServer()
 
 	http.Handle("/ws", websocket.Handler(srv.HandleWS))
@@ -20,7 +25,7 @@ func main() {
 
 	log.Println("Serving on", PORT)
 
-	if err := http.ListenAndServe(PORT, nil); err != nil {
+	if err := http.ListenAndServe(":"+strconv.Itoa(PORT), nil); err != nil {
 		log.Fatal("failed to serve", err)
 	}
 }
