@@ -3,6 +3,7 @@ package server
 import (
 	"io"
 	"log"
+	"sync"
 	"time"
 
 	"golang.org/x/net/websocket"
@@ -15,6 +16,7 @@ type ChatConn struct {
 
 type Server struct {
 	conns map[int64]*ChatConn
+	mut   sync.RWMutex
 }
 
 func NewServer() *Server {
@@ -27,7 +29,11 @@ func (s *Server) HandleWS(ws *websocket.Conn) {
 	log.Println("new connection from client:", ws.RemoteAddr())
 
 	conn := &ChatConn{Id: time.Now().UnixNano(), Conn: ws}
+
+	s.mut.Lock()
 	s.conns[conn.Id] = conn
+	s.mut.Unlock()
+
 	s.readLoop(conn)
 }
 
