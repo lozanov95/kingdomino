@@ -8,7 +8,7 @@ enum Player {
 type Message = { content: string, player: Player }
 
 function Chat() {
-    const [connected, setConnected] = useState(false)
+    const [connectionState, setConnectionState] = useState<number>(WebSocket.CLOSED)
     const [wsConnection, setWsConnection] = useState<WebSocket | null>(null)
     const [messages, setMessages] = useState<Message[]>([])
 
@@ -16,22 +16,25 @@ function Chat() {
         connect()
     }
 
-    useEffect(() => { }, [messages])
+    useEffect(() => {
+        console.log(wsConnection)
+    }, [wsConnection?.readyState])
 
     const connect = () => {
         const ws = new WebSocket("ws://localhost:8080/ws")
+        setConnectionState(WebSocket.CONNECTING)
         ws.onopen = () => {
-            setConnected(true)
+            setConnectionState(WebSocket.OPEN)
             setWsConnection(ws)
         }
 
         ws.onclose = () => {
-            setConnected(false)
+            setConnectionState(WebSocket.CLOSED)
             setMessages([])
         }
 
         ws.onerror = () => {
-            setConnected(false)
+            setConnectionState(WebSocket.CLOSED)
             setMessages([])
         }
 
@@ -51,12 +54,9 @@ function Chat() {
     return (
         <div>
             <h1>Chat</h1>
-
-            {connected ?
-                <div><MessageContainer messages={messages} /><MessageSendContainer handleSend={sendMessage} /></div> :
-                <button hidden={connected} onClick={handleChatConnect}>Connect</button>
-            }
-
+            {connectionState === WebSocket.CONNECTING ? <div>Connecting to chat...</div > : ""}
+            {connectionState === WebSocket.OPEN ? <div><MessageContainer messages={messages} /><MessageSendContainer handleSend={sendMessage} /></div> : ""}
+            {connectionState === WebSocket.CLOSED ? <button onClick={handleChatConnect}>Connect</button> : ""}
         </div>
     )
 }
