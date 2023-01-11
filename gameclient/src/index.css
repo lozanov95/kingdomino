@@ -5,6 +5,7 @@
     --primary-color: #222020;
     --text-color: #fff;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --border-radius: 9px;
 }
 
 * {
@@ -22,8 +23,8 @@ input {
     background-color: var(--primary-color);
     color: var(--text-color);
     font-weight: 700;
-    font-size: 20px;
-    border-radius: 6px;
+    font-size: 16px;
+    border-radius: var(--border-radius);
 }
 
 .cell {
@@ -54,4 +55,37 @@ input {
     text-align: center;
     display: flex;
     flex-direction: column;
+}
+
+.msg-container {
+    width: 250px;
+    height: 250px;
+    overflow: scroll;
+    margin: auto;
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    background-color: var(--primary-color);
+    border-radius: var(--border-radius);
+}
+
+.chat-msg {
+    margin: 2px;
+    border-radius: var(--border-radius);
+    padding: 6px;
+    width: fit-content;
+    min-width: 30px;
+}
+
+.chat-you {
+    background-color: #143c94;
+    text-align: right;
+    float: right;
+}
+
+.chat-other {
+    background-color: #343f31;
+    text-align: left;
+    float: left;
 }
