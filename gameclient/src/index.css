@@ -1,5 +1,4 @@
 :root {
-    box-sizing: border-box;
     --box-size: 90px;
     text-align: center;
     --background-color: #0f0e0e;
@@ -8,16 +7,23 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+* {
+    box-sizing: border-box;
+}
+
+
 body {
     background-color: var(--background-color);
     color: var(--text-color);
 }
 
-button {
+button,
+input {
     background-color: var(--primary-color);
     color: var(--text-color);
     font-weight: 700;
     font-size: 20px;
+    border-radius: 6px;
 }
 
 .cell {
