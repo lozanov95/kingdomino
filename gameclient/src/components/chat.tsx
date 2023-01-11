@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react"
+import { EventHandler, FormEventHandler, useEffect, useState } from "react"
 
 function Chat() {
     const [connected, setConnected] = useState(false)
+    const [wsConnection, setWsConnection] = useState<WebSocket | null>(null)
 
     function handleChatConnect() {
         connect()
@@ -11,6 +12,7 @@ function Chat() {
         const ws = new WebSocket("ws://localhost:8080/ws")
         ws.onopen = () => {
             setConnected(true)
+            setWsConnection(ws)
         }
 
         ws.onclose = () => {
@@ -22,23 +24,37 @@ function Chat() {
         }
     }
 
+    function sendMessage(msg: string) {
+        wsConnection?.send(msg)
+        console.log("sent ", msg)
+    }
+
     return (
         <div>
             <h1>Chat</h1>
             <button hidden={connected} onClick={handleChatConnect}>Connect</button>
-            <MessageBox />
+            <MessageBox handleSend={sendMessage} hidden={!connected} />
         </div>
     )
 }
 
-function MessageBox() {
+function MessageBox(props: { handleSend: (msg: string) => void, hidden: boolean }) {
+    const [msg, setMsg] = useState("")
+
+    function handleSubmit(ev: any) {
+        ev.preventDefault()
+        props.handleSend(msg)
+        setMsg("")
+    }
+
     return (
-        <div>
-            <input />
+        <form onSubmit={e => handleSubmit(e)} hidden={props.hidden}>
+            <input value={msg} onChange={e => setMsg(e.target.value)} />
             <button>Send</button>
-        </div>
+        </form>
 
     )
 }
 
 export default Chat
+
