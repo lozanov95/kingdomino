@@ -40,9 +40,9 @@ input {
     display: grid;
     grid-template-areas:
         "nav nav nav nav nav nav nav"
-        "a a game game game c b"
-        "a a game game game c b"
-        "a a game game game chat b";
+        "a a game game bonusboard c b"
+        "a a game game bonusboard c b"
+        "a a game game bonusboard chat b";
 }
 
 .cell {
@@ -137,4 +137,24 @@ img {
     font-size: 35px;
     background-color: #282727;
     text-align: initial;
+}
+
+.bonusboard {
+    grid-area: bonusboard;
+}
+
+.bonus-cell {
+    display: flex;
+    font-size: 30px;
+}
+
+.bonus-checkbox {
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-self: center;
+}
+
+.ineligible {
+    background-color: #590c0c;
 }

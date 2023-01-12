@@ -1,16 +1,14 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
 import Chat from './components/chat'
 import Game from './components/game'
 import Navigation from './components/nav'
+import BonusBoard from './components/bonusboard'
 
 function App() {
-
-
   return (
     <div className="app">
       <Navigation />
       <Game />
+      <BonusBoard />
       <Chat />
     </div>
   )
