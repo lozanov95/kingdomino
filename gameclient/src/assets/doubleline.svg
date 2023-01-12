@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="640" height="640" viewBox="0 0 640 640" xml:space="preserve">
+<desc>Created with Fabric.js 4.6.0</desc>
+<defs>
+</defs>
+<g transform="matrix(1 0 0 1 320 320)" id="CLAP3e2MJm1nOlAg52xZO"  >
+<path style="stroke: rgb(0,0,0); stroke-width: 7; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: none; fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke"  transform=" translate(0, 0)" d="M -260 -260 L 260 -260 L 260 -40 C 260 -40 265 85 200 160 C 135 235 0 260 0 260 C 0 260 -135 235 -200 160 C -265 85 -260 -40 -260 -40 z" stroke-linecap="round" />
+</g>
+<g transform="matrix(1 0 0 1 320 265.09)" id="tAyaDRkjuchK9hD3UZK4y"  >
+<g style="" vector-effect="non-scaling-stroke"   >
+		<g transform="matrix(1 0 0 1 0 -75.09)" id="uH1ftjQunYuN3-Q6-pLgK"  >
+<path style="stroke: rgb(0,0,0); stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke"  transform=" translate(0, 0)" d="M 260 -130 L 260 -50 L -260 130 L -260 50 z" stroke-linecap="round" />
+</g>
+		<g transform="matrix(1 0 0 1 8.34 80)" id="N9hv_LsI7O0XKo1tNfyeE"  >
+<path style="stroke: rgb(0,0,0); stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke"  transform=" translate(0, 0)" d="M 251.65954 -125.08671 L -251.65955000000002 54.91329 L -222.75782000000004 114.91329 L -216.39944000000003 125.08670000000001 L 251.65952999999996 -45.08670999999998 z" stroke-linecap="round" />
+</g>
+</g>
+</g>
+</svg>

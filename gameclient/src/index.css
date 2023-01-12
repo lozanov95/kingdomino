@@ -2,7 +2,7 @@
     --box-size: 90px;
     text-align: center;
     --background-color: #0f0e0e;
-    --primary-color: #222020;
+    --primary-color: #726c6c;
     --text-color: #fff;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     --border-radius: 9px;
@@ -55,6 +55,11 @@ input {
     text-align: center;
     display: flex;
     flex-direction: column;
+}
+
+img {
+    max-width: var(--box-size);
+    max-height: var(--box-size);
 }
 
 .msg-container {
