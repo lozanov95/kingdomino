@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { getBoard, getDices } from "../api/api"
 import badgeEmpty from "../assets/empty.svg"
 import badgeCastle from "../assets/castle.svg"
@@ -86,10 +86,7 @@ function Row(props: { elements: number[] }) {
 function Cell(props: { badge: string, nobles: number }) {
     return (
         <div className="boardCell">
-            <div className="nobles">
-                <div></div>
-                <div></div>
-            </div>
+            <Nobles amount={1} />
             <div className="cell"><img src={props.badge}></img></div>
         </div >
     )
@@ -117,6 +114,36 @@ function Dice(props: { value: number }) {
         <div className="cell">
             <img src={GetBadgeIcon(props.value)} />
         </div>
+    )
+}
+
+function Nobles({ amount }: { amount: number }) {
+    function renderNobles() {
+        switch (amount) {
+            case 0:
+                return
+            case 1:
+                return <Noble />
+            case 2:
+                return (
+                    <>
+                        <Noble /><Noble />
+                    </>
+                )
+            default:
+                return null
+        }
+    }
+    return (
+        <div className="nobles">
+            {renderNobles()}
+        </div>
+    )
+}
+
+function Noble() {
+    return (
+        <div>X</div>
     )
 }
 
