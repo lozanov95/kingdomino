@@ -52,7 +52,7 @@ function Chat() {
     }
 
     return (
-        <div>
+        <div className="chat">
             <h1>Chat</h1>
             {connectionState === WebSocket.CONNECTING ? <div>Connecting to chat...</div > : ""}
             {connectionState === WebSocket.OPEN ? <div><MessageContainer messages={messages} /><MessageSendContainer handleSend={sendMessage} /></div> : ""}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { getBoard, getDices } from "../api/api"
 import badgeEmpty from "../assets/empty.svg"
 import badgeCastle from "../assets/castle.svg"
@@ -24,8 +24,7 @@ enum Badge {
 
 function Game() {
     return (
-        <div>
-            <h2>Kingdomino</h2>
+        <div className="game">
             <Board />
             <DiceSection />
         </div>
@@ -78,15 +77,21 @@ function Row(props: { elements: number[] }) {
     return (
         <div className="row">
             {props.elements.map((el, idx) => {
-                return <Cell key={idx} badge={GetBadgeIcon(el) || ""} />
+                return <Cell key={idx} nobles={1} badge={GetBadgeIcon(el) || ""} />
             })}
         </div>
     )
 }
 
-function Cell(props: { badge: string }) {
+function Cell(props: { badge: string, nobles: number }) {
     return (
-        <div className="cell"><img src={props.badge}></img></div>
+        <div className="boardCell">
+            <div className="nobles">
+                <div></div>
+                <div></div>
+            </div>
+            <div className="cell"><img src={props.badge}></img></div>
+        </div >
     )
 }
 

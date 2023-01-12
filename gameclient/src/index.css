@@ -16,6 +16,7 @@
 body {
     background-color: var(--background-color);
     color: var(--text-color);
+    margin: 0px;
 }
 
 button,
@@ -27,8 +28,25 @@ input {
     border-radius: var(--border-radius);
 }
 
+.game {
+    grid-area: game;
+}
+
+.chat {
+    grid-area: chat;
+}
+
+.app {
+    display: grid;
+    grid-template-areas:
+        "nav nav nav nav nav nav nav"
+        "a a game game game c b"
+        "a a game game game c b"
+        "a a game game game chat b";
+}
+
 .cell {
-    display: flex;
+    display: inherit;
     width: var(--box-size);
     height: var(--box-size);
     border-style: solid;
@@ -37,6 +55,7 @@ input {
     background-color: var(--primary-color);
     justify-content: center;
     align-items: center;
+    grid-area: cell;
 }
 
 .dice-section {
@@ -93,4 +112,28 @@ img {
     background-color: #343f31;
     text-align: left;
     float: left;
+}
+
+.boardCell {
+    display: grid;
+    grid-template-areas:
+        "nobles cell cell"
+    ;
+
+}
+
+.nobles {
+    grid-area: nobles;
+    width: 1rem;
+    background-color: #282727;
+}
+
+.nav {
+    grid-area: nav;
+    min-width: 15%;
+    margin-bottom: 10px;
+    font-weight: bolder;
+    padding: 10px;
+    font-size: 35px;
+    background-color: #282727;
 }
