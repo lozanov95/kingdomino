@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react"
+import { MouseEventHandler, useEffect, useState } from "react"
 import { getBoard, getDices } from "../api/api"
-import { getBadgeIcon } from "./common"
+import { Domino, getBadgeIcon } from "./common"
 
 
 function Game() {
@@ -12,40 +12,37 @@ function Game() {
     )
 }
 
-
-
 function Board() {
-    const [board, setBoard] = useState([[0]])
-    const newBoard = getBoard()
+    const [board, setBoard] = useState<Domino[][] | null>(null)
 
-    if (newBoard.toString() !== board.toString()) {
-        setBoard(newBoard)
-    }
+    useEffect(() => {
+        setBoard(() => getBoard())
+    }, [])
 
     return (
         <div className="board center" >
-            {newBoard.map((el, idx) => {
+            {board?.map((el, idx) => {
                 return <Row key={idx} elements={el} />
             })}
         </div>
     )
 }
 
-function Row(props: { elements: number[] }) {
+function Row(props: { elements: Domino[] }) {
     return (
         <div className="row">
-            {props.elements.map((el, idx) => {
-                return <BoardCell key={idx} nobles={1} badge={getBadgeIcon(el)} />
+            {props.elements.map(({ badge, nobles }, idx) => {
+                return <BoardCell key={idx} nobles={nobles} badge={getBadgeIcon(badge)} />
             })}
         </div>
     )
 }
 
-function BoardCell(props: { badge: string, nobles: number }) {
+function BoardCell({ badge, nobles, onClick }: { badge: string, nobles: number, onClick?: MouseEventHandler }) {
     return (
         <div className="boardCell">
-            <Nobles amount={1} />
-            <Cell imgSrc={props.badge} />
+            <Nobles amount={nobles} />
+            <Cell imgSrc={badge} onClick={onClick} />
         </div >
     )
 }
@@ -67,9 +64,9 @@ function DiceSection() {
     )
 }
 
-export function Cell({ imgSrc }: { imgSrc: string }) {
+export function Cell({ imgSrc, onClick }: { imgSrc: string, onClick?: MouseEventHandler }) {
     return (
-        <div className="cell">
+        <div className="cell" onClick={onClick}>
             <img src={imgSrc} />
         </div>
     )

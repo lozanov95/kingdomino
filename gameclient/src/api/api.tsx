@@ -1,14 +1,28 @@
-import { Badge } from "../components/common"
+import { Badge, Domino } from "../components/common"
 
 export function getBoard() {
-    const board = [
-        [0, 2, 3, 4, 5, 6, 7],
-        [0, 2, 3, 4, 5, 6, 7],
-        [0, 0, 0, 1, 0, 0, 0],
-        [0, 2, 3, 4, 5, 6, 7],
-        [0, 2, 3, 4, 5, 6, 7],
+    let board: [Domino, Domino, Domino, Domino, Domino, Domino, Domino][] = [
+        [
+            { badge: Badge.EMPTY, nobles: 0, }, { badge: Badge.DOT, nobles: 0, }, { badge: Badge.LINE, nobles: 0, }, { badge: Badge.DOUBLEDOT, nobles: 0, },
+            { badge: Badge.DOUBLELINE, nobles: 0, }, { badge: Badge.FILLED, nobles: 0, }, { badge: Badge.CHECKED, nobles: 0 }
+        ],
+        [
+            { badge: Badge.EMPTY, nobles: 2, }, { badge: Badge.DOT, nobles: 2, }, { badge: Badge.LINE, nobles: 0, }, { badge: Badge.DOUBLEDOT, nobles: 0, },
+            { badge: Badge.DOUBLELINE, nobles: 0, }, { badge: Badge.FILLED, nobles: 0, }, { badge: Badge.CHECKED, nobles: 0 }
+        ],
+        [
+            { badge: Badge.EMPTY, nobles: 0, }, { badge: Badge.DOT, nobles: 0, }, { badge: Badge.LINE, nobles: 0, }, { badge: Badge.CASTLE, nobles: 0, },
+            { badge: Badge.DOUBLELINE, nobles: 0, }, { badge: Badge.FILLED, nobles: 1, }, { badge: Badge.CHECKED, nobles: 0 }
+        ],
+        [
+            { badge: Badge.EMPTY, nobles: 1, }, { badge: Badge.DOT, nobles: 0, }, { badge: Badge.LINE, nobles: 0, }, { badge: Badge.DOUBLEDOT, nobles: 0, },
+            { badge: Badge.DOUBLELINE, nobles: 0, }, { badge: Badge.FILLED, nobles: 2, }, { badge: Badge.CHECKED, nobles: 0 }
+        ],
+        [
+            { badge: Badge.EMPTY, nobles: 0, }, { badge: Badge.DOT, nobles: 0, }, { badge: Badge.LINE, nobles: 0, }, { badge: Badge.DOUBLEDOT, nobles: 0, },
+            { badge: Badge.DOUBLELINE, nobles: 0, }, { badge: Badge.FILLED, nobles: 1, }, { badge: Badge.CHECKED, nobles: 0 }
+        ],
     ]
-
     return board
 }
 
@@ -24,7 +38,7 @@ export function getBonus() {
             badge: Badge.DOT, requiredChecks: 5, currentChecks: 4, eligible: true
         },
         {
-            badge: Badge.LINE, requiredChecks: 5, currentChecks: 1, eligible: true
+            badge: Badge.LINE, requiredChecks: 5, currentChecks: 0, eligible: true
         },
         {
             badge: Badge.DOUBLEDOT, requiredChecks: 4, currentChecks: 0, eligible: true
@@ -36,7 +50,7 @@ export function getBonus() {
             badge: Badge.CHECKED, requiredChecks: 3, currentChecks: 3, eligible: false
         },
         {
-            badge: Badge.FILLED, requiredChecks: 3, currentChecks: 1, eligible: true
+            badge: Badge.FILLED, requiredChecks: 3, currentChecks: 0, eligible: true
         },
     ]
 

@@ -9,6 +9,11 @@ import badgeDoubleLine from "../assets/doubleline.svg"
 import badgeQuestion from "../assets/question.svg"
 
 
+export type Domino = {
+    badge: Badge,
+    nobles: number
+}
+
 export enum Badge {
     EMPTY = 0,
     CASTLE,
