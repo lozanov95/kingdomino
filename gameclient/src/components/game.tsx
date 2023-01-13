@@ -1,6 +1,6 @@
 import { MouseEventHandler, useEffect, useState } from "react"
 import { getBoard, getDices } from "../api/api"
-import { Domino, getBadgeIcon } from "./common"
+import { Domino, getBadgeIcon, Badge } from "./common"
 
 
 function Game() {
@@ -32,33 +32,31 @@ function Row(props: { elements: Domino[] }) {
     return (
         <div className="row">
             {props.elements.map(({ badge, nobles }, idx) => {
-                return <BoardCell key={idx} nobles={nobles} badge={getBadgeIcon(badge)} />
+                return <BoardCell key={idx} nobles={nobles} badge={badge} />
             })}
         </div>
     )
 }
 
-function BoardCell({ badge, nobles, onClick }: { badge: string, nobles: number, onClick?: MouseEventHandler }) {
+function BoardCell({ badge, nobles, onClick }: { badge: Badge, nobles: number, onClick?: MouseEventHandler }) {
     return (
         <div className="boardCell">
             <Nobles amount={nobles} />
-            <Cell imgSrc={badge} onClick={onClick} />
+            <Cell imgSrc={getBadgeIcon(badge)} onClick={onClick} />
         </div >
     )
 }
 
 function DiceSection() {
-    const [dices, setDices] = useState([0])
-    const newDice = getDices()
+    const [dices, setDices] = useState<Domino[] | null>(null)
 
-    if (newDice.toString() !== dices.toString()) {
-        setDices(newDice)
-    }
-
+    useEffect(() => {
+        setDices(getDices())
+    }, [])
     return (
         <div className="dice-section">
-            {dices.map((dice, idx) => {
-                return <Cell key={idx} imgSrc={getBadgeIcon(dice)} />
+            {dices?.map(({ badge, nobles }, idx) => {
+                return <BoardCell key={idx} badge={badge} nobles={nobles} />
             })}
         </div>
     )

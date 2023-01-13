@@ -27,7 +27,12 @@ export function getBoard() {
 }
 
 export function getDices() {
-    const dices = [2, 3, 8, 4]
+    const dices = [
+        { badge: Badge.DOT, nobles: 1 },
+        { badge: Badge.QUESTIONMARK, nobles: 0 },
+        { badge: Badge.DOUBLELINE, nobles: 0 },
+        { badge: Badge.CHECKED, nobles: 2 }
+    ]
 
     return dices
 }
