@@ -20,7 +20,13 @@ function BonusCell({ imgSrc, currentChecks, requiredChecks, eligible }: { imgSrc
     const [elClass, setElClass] = useState("")
 
     useEffect(() => {
-        setElClass(eligible ? "" : " ineligible")
+        let cs = ""
+        if (currentChecks == requiredChecks) {
+            cs = " completed"
+        } else if (!eligible) {
+            cs = " ineligible"
+        }
+        setElClass(cs)
 
         const els = Array.from(Array(requiredChecks)).map((_, idx) => {
 
