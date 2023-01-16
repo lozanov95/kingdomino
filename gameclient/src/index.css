@@ -29,7 +29,12 @@ input {
 }
 
 .game {
+    display: grid;
     grid-area: game;
+    grid-template-areas: 
+    "dice board bonusboard"
+    "dice board bonusboard"
+    "dice board bonusboard";
 }
 
 .chat {
@@ -39,10 +44,10 @@ input {
 .app {
     display: grid;
     grid-template-areas:
-        "nav nav nav nav nav nav nav"
-        "a a game game bonusboard c b"
-        "a a game game bonusboard c b"
-        "a a game game bonusboard chat b";
+        "nav nav nav nav nav"
+        "a chat game game b"
+        "a chat game game b"
+        "a chat game game b";
 }
 
 .cell {
@@ -59,19 +64,21 @@ input {
 }
 
 .dice-section {
+    grid-area: dice;
     display: flex;
     margin: 5px;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
 }
 
 .row {
     display: flex;
-    margin: auto;
 }
 
 .board {
-    text-align: center;
+    grid-area: board                                                                                                                                                                                                                                            ;
+    text-align: center;                                         
     display: flex;
     flex-direction: column;
 }

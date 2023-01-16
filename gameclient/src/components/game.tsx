@@ -1,5 +1,6 @@
 import { MouseEventHandler, useEffect, useState } from "react"
 import { getBoard, getDices } from "../api/api"
+import BonusBoard from "./bonusboard"
 import { Domino, getBadgeIcon, Badge } from "./common"
 
 
@@ -7,6 +8,7 @@ function Game() {
     return (
         <div className="game">
             <Board />
+            <BonusBoard/>
             <DiceSection />
         </div>
     )

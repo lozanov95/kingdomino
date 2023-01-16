@@ -1,4 +1,4 @@
-import { EventHandler, FormEventHandler, useEffect, useState } from "react"
+import {  useEffect, useState } from "react"
 
 enum Player {
     You = 0,
