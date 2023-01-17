@@ -5,11 +5,57 @@ import { Domino, getBadgeIcon, Badge } from "./common"
 
 
 function Game() {
+    const [gameState, setGameState] = useState(WebSocket.CLOSED)
+    const [wsConn, setWSConn] = useState<WebSocket | null>(null)
+    const [statusMsg, setStatusMsg] = useState("")
+    const [playerName, setPlayerName] = useState("")
+
+    function handleConnect(ev: SubmitEvent) {
+        ev.preventDefault()
+        setGameState(WebSocket.CONNECTING)
+        const ws = new WebSocket("ws://localhost:8080/join")
+        setStatusMsg("Connecting...")
+
+        ws.onopen = () => {
+            setGameState(ws.readyState)
+            setWSConn(ws)
+            ws.send(JSON.stringify({ name: playerName }))
+        
+            setStatusMsg("")
+        }
+
+        ws.onerror = () => {
+            setGameState(WebSocket.CLOSED)
+            setStatusMsg("Connection to the server failed.")
+        }
+
+        ws.onclose = () => {
+            setGameState(ws.readyState)
+            setStatusMsg("The connection was closed.")
+        }
+
+        ws.onmessage = (ev) => {
+            console.log(ev.data)
+            console.log(wsConn)
+        }
+    }
+
+
     return (
         <div className="game">
-            <Board />
-            <BonusBoard/>
-            <DiceSection />
+            <StatusPane message={statusMsg} />
+            {(() => {
+                switch (gameState) {
+                    case WebSocket.OPEN:
+                        return (<>
+                            <Board />
+                            <BonusBoard />
+                            <DiceSection />
+                        </>)
+                    default:
+                        return <Connect connectHandler={handleConnect} playerName={playerName} setPlayerName={setPlayerName} />
+                }
+            })()}
         </div>
     )
 }
@@ -102,5 +148,20 @@ function Noble() {
     )
 }
 
+function Connect({ connectHandler, playerName, setPlayerName }: { connectHandler: any, playerName: string, setPlayerName: any }) {
+
+    return (
+        <form onSubmitCapture={connectHandler}>
+            <input placeholder="name" minLength={3} value={playerName} onChange={e => setPlayerName(e.target.value)} />
+            <button>Connect</button>
+        </form>
+    )
+}
+
+function StatusPane({ message }: { message: string }) {
+    return (
+        <div className="status">{message}</div>
+    )
+}
 
 export default Game
