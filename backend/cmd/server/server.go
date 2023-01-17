@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/lozanov95/kingdomino/backend/cmd/game"
 	"golang.org/x/net/websocket"
 )
 
@@ -15,14 +16,21 @@ type ChatConn struct {
 }
 
 type Server struct {
-	conns map[int64]*ChatConn
-	mut   sync.RWMutex
+	conns       map[int64]*ChatConn
+	mut         sync.RWMutex
+	GameRooms   []*GameRoom
+	PlayersChan chan *game.Player
 }
 
 func NewServer() *Server {
-	return &Server{
-		conns: make(map[int64]*ChatConn),
+	s := &Server{
+		conns:       make(map[int64]*ChatConn),
+		PlayersChan: make(chan *game.Player, 2),
 	}
+
+	go s.joinRoomLoop()
+
+	return s
 }
 
 func (s *Server) HandleWS(ws *websocket.Conn) {
@@ -35,6 +43,56 @@ func (s *Server) HandleWS(ws *websocket.Conn) {
 	s.mut.Unlock()
 
 	s.readLoop(conn)
+}
+
+func (s *Server) HandleJoinRoom(ws *websocket.Conn) {
+	buf := make([]byte, 1024)
+	n, err := ws.Read(buf)
+	if err != nil {
+		if err == io.EOF {
+			log.Println("eof err")
+			return
+		}
+		log.Println(err)
+		ws.Close()
+		return
+	}
+	player := game.NewPlayer(buf[:n], ws)
+	_, err = player.Conn.Write([]byte("sending you to game"))
+	if err != nil {
+		ws.Close()
+		return
+	}
+
+	s.PlayersChan <- player
+
+	for {
+		time.Sleep(500 * time.Millisecond)
+	}
+
+}
+
+func (s *Server) joinRoomLoop() {
+	for {
+		p1 := <-s.PlayersChan
+		_, err := p1.Conn.Write([]byte("Waiting for player 2."))
+		if err != nil {
+			log.Println("p1 disconnected", err)
+		}
+		room := NewGameRoom()
+		room.Join(p1)
+
+		p2 := <-s.PlayersChan
+		_, err = p2.Conn.Write([]byte("p2 connected"))
+		if err != nil {
+			log.Println("p2 disconnected", err)
+		}
+		room.Join(p2)
+
+		p1.Conn.Write(p1.GetBoard())
+		p2.Conn.Write(p2.GetBoard())
+		go room.gameLoop()
+	}
 }
 
 func (s *Server) readLoop(ChatConn *ChatConn) {

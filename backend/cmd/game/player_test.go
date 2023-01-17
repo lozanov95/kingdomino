@@ -1,10 +1,14 @@
 package game
 
-import "testing"
+import (
+	"testing"
+
+	"golang.org/x/net/websocket"
+)
 
 func TestIncrementWithoutNobles(t *testing.T) {
 	b := Badge{name: LINE, nobles: 0}
-	p := NewPlayer("test")
+	p := NewPlayer([]byte("test"), &websocket.Conn{})
 
 	p.IncreaseBonus(b)
 
@@ -15,7 +19,7 @@ func TestIncrementWithoutNobles(t *testing.T) {
 
 func TestIncrementWithNobles(t *testing.T) {
 	b := Badge{name: LINE, nobles: 1}
-	p := NewPlayer("test")
+	p := NewPlayer([]byte("test"), &websocket.Conn{})
 
 	p.IncreaseBonus(b)
 

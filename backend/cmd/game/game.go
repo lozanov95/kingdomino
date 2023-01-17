@@ -7,10 +7,10 @@ type Game struct {
 }
 
 // Starts a new game and returns it as an instance
-func NewGame(p1Name, p2Name string) *Game {
+func NewGame(p1, p2 *Player) *Game {
 	g := Game{
-		p1: NewPlayer(p1Name),
-		p2: NewPlayer(p2Name),
+		p1: p1,
+		p2: p2,
 	}
 	g.setupDice()
 	return &g

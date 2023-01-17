@@ -1,6 +1,8 @@
 package game
 
-import "log"
+import (
+	"fmt"
+)
 
 type BadgeName int
 
@@ -24,8 +26,6 @@ const (
 // Returns the string representation of the BADGE
 func (b BadgeName) String() string {
 	switch b {
-	case EMPTY:
-		return "EMPTY"
 	case CASTLE:
 		return "CASTLE"
 	case DOT:
@@ -43,7 +43,10 @@ func (b BadgeName) String() string {
 	case QUESTIONMARK:
 		return "QUESTIONMARK"
 	default:
-		log.Println("Invalid choice")
-		return "INVALID"
+		return "EMPTY"
 	}
+}
+
+func (b Badge) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf("{\"name\":%d,\"nobles\":%d}", b.name, b.nobles)), nil
 }
