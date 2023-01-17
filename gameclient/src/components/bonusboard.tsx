@@ -8,8 +8,8 @@ function BonusBoard() {
 
     return (
         <div className="bonusboard">
-            {bonus.map(({ badge, currentChecks, requiredChecks, eligible }, idx) => {
-                return <BonusCell key={idx} imgSrc={getBadgeIcon(badge)} currentChecks={currentChecks} requiredChecks={requiredChecks} eligible={eligible} />
+            {bonus.map(({ name, currentChecks, requiredChecks, eligible }, idx) => {
+                return <BonusCell key={idx} imgSrc={getBadgeIcon(name)} currentChecks={currentChecks} requiredChecks={requiredChecks} eligible={eligible} />
             })}
         </div>
     )

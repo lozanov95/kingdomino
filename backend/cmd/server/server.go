@@ -58,11 +58,6 @@ func (s *Server) HandleJoinRoom(ws *websocket.Conn) {
 		return
 	}
 	player := game.NewPlayer(buf[:n], ws)
-	_, err = player.Conn.Write([]byte("sending you to game"))
-	if err != nil {
-		ws.Close()
-		return
-	}
 
 	s.PlayersChan <- player
 
@@ -75,18 +70,10 @@ func (s *Server) HandleJoinRoom(ws *websocket.Conn) {
 func (s *Server) joinRoomLoop() {
 	for {
 		p1 := <-s.PlayersChan
-		_, err := p1.Conn.Write([]byte("Waiting for player 2."))
-		if err != nil {
-			log.Println("p1 disconnected", err)
-		}
 		room := NewGameRoom()
 		room.Join(p1)
 
 		p2 := <-s.PlayersChan
-		_, err = p2.Conn.Write([]byte("p2 connected"))
-		if err != nil {
-			log.Println("p2 disconnected", err)
-		}
 		room.Join(p2)
 
 		p1.Conn.Write(p1.GetBoard())

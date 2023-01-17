@@ -10,7 +10,7 @@ import badgeQuestion from "../assets/question.svg"
 
 
 export type Domino = {
-    badge: Badge,
+    name: Badge,
     nobles: number
 }
 

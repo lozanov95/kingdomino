@@ -6,9 +6,10 @@ import { Domino, getBadgeIcon, Badge } from "./common"
 
 function Game() {
     const [gameState, setGameState] = useState(WebSocket.CLOSED)
-    const [wsConn, setWSConn] = useState<WebSocket | null>(null)
     const [statusMsg, setStatusMsg] = useState("")
     const [playerName, setPlayerName] = useState("")
+    const [gameBoard, setGameBoard] = useState<Domino[][] | undefined>(undefined)
+
 
     function handleConnect(ev: SubmitEvent) {
         ev.preventDefault()
@@ -18,9 +19,8 @@ function Game() {
 
         ws.onopen = () => {
             setGameState(ws.readyState)
-            setWSConn(ws)
             ws.send(JSON.stringify({ name: playerName }))
-        
+
             setStatusMsg("")
         }
 
@@ -34,9 +34,12 @@ function Game() {
             setStatusMsg("The connection was closed.")
         }
 
-        ws.onmessage = (ev) => {
-            console.log(ev.data)
-            console.log(wsConn)
+        ws.onmessage = ({ data }: { data: string }) => {
+            const d: string = data
+            if (d.length > 0) {
+                const { board } = JSON.parse(d)
+                setGameBoard(board)
+            }
         }
     }
 
@@ -48,7 +51,7 @@ function Game() {
                 switch (gameState) {
                     case WebSocket.OPEN:
                         return (<>
-                            <Board />
+                            <Board board={gameBoard} />
                             <BonusBoard />
                             <DiceSection />
                         </>)
@@ -60,12 +63,12 @@ function Game() {
     )
 }
 
-function Board() {
-    const [board, setBoard] = useState<Domino[][] | null>(null)
+function Board({ board }: { board?: Domino[][] }) {
+    // const [board, setBoard] = useState<Domino[][] | null>(null)
 
     useEffect(() => {
-        setBoard(() => getBoard())
-    }, [])
+
+    }, [board])
 
     return (
         <div className="board center" >
@@ -79,18 +82,18 @@ function Board() {
 function Row(props: { elements: Domino[] }) {
     return (
         <div className="row">
-            {props.elements.map(({ badge, nobles }, idx) => {
-                return <BoardCell key={idx} nobles={nobles} badge={badge} />
+            {props.elements.map(({ name, nobles }, idx) => {
+                return <BoardCell key={idx} nobles={nobles} name={name} />
             })}
         </div>
     )
 }
 
-function BoardCell({ badge, nobles, onClick }: { badge: Badge, nobles: number, onClick?: MouseEventHandler }) {
+function BoardCell({ name, nobles, onClick }: { name: Badge, nobles: number, onClick?: MouseEventHandler }) {
     return (
         <div className="boardCell">
             <Nobles amount={nobles} />
-            <Cell imgSrc={getBadgeIcon(badge)} onClick={onClick} />
+            <Cell imgSrc={getBadgeIcon(name)} onClick={onClick} />
         </div >
     )
 }
@@ -103,8 +106,8 @@ function DiceSection() {
     }, [])
     return (
         <div className="dice-section">
-            {dices?.map(({ badge, nobles }, idx) => {
-                return <BoardCell key={idx} badge={badge} nobles={nobles} />
+            {dices?.map(({ name, nobles }, idx) => {
+                return <BoardCell key={idx} name={name} nobles={nobles} />
             })}
         </div>
     )
