@@ -45,7 +45,6 @@ func (gr *GameRoom) gameLoop() {
 	buf := make([]byte, 1024)
 	for {
 		for _, player := range gr.Players {
-			fmt.Println(player)
 			n, err := player.Conn.Read(buf[0:])
 			if err != nil {
 				if err == io.EOF {

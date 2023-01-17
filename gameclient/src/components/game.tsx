@@ -1,7 +1,7 @@
 import { MouseEventHandler, useEffect, useState } from "react"
 import { getBoard, getDices } from "../api/api"
 import BonusBoard from "./bonusboard"
-import { Domino, getBadgeIcon, Badge } from "./common"
+import { Bonus, Domino, getBadgeIcon, Badge } from "./common"
 
 
 function Game() {
@@ -9,6 +9,7 @@ function Game() {
     const [statusMsg, setStatusMsg] = useState("")
     const [playerName, setPlayerName] = useState("")
     const [gameBoard, setGameBoard] = useState<Domino[][] | undefined>(undefined)
+    const [bonusCard, setBonusCard] = useState<Bonus[] | undefined>(undefined)
 
 
     function handleConnect(ev: SubmitEvent) {
@@ -37,8 +38,9 @@ function Game() {
         ws.onmessage = ({ data }: { data: string }) => {
             const d: string = data
             if (d.length > 0) {
-                const { board } = JSON.parse(d)
+                const { board, bonusCard } = JSON.parse(d)
                 setGameBoard(board)
+                setBonusCard(bonusCard)
             }
         }
     }
@@ -52,7 +54,7 @@ function Game() {
                     case WebSocket.OPEN:
                         return (<>
                             <Board board={gameBoard} />
-                            <BonusBoard />
+                            <BonusBoard bonusCard={bonusCard} />
                             <DiceSection />
                         </>)
                     default:

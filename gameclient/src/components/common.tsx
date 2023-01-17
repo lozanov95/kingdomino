@@ -14,6 +14,13 @@ export type Domino = {
     nobles: number
 }
 
+export type Bonus = {
+    name: number
+    RequiredChecks: number,
+    CurrentChecks: number,
+    Eligible: boolean
+}
+
 export enum Badge {
     EMPTY = 0,
     CASTLE,

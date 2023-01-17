@@ -37,15 +37,11 @@ func (b *Board) Json() ([]byte, error) {
 		return nil, err
 	}
 
-	fmt.Println("board.json", "bytes:", res, "string", string(res), ".")
-
 	return res, nil
 }
 
 func (b *Board) MarshalJSON() ([]byte, error) {
 	var sb strings.Builder
-	defer func() { fmt.Println(sb.String()) }()
-
 	sb.WriteString("{\"board\":[")
 
 	for i := 0; i < len(b); i++ {

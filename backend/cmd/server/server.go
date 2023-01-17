@@ -58,9 +58,7 @@ func (s *Server) HandleJoinRoom(ws *websocket.Conn) {
 		return
 	}
 	player := game.NewPlayer(buf[:n], ws)
-
 	s.PlayersChan <- player
-
 	for {
 		time.Sleep(500 * time.Millisecond)
 	}
@@ -75,9 +73,8 @@ func (s *Server) joinRoomLoop() {
 
 		p2 := <-s.PlayersChan
 		room.Join(p2)
-
-		p1.Conn.Write(p1.GetBoard())
-		p2.Conn.Write(p2.GetBoard())
+		p1.Conn.Write(p1.GetState())
+		p2.Conn.Write(p2.GetState())
 		go room.gameLoop()
 	}
 }

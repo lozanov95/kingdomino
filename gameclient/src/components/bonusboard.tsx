@@ -1,43 +1,42 @@
 import { Cell } from "./game"
-import { getBadgeIcon } from "./common"
+import { Bonus, getBadgeIcon } from "./common"
 import { getBonus } from "../api/api"
 import { useEffect, useState } from "react";
 
-function BonusBoard() {
-    const bonus = getBonus();
+function BonusBoard({ bonusCard }: { bonusCard?: Bonus[] }) {
 
     return (
         <div className="bonusboard">
-            {bonus.map(({ name, currentChecks, requiredChecks, eligible }, idx) => {
-                return <BonusCell key={idx} imgSrc={getBadgeIcon(name)} currentChecks={currentChecks} requiredChecks={requiredChecks} eligible={eligible} />
+            {bonusCard?.sort((a: Bonus, b: Bonus) => a.name > b.name ? 1 : -1).map(({ name, CurrentChecks, RequiredChecks, Eligible }, idx) => {
+                return <BonusCell key={idx} imgSrc={getBadgeIcon(name)} CurrentChecks={CurrentChecks} RequiredChecks={RequiredChecks} Eligible={Eligible} />
             })}
         </div>
     )
 }
 
-function BonusCell({ imgSrc, currentChecks, requiredChecks, eligible }: { imgSrc: string, currentChecks: number, requiredChecks: number, eligible: boolean }) {
+function BonusCell({ imgSrc, CurrentChecks, RequiredChecks, Eligible }: { imgSrc: string, CurrentChecks: number, RequiredChecks: number, Eligible: boolean }) {
     const [elements, setElements] = useState<JSX.Element[]>([])
     const [elClass, setElClass] = useState("")
 
     useEffect(() => {
         let cs = ""
-        if (currentChecks == requiredChecks) {
+        if (CurrentChecks == RequiredChecks) {
             cs = " completed"
-        } else if (!eligible) {
+        } else if (!Eligible) {
             cs = " ineligible"
         }
         setElClass(cs)
 
-        const els = Array.from(Array(requiredChecks)).map((_, idx) => {
+        const els = Array.from(Array(RequiredChecks)).map((_, idx) => {
 
-            if (idx < currentChecks) {
+            if (idx < CurrentChecks) {
                 return <input key={idx} className="bonus-checkbox" type="checkbox" disabled checked />
             }
             return <input key={idx} className="bonus-checkbox" type="checkbox" disabled />
         })
 
         setElements(els)
-    }, [currentChecks, eligible])
+    }, [CurrentChecks, Eligible])
 
     return (
         <div className={"bonus-cell" + elClass}>
