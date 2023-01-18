@@ -7,9 +7,9 @@ import (
 )
 
 type Bonus struct {
-	RequiredChecks int
-	CurrentChecks  int
-	Eligible       bool
+	RequiredChecks int  `json:"requiredChecks"`
+	CurrentChecks  int  `json:"currentChecks"`
+	Eligible       bool `json:"eligible"`
 }
 
 type BonusMap map[BadgeName]Bonus
@@ -34,10 +34,6 @@ func (b *Bonus) Increment() {
 		b.CurrentChecks++
 	}
 }
-
-// func (b *Bonus) MarshalJSON() ([]byte, error) {
-// 	return []byte(fmt.Sprintf("{\"requiredChecks\":%d,\"currentChecks\":%d,\"eligible\":%t}", b.RequiredChecks, b.CurrentChecks, b.Eligible)), nil
-// }
 
 func (bm *BonusMap) MarshalJSON() ([]byte, error) {
 	var sb strings.Builder

@@ -16,9 +16,9 @@ export type Domino = {
 
 export type Bonus = {
     name: number
-    RequiredChecks: number,
-    CurrentChecks: number,
-    Eligible: boolean
+    requiredChecks: number,
+    currentChecks: number,
+    eligible: boolean
 }
 
 export enum Badge {
