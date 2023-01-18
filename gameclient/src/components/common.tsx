@@ -21,6 +21,12 @@ export type Bonus = {
     eligible: boolean
 }
 
+export type GameState = {
+    bonusCard: Bonus[],
+    message: string,
+    board: Domino[][]
+}
+
 export enum Badge {
     EMPTY = 0,
     CASTLE,

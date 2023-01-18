@@ -32,6 +32,7 @@ input {
     display: grid;
     grid-area: game;
     grid-template-areas: 
+    "top top top"
     "dice board bonusboard"
     "dice board bonusboard"
     "dice board bonusboard";
@@ -45,9 +46,9 @@ input {
     display: grid;
     grid-template-areas:
         "nav nav nav nav nav"
-        "a chat game game b"
-        "a chat game game b"
-        "a chat game game b";
+        "a game game game b"
+        "a game game game b"
+        "a game game game b";
 }
 
 .cell {
@@ -172,4 +173,16 @@ img {
 
 .completed {
     background-color: #085508;
+}
+
+.status{
+    grid-area: top;
+    padding: 20px;
+    margin: 2px;
+    border-radius: var(--border-radius);
+    font-size: 30px;
+    background-color: rgb(37, 37, 152);
+}
+.connectForm{
+    grid-area: board;
 }

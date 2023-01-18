@@ -1,7 +1,7 @@
 import { MouseEventHandler, useEffect, useState } from "react"
 import { getBoard, getDices } from "../api/api"
 import BonusBoard from "./bonusboard"
-import { Bonus, Domino, getBadgeIcon, Badge } from "./common"
+import { Bonus, Domino, getBadgeIcon, Badge, GameState } from "./common"
 
 
 function Game() {
@@ -12,6 +12,12 @@ function Game() {
     const [bonusCard, setBonusCard] = useState<Bonus[] | undefined>(undefined)
 
 
+    function clearGameState(ws: WebSocket) {
+        setGameState(ws.readyState)
+        setBonusCard(undefined)
+        setGameBoard(undefined)
+    }
+
     function handleConnect(ev: SubmitEvent) {
         ev.preventDefault()
         setGameState(WebSocket.CONNECTING)
@@ -21,57 +27,46 @@ function Game() {
         ws.onopen = () => {
             setGameState(ws.readyState)
             ws.send(JSON.stringify({ name: playerName }))
-
-            setStatusMsg("")
+            setStatusMsg("Waiting for opponent.")
         }
 
         ws.onerror = () => {
-            setGameState(WebSocket.CLOSED)
+            clearGameState(ws)
             setStatusMsg("Connection to the server failed.")
         }
 
         ws.onclose = () => {
-            setGameState(ws.readyState)
+            clearGameState(ws)
             setStatusMsg("The connection was closed.")
         }
 
         ws.onmessage = ({ data }: { data: string }) => {
             const d: string = data
             if (d.length > 0) {
-                const { board, bonusCard } = JSON.parse(d)
+                const { board, bonusCard, message }: GameState = JSON.parse(d)
                 setGameBoard(board)
                 setBonusCard(bonusCard)
+                setStatusMsg(message)
             }
         }
     }
 
-
     return (
-        <div className="game">
-            <StatusPane message={statusMsg} />
-            {(() => {
-                switch (gameState) {
-                    case WebSocket.OPEN:
-                        return (<>
-                            <Board board={gameBoard} />
-                            <BonusBoard bonusCard={bonusCard} />
-                            <DiceSection />
-                        </>)
-                    default:
-                        return <Connect connectHandler={handleConnect} playerName={playerName} setPlayerName={setPlayerName} />
-                }
-            })()}
-        </div>
+        <>
+            <div className="game">
+                {statusMsg !== "" ? <StatusPane message={statusMsg} /> : ""}
+                {gameState === WebSocket.OPEN && gameBoard !== undefined ? <>
+                    <Board board={gameBoard} />
+                    <BonusBoard bonusCard={bonusCard} />
+                    <DiceSection />
+                </> : ""}
+                {gameState !== WebSocket.OPEN ? <Connect connectHandler={handleConnect} playerName={playerName} setPlayerName={setPlayerName} /> : ""}
+            </div>
+        </>
     )
 }
 
 function Board({ board }: { board?: Domino[][] }) {
-    // const [board, setBoard] = useState<Domino[][] | null>(null)
-
-    useEffect(() => {
-
-    }, [board])
-
     return (
         <div className="board center" >
             {board?.map((el, idx) => {
@@ -156,7 +151,8 @@ function Noble() {
 function Connect({ connectHandler, playerName, setPlayerName }: { connectHandler: any, playerName: string, setPlayerName: any }) {
 
     return (
-        <form onSubmitCapture={connectHandler}>
+        <form onSubmitCapture={connectHandler} className="connectForm">
+            <h2>Enter your name</h2>
             <input placeholder="name" minLength={3} value={playerName} onChange={e => setPlayerName(e.target.value)} />
             <button>Connect</button>
         </form>
