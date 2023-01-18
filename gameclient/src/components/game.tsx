@@ -53,7 +53,7 @@ function Game() {
                 const { board, bonusCard, message, dices }: GameState = JSON.parse(d)
                 board !== null ? setGameBoard(board) : ""
                 bonusCard !== null ? setBonusCard(bonusCard) : ""
-                message !== null ? setStatusMsg(message) : ""
+                message !== "" ? setStatusMsg(message) : ""
                 dices !== null ? setDices(dices) : ""
             }
         }
