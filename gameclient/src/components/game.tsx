@@ -10,12 +10,14 @@ function Game() {
     const [playerName, setPlayerName] = useState("")
     const [gameBoard, setGameBoard] = useState<Domino[][] | undefined>(undefined)
     const [bonusCard, setBonusCard] = useState<Bonus[] | undefined>(undefined)
+    const [dices, setDices] = useState<Domino[] | undefined>(undefined)
 
 
     function clearGameState(ws: WebSocket) {
         setGameState(ws.readyState)
         setBonusCard(undefined)
         setGameBoard(undefined)
+        setDices(undefined)
     }
 
     function handleConnect(ev: SubmitEvent) {
@@ -43,10 +45,11 @@ function Game() {
         ws.onmessage = ({ data }: { data: string }) => {
             const d: string = data
             if (d.length > 0) {
-                const { board, bonusCard, message }: GameState = JSON.parse(d)
+                const { board, bonusCard, message, dices }: GameState = JSON.parse(d)
                 setGameBoard(board)
                 setBonusCard(bonusCard)
                 setStatusMsg(message)
+                setDices(dices)
             }
         }
     }
@@ -58,7 +61,7 @@ function Game() {
                 {gameState === WebSocket.OPEN && gameBoard !== undefined ? <>
                     <Board board={gameBoard} />
                     <BonusBoard bonusCard={bonusCard} />
-                    <DiceSection />
+                    <DiceSection dices={dices} />
                 </> : ""}
                 {gameState !== WebSocket.OPEN ? <Connect connectHandler={handleConnect} playerName={playerName} setPlayerName={setPlayerName} /> : ""}
             </div>
@@ -95,12 +98,8 @@ function BoardCell({ name, nobles, onClick }: { name: Badge, nobles: number, onC
     )
 }
 
-function DiceSection() {
-    const [dices, setDices] = useState<Domino[] | null>(null)
+function DiceSection({ dices }: { dices: Domino[] | undefined }) {
 
-    useEffect(() => {
-        setDices(getDices())
-    }, [])
     return (
         <div className="dice-section">
             {dices?.map(({ name, nobles }, idx) => {

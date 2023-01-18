@@ -24,7 +24,8 @@ export type Bonus = {
 export type GameState = {
     bonusCard: Bonus[],
     message: string,
-    board: Domino[][]
+    board: Domino[][],
+    dices: Domino[],
 }
 
 export enum Badge {

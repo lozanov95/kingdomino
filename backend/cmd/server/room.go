@@ -51,9 +51,10 @@ func (gr *GameRoom) gameLoop() {
 	log.Println(gr.Players[0].Name, gr.Players[1].Name)
 
 	for gr.Players[0].Connected && gr.Players[1].Connected {
+		dices := gr.Game.RollDice()
 		for _, player := range gr.Players {
 			go func(player *game.Player) {
-				player.GameState <- game.GameState{Board: player.Board, BonusCard: player.BonusCard, Message: "yo"}
+				player.GameState <- game.GameState{Board: player.Board, BonusCard: player.BonusCard, Message: "yo", Dices: &dices}
 				n, err := player.Conn.Read(buf[0:])
 				if err != nil {
 					if err == io.EOF {

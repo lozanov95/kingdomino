@@ -15,6 +15,7 @@ type GameState struct {
 	Message   string    `json:"message"`
 	Board     *Board    `json:"board"`
 	BonusCard *BonusMap `json:"bonusCard"`
+	Dices     *[4]Badge `json:"dices"`
 }
 
 type Player struct {
