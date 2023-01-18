@@ -2,8 +2,6 @@ package server
 
 import (
 	"errors"
-	"fmt"
-	"io"
 	"log"
 	"sync"
 	"time"
@@ -31,7 +29,6 @@ func NewGameRoom() *GameRoom {
 	}
 
 	go gr.gameLoop()
-
 	return gr
 }
 
@@ -39,21 +36,30 @@ func (gr *GameRoom) gameLoop() {
 	defer func() {
 		for _, player := range gr.Players {
 			player.Conn.Close()
+			player.Connected = false
 		}
 	}()
 	log.Println("Started a game loop")
-	buf := make([]byte, 1024)
+	// buf := make([]byte, 1024)
 	for {
+		if len(gr.Players) < gr.PlayerLimit {
+			continue
+		}
+		log.Println(gr.Players[0].Name, gr.Players[1].Name)
 		for _, player := range gr.Players {
-			n, err := player.Conn.Read(buf[0:])
-			if err != nil {
-				if err == io.EOF {
-					break
-				}
-				log.Println("error:", err)
-				continue
-			}
-			fmt.Println(buf[:n])
+			player.GameState <- game.GameState{Board: player.Board, BonusCard: player.BonusCard, Message: "yo"}
+			// n, err := player.Conn.Read(buf[0:])
+			// if err != nil {
+			// 	if err == io.EOF {
+			// 		player.Connected = false
+			// 		log.Printf("player %s disconnected\n", player.Name)
+			// 		return
+			// 	}
+			// 	log.Println("error:", err)
+			// 	continue
+			// }
+			// fmt.Println(buf[:n])
+			// player.ClientMsg <- string(buf[:n])
 		}
 		time.Sleep(500 * time.Millisecond)
 	}

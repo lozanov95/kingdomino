@@ -42,8 +42,7 @@ func (b *Board) Json() ([]byte, error) {
 
 func (b *Board) MarshalJSON() ([]byte, error) {
 	var sb strings.Builder
-	sb.WriteString("{\"board\":[")
-
+	sb.WriteString("[")
 	for i := 0; i < len(b); i++ {
 		sb.WriteString("[")
 		for j := 0; j < len(b[i]); j++ {
@@ -62,7 +61,6 @@ func (b *Board) MarshalJSON() ([]byte, error) {
 			sb.WriteString(",")
 		}
 	}
-
-	sb.WriteString("]}")
+	sb.WriteString("]")
 	return []byte(sb.String()), nil
 }

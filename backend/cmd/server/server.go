@@ -1,6 +1,8 @@
 package server
 
 import (
+	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"sync"
@@ -16,19 +18,17 @@ type ChatConn struct {
 }
 
 type Server struct {
-	conns       map[int64]*ChatConn
-	mut         sync.RWMutex
-	GameRooms   []*GameRoom
-	PlayersChan chan *game.Player
+	conns     map[int64]*ChatConn
+	mut       sync.RWMutex
+	GameRooms []*GameRoom
 }
 
 func NewServer() *Server {
 	s := &Server{
-		conns:       make(map[int64]*ChatConn),
-		PlayersChan: make(chan *game.Player, 2),
+		conns: make(map[int64]*ChatConn),
+		// PlayersChan: make(chan *game.Player, 2),
+		GameRooms: []*GameRoom{NewGameRoom()},
 	}
-
-	go s.joinRoomLoop()
 
 	return s
 }
@@ -58,24 +58,45 @@ func (s *Server) HandleJoinRoom(ws *websocket.Conn) {
 		return
 	}
 	player := game.NewPlayer(buf[:n], ws)
-	s.PlayersChan <- player
-	for {
-		time.Sleep(500 * time.Millisecond)
-	}
+	// s.PlayersChan <- player
+	s.joinRoom(player)
 
 }
 
-func (s *Server) joinRoomLoop() {
-	for {
-		p1 := <-s.PlayersChan
-		room := NewGameRoom()
-		room.Join(p1)
+func (s *Server) joinRoom(p *game.Player) {
+	s.mut.Lock()
+	if s.GameRooms[len(s.GameRooms)-1].IsFull() {
+		s.GameRooms = append(s.GameRooms, NewGameRoom())
+	}
+	room := s.GameRooms[len(s.GameRooms)-1]
+	s.mut.Unlock()
 
-		p2 := <-s.PlayersChan
-		room.Join(p2)
-		p1.Conn.Write(p1.GetState())
-		p2.Conn.Write(p2.GetState())
-		go room.gameLoop()
+	if err := room.Join(p); err != nil {
+		log.Println(err)
+		return
+	}
+	s.sendGameState(p)
+}
+
+func (s *Server) sendGameState(p *game.Player) {
+	for p.Connected {
+		select {
+		case send := <-p.GameState:
+			msg, err := json.Marshal(send)
+			if err != nil {
+				if err == io.EOF {
+					p.Connected = false
+					return
+				}
+				log.Println(err)
+			}
+			p.Conn.Write(msg)
+			// fmt.Println(p.Name, "sending", string(msg))
+		case receive := <-p.ClientMsg:
+			log.Println(receive)
+		}
+		fmt.Println(p.Name, p.Conn.RemoteAddr())
+		time.Sleep(500 * time.Millisecond)
 	}
 }
 

@@ -37,13 +37,12 @@ func (b *Bonus) Increment() {
 
 func (bm *BonusMap) MarshalJSON() ([]byte, error) {
 	var sb strings.Builder
-
-	sb.WriteString("{\"bonusCard\":[")
+	sb.WriteString("[")
 	var idx int
 	for badge, bonus := range *bm {
 		sb.WriteString(fmt.Sprintf("{\"name\":%d,", badge))
 		jsonBonus, err := json.Marshal(bonus)
-		fmt.Println("bonus:", string(jsonBonus))
+
 		if err != nil {
 			return nil, err
 		}
@@ -55,7 +54,7 @@ func (bm *BonusMap) MarshalJSON() ([]byte, error) {
 		idx++
 	}
 
-	sb.WriteString("]}")
+	sb.WriteString("]")
 
 	return []byte(sb.String()), nil
 }

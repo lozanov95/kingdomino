@@ -8,20 +8,31 @@ import (
 	"golang.org/x/net/websocket"
 )
 
+type GameState struct {
+	Message   string    `json:"message"`
+	Board     *Board    `json:"board"`
+	BonusCard *BonusMap `json:"bonusCard"`
+}
+
 type Player struct {
-	Name  string `json:"name"`
-	Conn  *websocket.Conn
-	board *Board
-	// bonuscard *map[BadgeName]Bonus
-	bonuscard *BonusMap
+	Name      string `json:"name"`
+	Conn      *websocket.Conn
+	Board     *Board
+	BonusCard *BonusMap
+	Connected bool
+	GameState chan GameState
+	ClientMsg chan string
 }
 
 // Creates a new player instance and returns a pointer to it.
 func NewPlayer(jsonName []byte, conn *websocket.Conn) *Player {
 	player := &Player{
-		board:     NewBoard(),
-		bonuscard: NewBonusMap(),
+		Board:     NewBoard(),
+		BonusCard: NewBonusMap(),
 		Conn:      conn,
+		Connected: true,
+		GameState: make(chan GameState),
+		ClientMsg: make(chan string),
 	}
 
 	json.Unmarshal(jsonName, player)
@@ -35,13 +46,13 @@ func (p *Player) IncreaseBonus(b Badge) {
 		return
 	}
 
-	tmp := (*p.bonuscard)[b.name]
+	tmp := (*p.BonusCard)[b.name]
 	tmp.Increment()
-	(*p.bonuscard)[b.name] = tmp
+	(*p.BonusCard)[b.name] = tmp
 }
 
 func (p *Player) GetBoard() []byte {
-	board, err := p.board.Json()
+	board, err := p.Board.Json()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -49,7 +60,7 @@ func (p *Player) GetBoard() []byte {
 }
 
 func (p *Player) GetBonusCard() []byte {
-	card, err := p.bonuscard.MarshalJSON()
+	card, err := p.BonusCard.MarshalJSON()
 	if err != nil {
 		log.Println(err)
 		return nil

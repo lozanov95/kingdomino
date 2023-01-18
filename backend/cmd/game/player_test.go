@@ -12,8 +12,8 @@ func TestIncrementWithoutNobles(t *testing.T) {
 
 	p.IncreaseBonus(b)
 
-	if (*p.bonuscard)[LINE].CurrentChecks != 1 {
-		t.Errorf("Expected bonus of %s to be 1, but it is %d", LINE.String(), (*p.bonuscard)[LINE].CurrentChecks)
+	if (*p.BonusCard)[LINE].CurrentChecks != 1 {
+		t.Errorf("Expected bonus of %s to be 1, but it is %d", LINE.String(), (*p.BonusCard)[LINE].CurrentChecks)
 	}
 }
 
@@ -23,7 +23,7 @@ func TestIncrementWithNobles(t *testing.T) {
 
 	p.IncreaseBonus(b)
 
-	if (*p.bonuscard)[LINE].CurrentChecks != 0 {
-		t.Errorf("Expected bonus of %s to be 0, but it is %d", LINE.String(), (*p.bonuscard)[LINE].CurrentChecks)
+	if (*p.BonusCard)[LINE].CurrentChecks != 0 {
+		t.Errorf("Expected bonus of %s to be 0, but it is %d", LINE.String(), (*p.BonusCard)[LINE].CurrentChecks)
 	}
 }
