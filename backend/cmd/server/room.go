@@ -51,14 +51,14 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 		time.Sleep(500 * time.Millisecond)
 	}
 
+	dice := [4]game.Badge{}
+	for _, p := range gr.Players {
+		p.SendGameState(&dice, "Connected!")
+	}
 	log.Println(gr.Players[0].Name, gr.Players[1].Name)
 
 	for gr.Players[0].Connected && gr.Players[1].Connected {
 		dices := gr.Game.RollDice()
-		for _, player := range gr.Players {
-			player.SendGameState(&dices, fmt.Sprintf("Player %s's turn to pick dice", gr.Players[0].Name))
-		}
-
 		log.Println("waiting for input")
 
 		gr.handleDiceChoice(&dices, gr.Players[0])
@@ -67,15 +67,11 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 		gr.handleDiceChoice(&dices, gr.Players[0])
 
 		dices = gr.Game.RollDice()
-		for _, player := range gr.Players {
-			player.SendDice(&dices, fmt.Sprintf("Player %s's turn to pick dice", gr.Players[1].Name))
-		}
-		gr.handleDiceChoice(&dices, gr.Players[1])
-		gr.handleDiceChoice(&dices, gr.Players[0])
-		gr.handleDiceChoice(&dices, gr.Players[0])
-		gr.handleDiceChoice(&dices, gr.Players[1])
 
-		time.Sleep(10 * time.Second)
+		gr.handleDiceChoice(&dices, gr.Players[1])
+		gr.handleDiceChoice(&dices, gr.Players[0])
+		gr.handleDiceChoice(&dices, gr.Players[0])
+		gr.handleDiceChoice(&dices, gr.Players[1])
 	}
 }
 
@@ -105,9 +101,6 @@ func (gr *GameRoom) handleDiceChoice(d *[4]game.Badge, p *game.Player) {
 		d[choice].Name = game.EMPTY
 		d[choice].Nobles = 0
 
-		for _, player := range gr.Players {
-			player.SendDice(d, fmt.Sprintf("Player %s's turn to pick dice", p.Name))
-		}
 		return
 	}
 }
