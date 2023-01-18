@@ -1,18 +1,21 @@
 import { Cell } from "./game"
 import { Bonus, getBadgeIcon } from "./common"
 import { getBonus } from "../api/api"
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
-function BonusBoard({ bonusCard }: { bonusCard?: Bonus[] }) {
 
-    return (
-        <div className="bonusboard">
-            {bonusCard?.sort((a: Bonus, b: Bonus) => a.name > b.name ? 1 : -1).map(({ name, currentChecks, requiredChecks, eligible }, idx) => {
-                return <BonusCell key={idx} imgSrc={getBadgeIcon(name)} currentChecks={currentChecks} requiredChecks={requiredChecks} eligible={eligible} />
-            })}
-        </div>
-    )
-}
+const BonusBoard = React.memo(
+    function BonusBoard({ bonusCard }: { bonusCard?: Bonus[] }) {
+
+        return (
+            <div className="bonusboard">
+                {bonusCard?.sort((a: Bonus, b: Bonus) => a.name > b.name ? 1 : -1).map(({ name, currentChecks, requiredChecks, eligible }, idx) => {
+                    return <BonusCell key={idx} imgSrc={getBadgeIcon(name)} currentChecks={currentChecks} requiredChecks={requiredChecks} eligible={eligible} />
+                })}
+            </div>
+        )
+    }
+)
 
 function BonusCell({ imgSrc, currentChecks, requiredChecks, eligible }: { imgSrc: string, currentChecks: number, requiredChecks: number, eligible: boolean }) {
     const [elements, setElements] = useState<JSX.Element[]>([])
@@ -40,7 +43,7 @@ function BonusCell({ imgSrc, currentChecks, requiredChecks, eligible }: { imgSrc
 
     return (
         <div className={"bonus-cell" + elClass}>
-            <Cell imgSrc={imgSrc} />
+            <Cell imgSrc={imgSrc} id="" />
             {elements}
         </div>
     )

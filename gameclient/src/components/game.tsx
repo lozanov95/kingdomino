@@ -1,7 +1,10 @@
-import { MouseEventHandler, useEffect, useState, MouseEvent } from "react"
+import React, { MouseEventHandler, useEffect, useState, MouseEvent, useMemo } from "react"
 import BonusBoard from "./bonusboard"
 import { Bonus, Domino, getBadgeIcon, Badge, GameState } from "./common"
 
+function GS() {
+
+}
 
 function Game() {
     const [gameState, setGameState] = useState(WebSocket.CLOSED)
@@ -52,14 +55,12 @@ function Game() {
                 bonusCard !== null ? setBonusCard(bonusCard) : ""
                 message !== null ? setStatusMsg(message) : ""
                 dices !== null ? setDices(dices) : ""
-                console.log(d)
             }
         }
     }
 
     function handleDiceSelect(ev: MouseEvent<HTMLElement>) {
         wsConn?.send(ev.currentTarget.id)
-        console.log("chose", ev.currentTarget.id)
     }
 
     return (
@@ -77,15 +78,24 @@ function Game() {
     )
 }
 
-function Board({ board }: { board?: Domino[][] }) {
-    return (
-        <div className="board center" >
-            {board?.map((el, idx) => {
-                return <Row key={idx} elements={el} />
-            })}
-        </div>
-    )
-}
+
+const Board = React.memo(
+    function Board({ board }: { board?: Domino[][] }) {
+
+        const currentBoard = useMemo(() => {
+            return board
+        }, [board])
+
+        return (
+            <div className="board center" >
+                {currentBoard?.map((el, idx) => {
+                    return <Row key={idx} elements={el} />
+                })}
+            </div>
+        )
+    }
+)
+
 
 function Row(props: { elements: Domino[] }) {
     return (
@@ -106,16 +116,18 @@ function BoardCell({ id, name, nobles, onClick }: { id: string, name: Badge, nob
     )
 }
 
-function DiceSection({ dices, handleDiceSelect }: { dices: Domino[] | undefined, handleDiceSelect: MouseEventHandler }) {
+const DiceSection = React.memo(
+    function DiceSection({ dices, handleDiceSelect }: { dices: Domino[] | undefined, handleDiceSelect: MouseEventHandler }) {
 
-    return (
-        <div className="dice-section">
-            {dices?.map(({ name, nobles }, idx) => {
-                return <BoardCell id={idx.toString()} key={idx} name={name} nobles={nobles} onClick={handleDiceSelect} />
-            })}
-        </div>
-    )
-}
+        return (
+            <div className="dice-section">
+                {dices?.map(({ name, nobles }, idx) => {
+                    return <BoardCell id={idx.toString()} key={idx} name={name} nobles={nobles} onClick={handleDiceSelect} />
+                })}
+            </div>
+        )
+    }
+)
 
 export function Cell({ id, imgSrc, onClick }: { id: string, imgSrc: string, onClick?: MouseEventHandler }) {
     return (
