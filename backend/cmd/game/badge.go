@@ -1,14 +1,10 @@
 package game
 
-import (
-	"fmt"
-)
-
 type BadgeName int
 
 type Badge struct {
-	name   BadgeName
-	nobles int
+	Name   BadgeName `json:"name"`
+	Nobles int       `json:"nobles"`
 }
 
 const (
@@ -45,8 +41,4 @@ func (b BadgeName) String() string {
 	default:
 		return "EMPTY"
 	}
-}
-
-func (b Badge) MarshalJSON() ([]byte, error) {
-	return []byte(fmt.Sprintf("{\"name\":%d,\"nobles\":%d}", b.name, b.nobles)), nil
 }

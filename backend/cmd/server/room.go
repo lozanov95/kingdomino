@@ -3,8 +3,8 @@ package server
 import (
 	"errors"
 	"fmt"
-	"io"
 	"log"
+	"strconv"
 	"sync"
 	"time"
 
@@ -43,7 +43,7 @@ func (gr *GameRoom) gameLoop() {
 		log.Println("game room closed")
 	}()
 	log.Println("Started a game loop")
-	buf := make([]byte, 1024)
+	// buf := make([]byte, 1024)
 	for len(gr.Players) < gr.PlayerLimit {
 		time.Sleep(500 * time.Millisecond)
 	}
@@ -53,23 +53,55 @@ func (gr *GameRoom) gameLoop() {
 	for gr.Players[0].Connected && gr.Players[1].Connected {
 		dices := gr.Game.RollDice()
 		for _, player := range gr.Players {
-			go func(player *game.Player) {
-				player.GameState <- game.GameState{Board: player.Board, BonusCard: player.BonusCard, Message: "yo", Dices: &dices}
-				n, err := player.Conn.Read(buf[0:])
-				if err != nil {
-					if err == io.EOF {
-						player.Connected = false
-						log.Printf("player %s disconnected\n", player.Name)
-						return
-					}
-					log.Println("error:", err)
-					return
-				}
-				fmt.Println(buf[:n])
-				player.ClientMsg <- string(buf[:n])
-			}(player)
+			player.GameState <- game.GameState{Board: player.Board, BonusCard: player.BonusCard, Message: fmt.Sprintf("Player %s's turn to pick dice", gr.Players[0].Name), Dices: &dices, ID: player.Id}
 		}
-		time.Sleep(1000 * time.Millisecond)
+
+		log.Println("waiting for input")
+
+		gr.handleDiceChoice(&dices, gr.Players[0])
+		gr.handleDiceChoice(&dices, gr.Players[1])
+		gr.handleDiceChoice(&dices, gr.Players[1])
+		gr.handleDiceChoice(&dices, gr.Players[0])
+
+		dices = gr.Game.RollDice()
+		for _, player := range gr.Players {
+			player.GameState <- game.GameState{Dices: &dices}
+		}
+		gr.handleDiceChoice(&dices, gr.Players[1])
+		gr.handleDiceChoice(&dices, gr.Players[0])
+		gr.handleDiceChoice(&dices, gr.Players[0])
+		gr.handleDiceChoice(&dices, gr.Players[1])
+
+		time.Sleep(10 * time.Second)
+	}
+}
+
+func (gr *GameRoom) handleDiceChoice(d *[4]game.Badge, p *game.Player) {
+	for {
+		for _, player := range gr.Players {
+			player.GameState <- game.GameState{Board: player.Board, Message: fmt.Sprintf("Player %s's turn to pick dice", p.Name), BonusCard: player.BonusCard, Dices: d, PlayerTurn: p.Id, ID: player.Id}
+		}
+
+		msg, err := p.GetInput()
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		choice, err := strconv.Atoi(string(msg))
+
+		if err != nil || len(d) < choice || d[choice].Name == game.EMPTY {
+			p.SendMessage("Invalid choice!")
+			log.Println("Invalid choice")
+			continue
+		}
+
+		d[choice].Name = game.EMPTY
+		d[choice].Nobles = 0
+
+		for _, player := range gr.Players {
+			player.GameState <- game.GameState{Board: player.Board, Message: fmt.Sprintf("Player %s's turn to pick dice", p.Name), BonusCard: player.BonusCard, Dices: d, PlayerTurn: p.Id, ID: player.Id}
+		}
+		return
 	}
 }
 

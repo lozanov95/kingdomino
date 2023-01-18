@@ -20,42 +20,42 @@ func NewGame(p1, p2 *Player) *Game {
 func (g *Game) setupDice() {
 	g.dices[0] = Dice{
 		[6]Badge{
-			{name: QUESTIONMARK, nobles: 0},
-			{name: DOT, nobles: 0},
-			{name: DOUBLELINE, nobles: 1},
-			{name: LINE, nobles: 0},
-			{name: DOUBLEDOT, nobles: 1},
-			{name: DOT, nobles: 0},
+			{Name: QUESTIONMARK, Nobles: 0},
+			{Name: DOT, Nobles: 0},
+			{Name: DOUBLELINE, Nobles: 1},
+			{Name: LINE, Nobles: 0},
+			{Name: DOUBLEDOT, Nobles: 1},
+			{Name: DOT, Nobles: 0},
 		},
 	}
 	g.dices[1] = Dice{
 		[6]Badge{
-			{name: CHECKED, nobles: 0},
-			{name: LINE, nobles: 0},
-			{name: DOUBLEDOT, nobles: 1},
-			{name: DOUBLELINE, nobles: 1},
-			{name: DOT, nobles: 0},
-			{name: FILLED, nobles: 0},
+			{Name: CHECKED, Nobles: 0},
+			{Name: LINE, Nobles: 0},
+			{Name: DOUBLEDOT, Nobles: 1},
+			{Name: DOUBLELINE, Nobles: 1},
+			{Name: DOT, Nobles: 0},
+			{Name: FILLED, Nobles: 0},
 		},
 	}
 	g.dices[2] = Dice{
 		[6]Badge{
-			{name: DOUBLEDOT, nobles: 0},
-			{name: LINE, nobles: 0},
-			{name: FILLED, nobles: 2},
-			{name: CHECKED, nobles: 2},
-			{name: DOT, nobles: 0},
-			{name: DOUBLELINE, nobles: 0},
+			{Name: DOUBLEDOT, Nobles: 0},
+			{Name: LINE, Nobles: 0},
+			{Name: FILLED, Nobles: 2},
+			{Name: CHECKED, Nobles: 2},
+			{Name: DOT, Nobles: 0},
+			{Name: DOUBLELINE, Nobles: 0},
 		},
 	}
 	g.dices[3] = Dice{
 		[6]Badge{
-			{name: DOUBLELINE, nobles: 0},
-			{name: LINE, nobles: 1},
-			{name: QUESTIONMARK, nobles: 0},
-			{name: LINE, nobles: 0},
-			{name: DOT, nobles: 1},
-			{name: DOUBLEDOT, nobles: 0},
+			{Name: DOUBLELINE, Nobles: 0},
+			{Name: LINE, Nobles: 1},
+			{Name: QUESTIONMARK, Nobles: 0},
+			{Name: LINE, Nobles: 0},
+			{Name: DOT, Nobles: 1},
+			{Name: DOUBLEDOT, Nobles: 0},
 		},
 	}
 }

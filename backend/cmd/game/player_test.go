@@ -7,7 +7,7 @@ import (
 )
 
 func TestIncrementWithoutNobles(t *testing.T) {
-	b := Badge{name: LINE, nobles: 0}
+	b := Badge{Name: LINE, Nobles: 0}
 	p := NewPlayer([]byte("test"), &websocket.Conn{})
 
 	p.IncreaseBonus(b)
@@ -18,7 +18,7 @@ func TestIncrementWithoutNobles(t *testing.T) {
 }
 
 func TestIncrementWithNobles(t *testing.T) {
-	b := Badge{name: LINE, nobles: 1}
+	b := Badge{Name: LINE, Nobles: 1}
 	p := NewPlayer([]byte("test"), &websocket.Conn{})
 
 	p.IncreaseBonus(b)

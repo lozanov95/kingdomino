@@ -24,7 +24,7 @@ func (b *Board) Print() {
 		fmt.Printf("%d| ", i)
 		for j := 0; j < len(b[i]); j++ {
 			cell = b[i][j]
-			fmt.Print(cell.name.String(), cell.nobles, " | ")
+			fmt.Print(cell.Name.String(), cell.Name, " | ")
 		}
 		fmt.Printf("\n%s\n", lb)
 	}

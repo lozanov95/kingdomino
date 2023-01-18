@@ -11,14 +11,21 @@ import (
 	"golang.org/x/net/websocket"
 )
 
+const (
+	TIMEOUT = 60 * time.Second
+)
+
 type GameState struct {
-	Message   string    `json:"message"`
-	Board     *Board    `json:"board"`
-	BonusCard *BonusMap `json:"bonusCard"`
-	Dices     *[4]Badge `json:"dices"`
+	ID         int64     `json:"id"`
+	Message    string    `json:"message"`
+	Board      *Board    `json:"board"`
+	BonusCard  *BonusMap `json:"bonusCard"`
+	Dices      *[4]Badge `json:"dices"`
+	PlayerTurn int64     `json:"playerTurn"`
 }
 
 type Player struct {
+	Id        int64  `json:"id"`
 	Name      string `json:"name"`
 	Conn      *websocket.Conn
 	Board     *Board
@@ -30,6 +37,7 @@ type Player struct {
 
 // Creates a new player instance and returns a pointer to it.
 func NewPlayer(jsonName []byte, conn *websocket.Conn) *Player {
+
 	player := &Player{
 		Board:     NewBoard(),
 		BonusCard: NewBonusMap(),
@@ -37,6 +45,7 @@ func NewPlayer(jsonName []byte, conn *websocket.Conn) *Player {
 		Connected: true,
 		GameState: make(chan GameState),
 		ClientMsg: make(chan string),
+		Id:        time.Now().UnixNano(),
 	}
 
 	json.Unmarshal(jsonName, player)
@@ -46,13 +55,13 @@ func NewPlayer(jsonName []byte, conn *websocket.Conn) *Player {
 
 // Increases the bonus of a specific card
 func (p *Player) IncreaseBonus(b Badge) {
-	if b.nobles != 0 {
+	if b.Nobles != 0 {
 		return
 	}
 
-	tmp := (*p.BonusCard)[b.name]
+	tmp := (*p.BonusCard)[b.Name]
 	tmp.Increment()
-	(*p.BonusCard)[b.name] = tmp
+	(*p.BonusCard)[b.Name] = tmp
 }
 
 func (p *Player) GetBoard() []byte {
@@ -108,4 +117,24 @@ func (p *Player) SendGameState() {
 		fmt.Println(p.Name, p.Conn.RemoteAddr())
 		time.Sleep(1000 * time.Millisecond)
 	}
+}
+
+func (p *Player) GetInput() ([]byte, error) {
+	buf := make([]byte, 1024)
+
+	err := p.Conn.SetReadDeadline(time.Now().Add(TIMEOUT))
+	if err != nil {
+		return nil, err
+	}
+	n, err := p.Conn.Read(buf[0:])
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	return buf[:n], nil
+}
+
+func (p *Player) SendMessage(message string) {
+	p.GameState <- GameState{Message: message}
 }

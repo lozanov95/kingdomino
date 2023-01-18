@@ -1,16 +1,17 @@
-import { MouseEventHandler, useEffect, useState } from "react"
-import { getBoard, getDices } from "../api/api"
+import { MouseEventHandler, useEffect, useState, MouseEvent } from "react"
 import BonusBoard from "./bonusboard"
 import { Bonus, Domino, getBadgeIcon, Badge, GameState } from "./common"
 
 
 function Game() {
     const [gameState, setGameState] = useState(WebSocket.CLOSED)
+    const [wsConn, setWsConn] = useState<WebSocket | null>(null)
     const [statusMsg, setStatusMsg] = useState("")
     const [playerName, setPlayerName] = useState("")
     const [gameBoard, setGameBoard] = useState<Domino[][] | undefined>(undefined)
     const [bonusCard, setBonusCard] = useState<Bonus[] | undefined>(undefined)
     const [dices, setDices] = useState<Domino[] | undefined>(undefined)
+    const [pTurn, setPTurn] = useState(-1)
 
 
     function clearGameState(ws: WebSocket) {
@@ -30,6 +31,7 @@ function Game() {
             setGameState(ws.readyState)
             ws.send(JSON.stringify({ name: playerName }))
             setStatusMsg("Waiting for opponent.")
+            setWsConn(ws)
         }
 
         ws.onerror = () => {
@@ -46,12 +48,18 @@ function Game() {
             const d: string = data
             if (d.length > 0) {
                 const { board, bonusCard, message, dices }: GameState = JSON.parse(d)
-                setGameBoard(board)
-                setBonusCard(bonusCard)
-                setStatusMsg(message)
-                setDices(dices)
+                board !== null ? setGameBoard(board) : ""
+                bonusCard !== null ? setBonusCard(bonusCard) : ""
+                message !== null ? setStatusMsg(message) : ""
+                dices !== null ? setDices(dices) : ""
+                console.log(d)
             }
         }
+    }
+
+    function handleDiceSelect(ev: MouseEvent<HTMLElement>) {
+        wsConn?.send(ev.currentTarget.id)
+        console.log("chose", ev.currentTarget.id)
     }
 
     return (
@@ -61,7 +69,7 @@ function Game() {
                 {gameState === WebSocket.OPEN && gameBoard !== undefined ? <>
                     <Board board={gameBoard} />
                     <BonusBoard bonusCard={bonusCard} />
-                    <DiceSection dices={dices} />
+                    <DiceSection dices={dices} handleDiceSelect={handleDiceSelect} />
                 </> : ""}
                 {gameState !== WebSocket.OPEN ? <Connect connectHandler={handleConnect} playerName={playerName} setPlayerName={setPlayerName} /> : ""}
             </div>
@@ -83,36 +91,36 @@ function Row(props: { elements: Domino[] }) {
     return (
         <div className="row">
             {props.elements.map(({ name, nobles }, idx) => {
-                return <BoardCell key={idx} nobles={nobles} name={name} />
+                return <BoardCell id={idx.toString()} key={idx} nobles={nobles} name={name} />
             })}
         </div>
     )
 }
 
-function BoardCell({ name, nobles, onClick }: { name: Badge, nobles: number, onClick?: MouseEventHandler }) {
+function BoardCell({ id, name, nobles, onClick }: { id: string, name: Badge, nobles: number, onClick?: MouseEventHandler }) {
     return (
         <div className="boardCell">
             <Nobles amount={nobles} />
-            <Cell imgSrc={getBadgeIcon(name)} onClick={onClick} />
+            <Cell id={id} imgSrc={getBadgeIcon(name)} onClick={onClick} />
         </div >
     )
 }
 
-function DiceSection({ dices }: { dices: Domino[] | undefined }) {
+function DiceSection({ dices, handleDiceSelect }: { dices: Domino[] | undefined, handleDiceSelect: MouseEventHandler }) {
 
     return (
         <div className="dice-section">
             {dices?.map(({ name, nobles }, idx) => {
-                return <BoardCell key={idx} name={name} nobles={nobles} />
+                return <BoardCell id={idx.toString()} key={idx} name={name} nobles={nobles} onClick={handleDiceSelect} />
             })}
         </div>
     )
 }
 
-export function Cell({ imgSrc, onClick }: { imgSrc: string, onClick?: MouseEventHandler }) {
+export function Cell({ id, imgSrc, onClick }: { id: string, imgSrc: string, onClick?: MouseEventHandler }) {
     return (
-        <div className="cell" onClick={onClick}>
-            <img src={imgSrc} />
+        <div className="cell" id={id} onClick={onClick}>
+            <img src={imgSrc} alt="badge icon" />
         </div>
     )
 }
