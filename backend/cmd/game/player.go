@@ -97,7 +97,7 @@ func (p *Player) GetState() []byte {
 	return []byte(sb.String())
 }
 
-func (p *Player) SendGameState() {
+func (p *Player) GameStateLoop() {
 	for p.Connected {
 		select {
 		case send := <-p.GameState:
@@ -137,4 +137,19 @@ func (p *Player) GetInput() ([]byte, error) {
 
 func (p *Player) SendMessage(message string) {
 	p.GameState <- GameState{Message: message}
+}
+
+func (p *Player) SendDice(d *[4]Badge, m string) {
+	p.GameState <- GameState{Dices: d, Message: m}
+}
+
+func (p *Player) SendGameState(d *[4]Badge, m string) {
+	p.GameState <- GameState{
+		ID:        p.Id,
+		Message:   m,
+		Board:     p.Board,
+		BonusCard: p.BonusCard,
+		Dices:     d,
+		// PlayerTurn: 0,
+	}
 }
