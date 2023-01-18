@@ -1,8 +1,6 @@
 package server
 
 import (
-	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"sync"
@@ -75,29 +73,7 @@ func (s *Server) joinRoom(p *game.Player) {
 		log.Println(err)
 		return
 	}
-	s.sendGameState(p)
-}
-
-func (s *Server) sendGameState(p *game.Player) {
-	for p.Connected {
-		select {
-		case send := <-p.GameState:
-			msg, err := json.Marshal(send)
-			if err != nil {
-				if err == io.EOF {
-					p.Connected = false
-					return
-				}
-				log.Println(err)
-			}
-			p.Conn.Write(msg)
-			// fmt.Println(p.Name, "sending", string(msg))
-		case receive := <-p.ClientMsg:
-			log.Println(receive)
-		}
-		fmt.Println(p.Name, p.Conn.RemoteAddr())
-		time.Sleep(500 * time.Millisecond)
-	}
+	p.SendGameState()
 }
 
 func (s *Server) readLoop(ChatConn *ChatConn) {

@@ -2,6 +2,8 @@ package server
 
 import (
 	"errors"
+	"fmt"
+	"io"
 	"log"
 	"sync"
 	"time"
@@ -38,30 +40,35 @@ func (gr *GameRoom) gameLoop() {
 			player.Conn.Close()
 			player.Connected = false
 		}
+		log.Println("game room closed")
 	}()
 	log.Println("Started a game loop")
-	// buf := make([]byte, 1024)
-	for {
-		if len(gr.Players) < gr.PlayerLimit {
-			continue
-		}
-		log.Println(gr.Players[0].Name, gr.Players[1].Name)
-		for _, player := range gr.Players {
-			player.GameState <- game.GameState{Board: player.Board, BonusCard: player.BonusCard, Message: "yo"}
-			// n, err := player.Conn.Read(buf[0:])
-			// if err != nil {
-			// 	if err == io.EOF {
-			// 		player.Connected = false
-			// 		log.Printf("player %s disconnected\n", player.Name)
-			// 		return
-			// 	}
-			// 	log.Println("error:", err)
-			// 	continue
-			// }
-			// fmt.Println(buf[:n])
-			// player.ClientMsg <- string(buf[:n])
-		}
+	buf := make([]byte, 1024)
+	for len(gr.Players) < gr.PlayerLimit {
 		time.Sleep(500 * time.Millisecond)
+	}
+
+	log.Println(gr.Players[0].Name, gr.Players[1].Name)
+
+	for gr.Players[0].Connected && gr.Players[1].Connected {
+		for _, player := range gr.Players {
+			go func(player *game.Player) {
+				player.GameState <- game.GameState{Board: player.Board, BonusCard: player.BonusCard, Message: "yo"}
+				n, err := player.Conn.Read(buf[0:])
+				if err != nil {
+					if err == io.EOF {
+						player.Connected = false
+						log.Printf("player %s disconnected\n", player.Name)
+						return
+					}
+					log.Println("error:", err)
+					return
+				}
+				fmt.Println(buf[:n])
+				player.ClientMsg <- string(buf[:n])
+			}(player)
+		}
+		time.Sleep(1000 * time.Millisecond)
 	}
 }
 

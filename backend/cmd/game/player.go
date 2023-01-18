@@ -2,8 +2,11 @@ package game
 
 import (
 	"encoding/json"
+	"fmt"
+	"io"
 	"log"
 	"strings"
+	"time"
 
 	"golang.org/x/net/websocket"
 )
@@ -82,4 +85,26 @@ func (p *Player) GetState() []byte {
 	sb.WriteString("}")
 
 	return []byte(sb.String())
+}
+
+func (p *Player) SendGameState() {
+	for p.Connected {
+		select {
+		case send := <-p.GameState:
+			msg, err := json.Marshal(send)
+			if err != nil {
+				if err == io.EOF {
+					p.Connected = false
+					return
+				}
+				log.Println(err)
+			}
+			p.Conn.Write(msg)
+			// fmt.Println(p.Name, "sending", string(msg))
+		case receive := <-p.ClientMsg:
+			log.Println(receive)
+		}
+		fmt.Println(p.Name, p.Conn.RemoteAddr())
+		time.Sleep(1000 * time.Millisecond)
+	}
 }
