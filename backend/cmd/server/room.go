@@ -16,6 +16,7 @@ var (
 )
 
 type GameRoom struct {
+	ID          string
 	Players     []*game.Player
 	PlayerLimit int
 	mux         sync.RWMutex
@@ -23,27 +24,29 @@ type GameRoom struct {
 }
 
 // Returns a new game room instance.
-func NewGameRoom() *GameRoom {
+func NewGameRoom(closeChan chan string) *GameRoom {
+	id := strconv.Itoa(int(time.Now().UnixMicro()))
 	gr := &GameRoom{
+		ID:          id,
 		Players:     []*game.Player{},
 		PlayerLimit: 2,
 		mux:         sync.RWMutex{},
 	}
 
-	go gr.gameLoop()
+	go gr.gameLoop(closeChan)
 	return gr
 }
 
-func (gr *GameRoom) gameLoop() {
+func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 	defer func() {
 		for _, player := range gr.Players {
 			player.Conn.Close()
 			player.Connected = false
 		}
+		closeChan <- gr.ID
 		log.Println("game room closed")
 	}()
-	log.Println("Started a game loop")
-	// buf := make([]byte, 1024)
+	log.Println("Opened a room")
 	for len(gr.Players) < gr.PlayerLimit {
 		time.Sleep(500 * time.Millisecond)
 	}
@@ -53,7 +56,7 @@ func (gr *GameRoom) gameLoop() {
 	for gr.Players[0].Connected && gr.Players[1].Connected {
 		dices := gr.Game.RollDice()
 		for _, player := range gr.Players {
-			player.GameState <- game.GameState{Board: player.Board, BonusCard: player.BonusCard, Message: fmt.Sprintf("Player %s's turn to pick dice", gr.Players[0].Name), Dices: &dices, ID: player.Id}
+			player.SendGameState(&dices, fmt.Sprintf("Player %s's turn to pick dice", gr.Players[0].Name))
 		}
 
 		log.Println("waiting for input")
@@ -65,7 +68,7 @@ func (gr *GameRoom) gameLoop() {
 
 		dices = gr.Game.RollDice()
 		for _, player := range gr.Players {
-			player.GameState <- game.GameState{Dices: &dices}
+			player.SendDice(&dices, fmt.Sprintf("Player %s's turn to pick dice", gr.Players[1].Name))
 		}
 		gr.handleDiceChoice(&dices, gr.Players[1])
 		gr.handleDiceChoice(&dices, gr.Players[0])
@@ -79,12 +82,16 @@ func (gr *GameRoom) gameLoop() {
 func (gr *GameRoom) handleDiceChoice(d *[4]game.Badge, p *game.Player) {
 	for {
 		for _, player := range gr.Players {
-			player.GameState <- game.GameState{Board: player.Board, Message: fmt.Sprintf("Player %s's turn to pick dice", p.Name), BonusCard: player.BonusCard, Dices: d, PlayerTurn: p.Id, ID: player.Id}
+			if !player.Connected {
+				return
+			}
+			player.SendDice(d, fmt.Sprintf("Player %s's turn to pick dice", p.Name))
 		}
 
 		msg, err := p.GetInput()
 		if err != nil {
-			log.Println(err)
+			p.Connected = false
+			log.Println("handle dice", err)
 			return
 		}
 		choice, err := strconv.Atoi(string(msg))
@@ -99,7 +106,7 @@ func (gr *GameRoom) handleDiceChoice(d *[4]game.Badge, p *game.Player) {
 		d[choice].Nobles = 0
 
 		for _, player := range gr.Players {
-			player.GameState <- game.GameState{Board: player.Board, Message: fmt.Sprintf("Player %s's turn to pick dice", p.Name), BonusCard: player.BonusCard, Dices: d, PlayerTurn: p.Id, ID: player.Id}
+			player.SendDice(d, fmt.Sprintf("Player %s's turn to pick dice", p.Name))
 		}
 		return
 	}

@@ -18,14 +18,16 @@ type ChatConn struct {
 type Server struct {
 	conns     map[int64]*ChatConn
 	mut       sync.RWMutex
-	GameRooms []*GameRoom
+	GameRooms map[string]*GameRoom
+	CloseChan chan string
 }
 
 func NewServer() *Server {
 	s := &Server{
-		conns: make(map[int64]*ChatConn),
-		// PlayersChan: make(chan *game.Player, 2),
-		GameRooms: []*GameRoom{NewGameRoom()},
+		conns:     make(map[int64]*ChatConn),
+		mut:       sync.RWMutex{},
+		GameRooms: map[string]*GameRoom{},
+		CloseChan: make(chan string, 10),
 	}
 
 	return s
@@ -56,24 +58,28 @@ func (s *Server) HandleJoinRoom(ws *websocket.Conn) {
 		return
 	}
 	player := game.NewPlayer(buf[:n], ws)
-	// s.PlayersChan <- player
-	s.joinRoom(player)
 
+	s.joinRoom(player)
 }
 
 func (s *Server) joinRoom(p *game.Player) {
 	s.mut.Lock()
-	if s.GameRooms[len(s.GameRooms)-1].IsFull() {
-		s.GameRooms = append(s.GameRooms, NewGameRoom())
+	joined := false
+	for _, room := range s.GameRooms {
+		if !room.IsFull() {
+			room.Join(p)
+			joined = true
+			break
+		}
 	}
-	room := s.GameRooms[len(s.GameRooms)-1]
+	if !joined {
+		room := NewGameRoom(s.CloseChan)
+		room.Join(p)
+		s.GameRooms[room.ID] = room
+	}
 	s.mut.Unlock()
 
-	if err := room.Join(p); err != nil {
-		log.Println(err)
-		return
-	}
-	p.SendGameState()
+	p.GameStateLoop()
 }
 
 func (s *Server) readLoop(ChatConn *ChatConn) {
@@ -100,4 +106,12 @@ func (s *Server) readLoop(ChatConn *ChatConn) {
 			}
 		}
 	}
+}
+
+func (s *Server) CloseRoom(id string) {
+	s.mut.Lock()
+	defer s.mut.Unlock()
+	delete(s.GameRooms, id)
+	log.Println("closed room", id)
+	log.Println("active rooms", len(s.GameRooms))
 }

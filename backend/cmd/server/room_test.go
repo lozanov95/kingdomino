@@ -12,7 +12,7 @@ func TestJoinRoom(t *testing.T) {
 	c1 := &websocket.Conn{}
 	c2 := &websocket.Conn{}
 	c3 := &websocket.Conn{}
-	gr := server.NewGameRoom()
+	gr := server.NewGameRoom(make(chan string))
 	p1 := game.NewPlayer([]byte("{\"name\":\"Stoyan\"}"), c1)
 	p2 := game.NewPlayer([]byte("{\"name\":\"Stoyan\"}"), c2)
 	p3 := game.NewPlayer([]byte("{\"name\":\"Stoyan\"}"), c3)

@@ -20,6 +20,12 @@ func main() {
 
 	srv := server.NewServer()
 
+	go func() {
+		for id := range srv.CloseChan {
+			srv.CloseRoom(id)
+		}
+	}()
+
 	http.Handle("/ws", websocket.Handler(srv.HandleWS))
 	http.Handle("/join", websocket.Handler(srv.HandleJoinRoom))
 	http.Handle("/", http.FileServer(http.Dir("./ui")))
