@@ -51,27 +51,27 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 		time.Sleep(500 * time.Millisecond)
 	}
 
-	dice := [4]game.Badge{}
+	var dice *[4]game.Badge
 	for _, p := range gr.Players {
-		p.SendGameState(&dice, "Connected!")
+		p.SendGameState(dice, "Connected!")
 	}
 	log.Println(gr.Players[0].Name, gr.Players[1].Name)
 
 	for gr.Players[0].Connected && gr.Players[1].Connected {
-		dices := gr.Game.RollDice()
+		dice = gr.Game.RollDice()
 		log.Println("waiting for input")
 
-		gr.handleDiceChoice(&dices, gr.Players[0])
-		gr.handleDiceChoice(&dices, gr.Players[1])
-		gr.handleDiceChoice(&dices, gr.Players[1])
-		gr.handleDiceChoice(&dices, gr.Players[0])
+		gr.handleDiceChoice(dice, gr.Players[0])
+		gr.handleDiceChoice(dice, gr.Players[1])
+		gr.handleDiceChoice(dice, gr.Players[1])
+		gr.handleDiceChoice(dice, gr.Players[0])
 
-		dices = gr.Game.RollDice()
+		dice = gr.Game.RollDice()
 
-		gr.handleDiceChoice(&dices, gr.Players[1])
-		gr.handleDiceChoice(&dices, gr.Players[0])
-		gr.handleDiceChoice(&dices, gr.Players[0])
-		gr.handleDiceChoice(&dices, gr.Players[1])
+		gr.handleDiceChoice(dice, gr.Players[1])
+		gr.handleDiceChoice(dice, gr.Players[0])
+		gr.handleDiceChoice(dice, gr.Players[0])
+		gr.handleDiceChoice(dice, gr.Players[1])
 	}
 }
 

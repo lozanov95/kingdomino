@@ -60,11 +60,11 @@ func (g *Game) setupDice() {
 	}
 }
 
-func (g *Game) RollDice() [4]Badge {
+func (g *Game) RollDice() *[4]Badge {
 	d := [4]Badge{}
 	for i, r := range g.dices {
 		d[i] = r.Roll()
 	}
 
-	return d
+	return &d
 }
