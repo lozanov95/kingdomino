@@ -100,6 +100,11 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 		for _, player := range gr.Players {
 			wg.Add(1)
 			go func(player *game.Player) {
+				defer func() {
+					if err := recover(); err != nil {
+						log.Println(err)
+					}
+				}()
 				defer wg.Done()
 				player.SendDice(dice, "")
 				player.PlaceDomino()
