@@ -30,8 +30,12 @@ func (b *Bonus) IsCompleted() bool {
 }
 
 func (b *Bonus) Increment() {
-	if !b.IsCompleted() {
+	if !b.IsCompleted() && b.Eligible {
 		b.CurrentChecks++
+	}
+
+	if b.IsCompleted() {
+		b.Eligible = false
 	}
 }
 
@@ -57,4 +61,14 @@ func (bm *BonusMap) MarshalJSON() ([]byte, error) {
 	sb.WriteString("]")
 
 	return []byte(sb.String()), nil
+}
+
+func (bm *BonusMap) AddBonus(d Badge) {
+	if d.Nobles > 0 {
+		return
+	}
+
+	b := (*bm)[d.Name]
+	b.Increment()
+	(*bm)[d.Name] = b
 }

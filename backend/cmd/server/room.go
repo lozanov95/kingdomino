@@ -65,10 +65,7 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 	for gr.Players[0].Connected && gr.Players[1].Connected {
 		dice = gr.Game.RollDice()
 
-		gr.handleDiceChoice(dice, gr.Players[0])
-		gr.handleDiceChoice(dice, gr.Players[1])
-		gr.handleDiceChoice(dice, gr.Players[1])
-		gr.handleDiceChoice(dice, gr.Players[0])
+		gr.handleDicesRound(dice, gr.Players[0], gr.Players[1])
 
 		for _, player := range gr.Players {
 			wg.Add(1)
@@ -76,10 +73,11 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 				defer func() {
 					if err := recover(); err != nil {
 						log.Println(err)
+						player.Connected = false
 					}
 				}()
 				defer wg.Done()
-				player.SendDice(dice, "")
+				player.SendGameState(dice, "")
 				player.PlaceDomino()
 				player.SendMessage("Waiting for all players to complete their turns.")
 			}(player)
@@ -87,15 +85,8 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 
 		wg.Wait()
 
-		for _, player := range gr.Players {
-			player.ClearDice()
-		}
-		dice = gr.Game.RollDice()
-
-		gr.handleDiceChoice(dice, gr.Players[1])
-		gr.handleDiceChoice(dice, gr.Players[0])
-		gr.handleDiceChoice(dice, gr.Players[0])
-		gr.handleDiceChoice(dice, gr.Players[1])
+		dice := gr.Game.RollDice()
+		gr.handleDicesRound(dice, gr.Players[1], gr.Players[0])
 
 		for _, player := range gr.Players {
 			wg.Add(1)
@@ -103,11 +94,13 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 				defer func() {
 					if err := recover(); err != nil {
 						log.Println(err)
+						player.Connected = false
 					}
 				}()
 				defer wg.Done()
-				player.SendDice(dice, "")
+				player.SendGameState(dice, "")
 				player.PlaceDomino()
+				player.SendMessage("Waiting for all players to complete their turns.")
 			}(player)
 		}
 
@@ -119,7 +112,18 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 	}
 }
 
-func (gr *GameRoom) handleDiceChoice(d *[4]game.Badge, p *game.Player) {
+func (gr *GameRoom) handleDicesRound(dice *[4]game.Badge, p1, p2 *game.Player) {
+	for _, player := range gr.Players {
+		player.ClearDice()
+	}
+
+	gr.handleDiceChoice(dice, p1, p2)
+	gr.handleDiceChoice(dice, p2, p1)
+	gr.handleDiceChoice(dice, p2, p1)
+	gr.handleDiceChoice(dice, p1, p2)
+}
+
+func (gr *GameRoom) handleDiceChoice(d *[4]game.Badge, p *game.Player, p2 *game.Player) {
 	for {
 		for _, player := range gr.Players {
 			if !player.Connected {
@@ -143,6 +147,13 @@ func (gr *GameRoom) handleDiceChoice(d *[4]game.Badge, p *game.Player) {
 		}
 
 		p.AddDice(d[choice])
+		p.BonusCard.AddBonus(d[choice])
+		dName := d[choice].Name
+		if !(*p.BonusCard)[dName].Eligible {
+			p2Bonus := (*p2.BonusCard)[dName]
+			p2Bonus.Eligible = false
+			(*p2.BonusCard)[dName] = p2Bonus
+		}
 		d[choice].Name = game.EMPTY
 		d[choice].Nobles = 0
 
