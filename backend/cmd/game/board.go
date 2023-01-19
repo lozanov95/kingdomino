@@ -2,7 +2,6 @@ package game
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"strings"
 )
@@ -13,21 +12,6 @@ func NewBoard() *Board {
 	var newB Board
 	newB[2][3] = Badge{CASTLE, 0}
 	return &newB
-}
-
-func (b *Board) Print() {
-	fmt.Println("BOARD")
-	lb := "----------------------------------------------------------"
-	fmt.Printf("%s\n", lb)
-	var cell Badge
-	for i := 0; i < len(b); i++ {
-		fmt.Printf("%d| ", i)
-		for j := 0; j < len(b[i]); j++ {
-			cell = b[i][j]
-			fmt.Print(cell.Name.String(), cell.Name, " | ")
-		}
-		fmt.Printf("\n%s\n", lb)
-	}
 }
 
 func (b *Board) Json() ([]byte, error) {
