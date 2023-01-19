@@ -15,10 +15,10 @@ export const Board = memo(
     }
 )
 
-function Row(props: { elements: Domino[] }) {
+export function Row({ elements }: { elements: Domino[] | null }) {
     return (
         <div className="row">
-            {props.elements.map(({ name, nobles }, idx) => {
+            {elements?.map(({ name, nobles }, idx) => {
                 return <BoardCell id={idx.toString()} key={idx} nobles={nobles} name={name} />
             })}
         </div>
