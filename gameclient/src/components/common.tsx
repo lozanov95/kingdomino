@@ -7,6 +7,7 @@ import badgeDoubleDot from "../assets/doubledot.svg"
 import badgeLine from "../assets/line.svg"
 import badgeDoubleLine from "../assets/doubleline.svg"
 import badgeQuestion from "../assets/question.svg"
+import { MouseEventHandler } from "react"
 
 
 export type Domino = {
@@ -63,4 +64,42 @@ export function getBadgeIcon(id: number) {
         default:
             return ""
     }
+}
+
+export function Cell({ id, imgSrc, onClick }: { id: string, imgSrc: string, onClick?: MouseEventHandler }) {
+    return (
+        <div className="cell" id={id} onClick={onClick}>
+            <img src={imgSrc} alt="badge icon" />
+        </div>
+    )
+}
+
+export function Nobles({ amount }: { amount: number }) {
+    function renderNobles() {
+        switch (amount) {
+            case 0:
+                return
+            case 1:
+                return <Noble />
+            case 2:
+                return (
+                    <>
+                        <Noble /><Noble />
+                    </>
+                )
+            default:
+                return null
+        }
+    }
+    return (
+        <div className="nobles">
+            {renderNobles()}
+        </div>
+    )
+}
+
+export function Noble() {
+    return (
+        <div>X</div>
+    )
 }

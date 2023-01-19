@@ -1,4 +1,4 @@
-import { Cell } from "./game"
+import { Cell } from "./common"
 import { Bonus, getBadgeIcon } from "./common"
 import { useEffect, useState, memo } from "react";
 
