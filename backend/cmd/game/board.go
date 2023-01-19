@@ -48,3 +48,37 @@ func (b *Board) MarshalJSON() ([]byte, error) {
 	sb.WriteString("]")
 	return []byte(sb.String()), nil
 }
+
+func (b *Board) IsValidPlacementPos(row, cell int) bool {
+	if b[row][cell].Name != EMPTY {
+		return false
+	}
+	startI := row - 1
+	startJ := cell - 1
+	if startI < 0 {
+		startI = 0
+	}
+	if startJ < 0 {
+		startJ = 0
+	}
+	maxI := row + 1
+	maxJ := cell + 1
+	if maxI > 4 {
+		maxI = 4
+	}
+	if maxJ > 6 {
+		maxJ = 6
+	}
+
+	for i := startI; i <= maxI; i++ {
+		for j := startJ; j <= maxJ; j++ {
+			if b[i][j].Name != EMPTY && (i != row || j != cell) {
+				return true
+			} else {
+				log.Printf("[%d][%d]: %s", i, j, b[i][j].Name)
+			}
+		}
+	}
+
+	return false
+}

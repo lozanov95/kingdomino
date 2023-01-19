@@ -2,6 +2,7 @@ package game
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -13,6 +14,10 @@ import (
 	"golang.org/x/net/websocket"
 )
 
+var (
+	ErrPlayerDisconnected = errors.New("the player has been disconnected")
+)
+
 const (
 	TIMEOUT = 60 * time.Second
 )
@@ -20,6 +25,11 @@ const (
 type DiePos struct {
 	Cell int `json:"cell"`
 	Row  int `json:"row"`
+}
+
+type BoardPlacementInput struct {
+	Validate     bool
+	PrevPosition DiePos
 }
 
 type GameState struct {
@@ -133,8 +143,8 @@ func (p *Player) GetInput() ([]byte, error) {
 	}
 	n, err := p.Conn.Read(buf[0:])
 	if err != nil {
-		log.Println(err)
-		return nil, err
+		panic(ErrPlayerDisconnected)
+
 	}
 
 	return buf[:n], nil
@@ -173,59 +183,92 @@ func (p *Player) ClearDice() {
 }
 
 func (p *Player) PlaceDomino() {
+	var d [4]Badge
+
 	p.SendMessage("Select the dice that you want to place")
-	choice, err := func() (int, error) {
-		for {
-			var choice int
-			msg, err := p.GetInput()
-			if err != nil {
-				if err == io.EOF {
-					p.Connected = false
-				}
-				log.Println(err)
-				return choice, err
-			}
-
-			choice, err = strconv.Atoi(string(msg))
-
-			if err != nil || len(p.Dices) < choice || p.Dices[choice].Name == EMPTY {
-				p.SendMessage("Invalid choice!")
-				log.Println("Invalid choice")
-				continue
-			}
-
-			return choice, nil
-		}
-	}()
-	if err != nil {
-		log.Println(err)
-		return
-	}
+	choice := p.getSelectedDominoChoice()
 	fmt.Println("player", p.Name, "chose", p.Dices[choice])
+	prevPos := p.placeOnBoard(choice, BoardPlacementInput{})
+	p.SendGameState(&d, "")
 
-	p.SendMessage("Select the place on the board that you want to place it on")
-	msg, err := p.GetInput()
-	if err != nil {
-		if err == io.EOF {
-			p.Connected = false
+	p.SendMessage("Select the dice that you want to place")
+	choice = p.getSelectedDominoChoice()
+	fmt.Println("player", p.Name, "chose", p.Dices[choice])
+	p.placeOnBoard(choice, BoardPlacementInput{Validate: true, PrevPosition: prevPos})
+	p.SendGameState(&d, "")
+}
+
+func (p *Player) getSelectedDominoChoice() int {
+	for {
+		var choice int
+		msg, err := p.GetInput()
+		if err != nil {
+			return choice
 		}
-		log.Println(err)
-		return
+
+		choice, err = strconv.Atoi(string(msg))
+
+		if err != nil || len(p.Dices) < choice || p.Dices[choice].Name == EMPTY {
+			p.SendMessage("Invalid choice!")
+			log.Println("Invalid choice")
+			continue
+		}
+
+		return choice
 	}
-	var pos DiePos
-	err = json.Unmarshal(msg, &pos)
+}
+
+func (p *Player) placeOnBoard(choice int, b BoardPlacementInput) DiePos {
+	pos, err := p.getBoardPlacementInput(b)
 	if err != nil {
-		if err == io.EOF {
-			p.Connected = false
-		}
-		log.Println(err)
-		return
+		return DiePos{}
 	}
 
 	p.Board[pos.Row][pos.Cell] = p.Dices[choice]
 	newDices := p.Dices[:choice]
 	newDices = append(newDices, p.Dices[choice+1:]...)
 	p.Dices = newDices
-	var d [4]Badge
-	p.SendGameState(&d, "")
+	return pos
+}
+
+func (p *Player) getBoardPlacementInput(bpi BoardPlacementInput) (DiePos, error) {
+	p.SendMessage("Select the place on the board that you want to place it on")
+	for p.Connected {
+		msg, err := p.GetInput()
+		if err != nil {
+			if err == io.EOF {
+				p.Connected = false
+			}
+			log.Println(err)
+			return DiePos{}, err
+		}
+		var pos DiePos
+		err = json.Unmarshal(msg, &pos)
+		if err != nil {
+			if err == io.EOF {
+				p.Connected = false
+			}
+			log.Println(err)
+			return DiePos{}, err
+		}
+
+		if !p.Board.IsValidPlacementPos(pos.Row, pos.Cell) || (bpi.Validate && !bpi.IsValid(&pos)) {
+			p.SendMessage("Invalid position. Please select a new position")
+			continue
+		}
+
+		return pos, nil
+	}
+	return DiePos{}, io.EOF
+}
+
+func (bpi *BoardPlacementInput) IsValid(newPos *DiePos) bool {
+	if (newPos.Row-1 == bpi.PrevPosition.Row && newPos.Cell == bpi.PrevPosition.Cell) ||
+		(newPos.Row+1 == bpi.PrevPosition.Row && newPos.Cell == bpi.PrevPosition.Cell) ||
+		(newPos.Row == bpi.PrevPosition.Row && newPos.Cell-1 == bpi.PrevPosition.Cell) ||
+		(newPos.Row == bpi.PrevPosition.Row && newPos.Cell+1 == bpi.PrevPosition.Cell) {
+		return true
+	}
+
+	return false
 }

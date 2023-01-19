@@ -45,6 +45,11 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 		}
 		closeChan <- gr.ID
 	}()
+	defer func() {
+		if err := recover(); err != nil {
+			log.Println(err)
+		}
+	}()
 	log.Println("Opened a room")
 	for len(gr.Players) < gr.PlayerLimit {
 		time.Sleep(500 * time.Millisecond)
@@ -73,7 +78,6 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 				defer wg.Done()
 				player.SendDice(dice, "")
 				player.PlaceDomino()
-				player.PlaceDomino()
 				player.SendMessage("Waiting for all players to complete their turns.")
 			}(player)
 		}
@@ -95,7 +99,6 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 			go func(player *game.Player) {
 				defer wg.Done()
 				player.SendDice(dice, "")
-				player.PlaceDomino()
 				player.PlaceDomino()
 			}(player)
 		}
