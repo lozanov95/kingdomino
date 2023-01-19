@@ -4,7 +4,7 @@ import { useEffect, useState, memo } from "react";
 
 
 const BonusBoard = memo(
-    function BonusBoard({ bonusCard }: { bonusCard?: Bonus[] }) {
+    function BonusBoard({ bonusCard }: { bonusCard: Bonus[] | null }) {
 
         return (
             <div className="bonusboard">

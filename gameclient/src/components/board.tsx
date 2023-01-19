@@ -3,7 +3,7 @@ import { Domino, Badge, getBadgeIcon } from "./common"
 import { Nobles, Cell } from "./common"
 
 export const Board = memo(
-    function Board({ board }: { board?: Domino[][] }) {
+    function Board({ board }: { board: Domino[][] | null }) {
 
         return (
             <div className="board center" >

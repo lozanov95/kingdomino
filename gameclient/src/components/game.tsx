@@ -9,16 +9,16 @@ function Game() {
     const [wsConn, setWsConn] = useState<WebSocket | null>(null)
     const [statusMsg, setStatusMsg] = useState("")
     const [playerName, setPlayerName] = useState("")
-    const [gameBoard, setGameBoard] = useState<Domino[][] | undefined>(undefined)
-    const [bonusCard, setBonusCard] = useState<Bonus[] | undefined>(undefined)
+    const [gameBoard, setGameBoard] = useState<Domino[][] | null>(null)
+    const [bonusCard, setBonusCard] = useState<Bonus[] | null>(null)
     const [dices, setDices] = useState<Domino[] | null>(null)
     const [selectedDice, setSelectedDice] = useState<Domino[] | null>(null)
 
 
     function clearGameState(ws: WebSocket) {
         setGameState(ws.readyState)
-        setBonusCard(undefined)
-        setGameBoard(undefined)
+        setBonusCard(null)
+        setGameBoard(null)
         setDices(null)
     }
 
