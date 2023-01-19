@@ -2,7 +2,6 @@ package game
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"strings"
@@ -110,12 +109,9 @@ func (p *Player) GameStateLoop() {
 				log.Println(err)
 			}
 			p.Conn.Write(msg)
-			// fmt.Println(p.Name, "sending", string(msg))
 		case receive := <-p.ClientMsg:
 			log.Println(receive)
 		}
-		fmt.Println(p.Name, p.Conn.RemoteAddr())
-		time.Sleep(1000 * time.Millisecond)
 	}
 }
 
