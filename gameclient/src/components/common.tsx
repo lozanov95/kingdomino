@@ -27,6 +27,7 @@ export type GameState = {
     message: string,
     board: Domino[][],
     dices: Domino[],
+    selectedDice: Domino[],
 }
 
 export enum Badge {

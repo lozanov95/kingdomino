@@ -65,12 +65,19 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 		gr.handleDiceChoice(dice, gr.Players[1])
 		gr.handleDiceChoice(dice, gr.Players[0])
 
+		for _, player := range gr.Players {
+			player.ClearDice()
+		}
 		dice = gr.Game.RollDice()
 
 		gr.handleDiceChoice(dice, gr.Players[1])
 		gr.handleDiceChoice(dice, gr.Players[0])
 		gr.handleDiceChoice(dice, gr.Players[0])
 		gr.handleDiceChoice(dice, gr.Players[1])
+
+		for _, player := range gr.Players {
+			player.ClearDice()
+		}
 	}
 }
 
@@ -97,6 +104,7 @@ func (gr *GameRoom) handleDiceChoice(d *[4]game.Badge, p *game.Player) {
 			continue
 		}
 
+		p.AddDice(d[choice])
 		d[choice].Name = game.EMPTY
 		d[choice].Nobles = 0
 

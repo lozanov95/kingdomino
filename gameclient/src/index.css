@@ -63,9 +63,7 @@ input {
     align-items: center;
     grid-area: cell;
 }
-
 .dice-section {
-    grid-area: dice;
     display: flex;
     margin: 5px;
     justify-content: center;

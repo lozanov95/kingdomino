@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"strings"
+	"sync"
 	"time"
 
 	"golang.org/x/net/websocket"
@@ -15,12 +16,13 @@ const (
 )
 
 type GameState struct {
-	ID         int64     `json:"id"`
-	Message    string    `json:"message"`
-	Board      *Board    `json:"board"`
-	BonusCard  *BonusMap `json:"bonusCard"`
-	Dices      *[4]Badge `json:"dices"`
-	PlayerTurn int64     `json:"playerTurn"`
+	ID            int64     `json:"id"`
+	Message       string    `json:"message"`
+	Board         *Board    `json:"board"`
+	BonusCard     *BonusMap `json:"bonusCard"`
+	Dices         *[4]Badge `json:"dices"`
+	PlayerTurn    int64     `json:"playerTurn"`
+	SelectedDices []Badge   `json:"selectedDice"`
 }
 
 type Player struct {
@@ -32,19 +34,24 @@ type Player struct {
 	Connected bool
 	GameState chan GameState
 	ClientMsg chan string
+	Dices     []Badge
+	mut       sync.RWMutex
 }
 
 // Creates a new player instance and returns a pointer to it.
 func NewPlayer(jsonName []byte, conn *websocket.Conn) *Player {
 
 	player := &Player{
+		Id:        time.Now().UnixNano(),
+		Name:      "",
+		Conn:      conn,
 		Board:     NewBoard(),
 		BonusCard: NewBonusMap(),
-		Conn:      conn,
 		Connected: true,
 		GameState: make(chan GameState),
 		ClientMsg: make(chan string),
-		Id:        time.Now().UnixNano(),
+		Dices:     []Badge{},
+		mut:       sync.RWMutex{},
 	}
 
 	json.Unmarshal(jsonName, player)
@@ -136,16 +143,29 @@ func (p *Player) SendMessage(message string) {
 }
 
 func (p *Player) SendDice(d *[4]Badge, m string) {
-	p.GameState <- GameState{Dices: d, Message: m}
+	p.GameState <- GameState{Dices: d, Message: m, SelectedDices: p.Dices}
 }
 
 func (p *Player) SendGameState(d *[4]Badge, m string) {
 	p.GameState <- GameState{
-		ID:        p.Id,
-		Message:   m,
-		Board:     p.Board,
-		BonusCard: p.BonusCard,
-		Dices:     d,
+		ID:            p.Id,
+		Message:       m,
+		Board:         p.Board,
+		BonusCard:     p.BonusCard,
+		Dices:         d,
+		SelectedDices: p.Dices,
 		// PlayerTurn: 0,
 	}
+}
+
+func (p *Player) AddDice(d Badge) {
+	p.mut.Lock()
+	defer p.mut.Unlock()
+	p.Dices = append(p.Dices, d)
+}
+
+func (p *Player) ClearDice() {
+	p.mut.Lock()
+	defer p.mut.Unlock()
+	p.Dices = make([]Badge, 0)
 }
