@@ -1,10 +1,9 @@
 import { Cell } from "./game"
 import { Bonus, getBadgeIcon } from "./common"
-import { getBonus } from "../api/api"
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 
 
-const BonusBoard = React.memo(
+const BonusBoard = memo(
     function BonusBoard({ bonusCard }: { bonusCard?: Bonus[] }) {
 
         return (

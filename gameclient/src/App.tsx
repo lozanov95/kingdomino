@@ -1,4 +1,3 @@
-import Chat from './components/chat'
 import Game from './components/game'
 import Navigation from './components/nav'
 
@@ -7,7 +6,6 @@ function App() {
     <div className="app">
       <Navigation />
       <Game />
-      {/* <Chat /> */}
     </div>
   )
 }

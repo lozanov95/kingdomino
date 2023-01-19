@@ -1,10 +1,6 @@
-import React, { MouseEventHandler, useEffect, useState, MouseEvent, useMemo } from "react"
+import { MouseEventHandler, useState, MouseEvent, useMemo, memo } from "react"
 import BonusBoard from "./bonusboard"
 import { Bonus, Domino, getBadgeIcon, Badge, GameState } from "./common"
-
-function GS() {
-
-}
 
 function Game() {
     const [gameState, setGameState] = useState(WebSocket.CLOSED)
@@ -14,7 +10,6 @@ function Game() {
     const [gameBoard, setGameBoard] = useState<Domino[][] | undefined>(undefined)
     const [bonusCard, setBonusCard] = useState<Bonus[] | undefined>(undefined)
     const [dices, setDices] = useState<Domino[] | undefined>(undefined)
-    const [pTurn, setPTurn] = useState(-1)
 
 
     function clearGameState(ws: WebSocket) {
@@ -79,7 +74,7 @@ function Game() {
 }
 
 
-const Board = React.memo(
+const Board = memo(
     function Board({ board }: { board?: Domino[][] }) {
 
         const currentBoard = useMemo(() => {
@@ -116,7 +111,7 @@ function BoardCell({ id, name, nobles, onClick }: { id: string, name: Badge, nob
     )
 }
 
-const DiceSection = React.memo(
+const DiceSection = memo(
     function DiceSection({ dices, handleDiceSelect }: { dices: Domino[] | undefined, handleDiceSelect: MouseEventHandler }) {
 
         return (
@@ -172,16 +167,18 @@ function Connect({ connectHandler, playerName, setPlayerName }: { connectHandler
     return (
         <form onSubmitCapture={connectHandler} className="connectForm">
             <h2>Enter your name</h2>
-            <input placeholder="name" minLength={3} value={playerName} onChange={e => setPlayerName(e.target.value)} />
+            <input placeholder="name" minLength={3} value={playerName} onChange={e => setPlayerName(e.target.value)} required />
             <button>Connect</button>
         </form>
     )
 }
 
-function StatusPane({ message }: { message: string }) {
-    return (
-        <div className="status">{message}</div>
-    )
-}
+const StatusPane = memo(
+    function StatusPane({ message }: { message: string }) {
+        return (
+            <div className="status">{message}</div>
+        )
+    }
+)
 
 export default Game
