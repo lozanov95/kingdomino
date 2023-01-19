@@ -3,7 +3,6 @@ package game
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"log"
 	"strconv"
@@ -143,6 +142,7 @@ func (p *Player) GetInput() ([]byte, error) {
 	}
 	n, err := p.Conn.Read(buf[0:])
 	if err != nil {
+		p.Connected = false
 		panic(ErrPlayerDisconnected)
 
 	}
@@ -187,13 +187,11 @@ func (p *Player) PlaceDomino() {
 
 	p.SendMessage("Select the dice that you want to place")
 	choice := p.getSelectedDominoChoice()
-	fmt.Println("player", p.Name, "chose", p.Dices[choice])
 	prevPos := p.placeOnBoard(choice, BoardPlacementInput{})
 	p.SendGameState(&d, "")
 
 	p.SendMessage("Select the dice that you want to place")
 	choice = p.getSelectedDominoChoice()
-	fmt.Println("player", p.Name, "chose", p.Dices[choice])
 	p.placeOnBoard(choice, BoardPlacementInput{Validate: true, PrevPosition: prevPos})
 	p.SendGameState(&d, "")
 }

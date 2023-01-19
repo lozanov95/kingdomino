@@ -74,8 +74,6 @@ func (b *Board) IsValidPlacementPos(row, cell int) bool {
 		for j := startJ; j <= maxJ; j++ {
 			if b[i][j].Name != EMPTY && (i != row || j != cell) {
 				return true
-			} else {
-				log.Printf("[%d][%d]: %s", i, j, b[i][j].Name)
 			}
 		}
 	}

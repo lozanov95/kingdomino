@@ -39,17 +39,16 @@ func NewGameRoom(closeChan chan string) *GameRoom {
 
 func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 	defer func() {
+		if err := recover(); err != nil {
+			log.Println("panic in game loop", err)
+		}
 		for _, player := range gr.Players {
 			player.Conn.Close()
 			player.Connected = false
 		}
 		closeChan <- gr.ID
 	}()
-	defer func() {
-		if err := recover(); err != nil {
-			log.Println(err)
-		}
-	}()
+
 	log.Println("Opened a room")
 	for len(gr.Players) < gr.PlayerLimit {
 		time.Sleep(500 * time.Millisecond)
@@ -65,7 +64,6 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 
 	for gr.Players[0].Connected && gr.Players[1].Connected {
 		dice = gr.Game.RollDice()
-		log.Println("waiting for input")
 
 		gr.handleDiceChoice(dice, gr.Players[0])
 		gr.handleDiceChoice(dice, gr.Players[1])
@@ -75,6 +73,11 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 		for _, player := range gr.Players {
 			wg.Add(1)
 			go func(player *game.Player) {
+				defer func() {
+					if err := recover(); err != nil {
+						log.Println(err)
+					}
+				}()
 				defer wg.Done()
 				player.SendDice(dice, "")
 				player.PlaceDomino()

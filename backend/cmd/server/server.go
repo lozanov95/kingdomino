@@ -46,6 +46,7 @@ func (s *Server) HandleWS(ws *websocket.Conn) {
 }
 
 func (s *Server) HandleJoinRoom(ws *websocket.Conn) {
+
 	buf := make([]byte, 1024)
 	n, err := ws.Read(buf)
 	if err != nil {
@@ -78,7 +79,6 @@ func (s *Server) joinRoom(p *game.Player) {
 		s.GameRooms[room.ID] = room
 	}
 	s.mut.Unlock()
-
 	p.GameStateLoop()
 }
 
