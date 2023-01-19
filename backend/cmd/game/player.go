@@ -2,8 +2,10 @@ package game
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -14,6 +16,11 @@ import (
 const (
 	TIMEOUT = 60 * time.Second
 )
+
+type DiePos struct {
+	Cell int `json:"cell"`
+	Row  int `json:"row"`
+}
 
 type GameState struct {
 	ID            int64     `json:"id"`
@@ -134,7 +141,7 @@ func (p *Player) GetInput() ([]byte, error) {
 }
 
 func (p *Player) SendMessage(message string) {
-	p.GameState <- GameState{Message: message}
+	p.GameState <- GameState{Message: message, SelectedDices: p.Dices}
 }
 
 func (p *Player) SendDice(d *[4]Badge, m string) {
@@ -166,5 +173,59 @@ func (p *Player) ClearDice() {
 }
 
 func (p *Player) PlaceDomino() {
+	p.SendMessage("Select the dice that you want to place")
+	choice, err := func() (int, error) {
+		for {
+			var choice int
+			msg, err := p.GetInput()
+			if err != nil {
+				if err == io.EOF {
+					p.Connected = false
+				}
+				log.Println(err)
+				return choice, err
+			}
 
+			choice, err = strconv.Atoi(string(msg))
+
+			if err != nil || len(p.Dices) < choice || p.Dices[choice].Name == EMPTY {
+				p.SendMessage("Invalid choice!")
+				log.Println("Invalid choice")
+				continue
+			}
+
+			return choice, nil
+		}
+	}()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	fmt.Println("player", p.Name, "chose", p.Dices[choice])
+
+	p.SendMessage("Select the place on the board that you want to place it on")
+	msg, err := p.GetInput()
+	if err != nil {
+		if err == io.EOF {
+			p.Connected = false
+		}
+		log.Println(err)
+		return
+	}
+	var pos DiePos
+	err = json.Unmarshal(msg, &pos)
+	if err != nil {
+		if err == io.EOF {
+			p.Connected = false
+		}
+		log.Println(err)
+		return
+	}
+
+	p.Board[pos.Row][pos.Cell] = p.Dices[choice]
+	newDices := p.Dices[:choice]
+	newDices = append(newDices, p.Dices[choice+1:]...)
+	p.Dices = newDices
+	var d [4]Badge
+	p.SendGameState(&d, "")
 }

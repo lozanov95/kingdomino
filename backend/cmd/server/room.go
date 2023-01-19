@@ -56,6 +56,8 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 	}
 	log.Println("started room with", gr.Players[0].Name, "and", gr.Players[1].Name)
 
+	var wg sync.WaitGroup
+
 	for gr.Players[0].Connected && gr.Players[1].Connected {
 		dice = gr.Game.RollDice()
 		log.Println("waiting for input")
@@ -66,6 +68,19 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 		gr.handleDiceChoice(dice, gr.Players[0])
 
 		for _, player := range gr.Players {
+			wg.Add(1)
+			go func(player *game.Player) {
+				defer wg.Done()
+				player.SendDice(dice, "")
+				player.PlaceDomino()
+				player.PlaceDomino()
+				player.SendMessage("Waiting for all players to complete their turns.")
+			}(player)
+		}
+
+		wg.Wait()
+
+		for _, player := range gr.Players {
 			player.ClearDice()
 		}
 		dice = gr.Game.RollDice()
@@ -74,6 +89,18 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 		gr.handleDiceChoice(dice, gr.Players[0])
 		gr.handleDiceChoice(dice, gr.Players[0])
 		gr.handleDiceChoice(dice, gr.Players[1])
+
+		for _, player := range gr.Players {
+			wg.Add(1)
+			go func(player *game.Player) {
+				defer wg.Done()
+				player.SendDice(dice, "")
+				player.PlaceDomino()
+				player.PlaceDomino()
+			}(player)
+		}
+
+		wg.Wait()
 
 		for _, player := range gr.Players {
 			player.ClearDice()

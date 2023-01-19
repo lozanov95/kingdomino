@@ -20,6 +20,7 @@ function Game() {
         setBonusCard(null)
         setGameBoard(null)
         setDices(null)
+        setSelectedDice(null)
     }
 
     function handleConnect(ev: SubmitEvent) {
@@ -62,12 +63,20 @@ function Game() {
         wsConn?.send(ev.currentTarget.id)
     }
 
+    function handleBoardClick(ev: MouseEvent<HTMLElement>) {
+        const selection = {
+            row: Number(ev.currentTarget.parentElement?.parentElement?.id),
+            cell: Number(ev.currentTarget.id)
+        }
+        wsConn?.send(JSON.stringify(selection))
+    }
+
     return (
         <>
             <div className="game">
                 {statusMsg !== "" ? <StatusPane message={statusMsg} /> : ""}
                 {gameState === WebSocket.OPEN && gameBoard !== undefined ? <>
-                    <Board board={gameBoard} />
+                    <Board board={gameBoard} handleOnClick={handleBoardClick} />
                     <BonusBoard bonusCard={bonusCard} />
                     <DiceSection selectedDice={selectedDice} dices={dices} handleDiceSelect={handleDiceSelect} />
                 </> : ""}

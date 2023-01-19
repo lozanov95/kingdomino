@@ -15,7 +15,7 @@ export const DiceSection = memo(
                 </div>
                 <div className="dice-selected">
                     {selectedDice?.length ?? 0 > 0 ? <h2>Selected</h2> : ""}
-                    <Row elements={selectedDice} />
+                    <Row elements={selectedDice} onClick={handleDiceSelect} />
                 </div>
             </div>
         )
