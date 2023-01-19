@@ -44,7 +44,6 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 			player.Connected = false
 		}
 		closeChan <- gr.ID
-		log.Println("game room closed")
 	}()
 	log.Println("Opened a room")
 	for len(gr.Players) < gr.PlayerLimit {
@@ -55,7 +54,7 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 	for _, p := range gr.Players {
 		p.SendGameState(dice, "Connected!")
 	}
-	log.Println(gr.Players[0].Name, gr.Players[1].Name)
+	log.Println("started room with", gr.Players[0].Name, "and", gr.Players[1].Name)
 
 	for gr.Players[0].Connected && gr.Players[1].Connected {
 		dice = gr.Game.RollDice()
