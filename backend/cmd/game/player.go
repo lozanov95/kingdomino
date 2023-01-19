@@ -182,18 +182,17 @@ func (p *Player) ClearDice() {
 	p.Dices = make([]Badge, 0)
 }
 
-func (p *Player) PlaceDomino() {
-	var d [4]Badge
+func (p *Player) PlaceDomino(d *[4]Badge) {
 
-	p.SendMessage("Select the dice that you want to place")
+	p.SendGameState(d, "Select the dice that you want to place")
 	choice := p.getSelectedDominoChoice()
 	prevPos := p.placeOnBoard(choice, BoardPlacementInput{})
-	p.SendGameState(&d, "")
+	p.SendGameState(d, "")
 
 	p.SendMessage("Select the dice that you want to place")
 	choice = p.getSelectedDominoChoice()
 	p.placeOnBoard(choice, BoardPlacementInput{Validate: true, PrevPosition: prevPos})
-	p.SendGameState(&d, "")
+	p.SendGameState(d, "Waiting for all players to complete their turns.")
 }
 
 func (p *Player) getSelectedDominoChoice() int {

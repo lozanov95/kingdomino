@@ -77,9 +77,7 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 					}
 				}()
 				defer wg.Done()
-				player.SendGameState(dice, "")
-				player.PlaceDomino()
-				player.SendMessage("Waiting for all players to complete their turns.")
+				player.PlaceDomino(dice)
 			}(player)
 		}
 
@@ -98,9 +96,7 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 					}
 				}()
 				defer wg.Done()
-				player.SendGameState(dice, "")
-				player.PlaceDomino()
-				player.SendMessage("Waiting for all players to complete their turns.")
+				player.PlaceDomino(dice)
 			}(player)
 		}
 
