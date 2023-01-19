@@ -104,21 +104,16 @@ func (p *Player) GetState() []byte {
 }
 
 func (p *Player) GameStateLoop() {
-	for p.Connected {
-		select {
-		case send := <-p.GameState:
-			msg, err := json.Marshal(send)
-			if err != nil {
-				if err == io.EOF {
-					p.Connected = false
-					return
-				}
-				log.Println(err)
+	for send := range p.GameState {
+		msg, err := json.Marshal(send)
+		if err != nil {
+			if err == io.EOF {
+				p.Connected = false
+				return
 			}
-			p.Conn.Write(msg)
-		case receive := <-p.ClientMsg:
-			log.Println(receive)
+			log.Println(err)
 		}
+		p.Conn.Write(msg)
 	}
 }
 
@@ -168,4 +163,8 @@ func (p *Player) ClearDice() {
 	p.mut.Lock()
 	defer p.mut.Unlock()
 	p.Dices = make([]Badge, 0)
+}
+
+func (p *Player) PlaceDomino() {
+
 }
