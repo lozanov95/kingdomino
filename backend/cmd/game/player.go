@@ -32,8 +32,8 @@ type ClientPayload struct {
 }
 
 type BoardPlacementInput struct {
-	Validate     bool
 	PrevPosition DiePos
+	Board        *Board
 }
 
 type GameState struct {
@@ -201,12 +201,12 @@ func (p *Player) PlaceDomino(d *[4]Badge) {
 
 	p.SendGameState(d, "Select the dice that you want to place")
 	choice := p.getSelectedDominoChoice()
-	prevPos := p.placeOnBoard(choice, BoardPlacementInput{})
+	prevPos := p.placeOnBoard(choice, BoardPlacementInput{Board: p.Board})
 	p.SendGameState(d, "")
 
 	p.SendMessage("Select the dice that you want to place")
 	choice = p.getSelectedDominoChoice()
-	p.placeOnBoard(choice, BoardPlacementInput{Validate: true, PrevPosition: prevPos})
+	p.placeOnBoard(choice, BoardPlacementInput{PrevPosition: prevPos, Board: p.Board})
 	p.SendGameState(d, "Waiting for all players to complete their turns.")
 }
 
@@ -220,7 +220,7 @@ func (p *Player) getSelectedDominoChoice() int {
 
 		choice = msg.SelectedDie
 
-		if err != nil || choice < 0 || len(p.Dices) < choice || p.Dices[choice].Name == EMPTY {
+		if err != nil || choice < 0 || len(p.Dices) <= choice || p.Dices[choice].Name == EMPTY {
 			p.SendMessage("Invalid choice!")
 			log.Println("Invalid choice")
 			continue
@@ -273,8 +273,9 @@ func (p *Player) getBoardPlacementInput(bpi BoardPlacementInput) (DiePos, error)
 }
 
 func (bpi *BoardPlacementInput) IsValid(newPos *DiePos) bool {
-	if !bpi.Validate {
-		return true
+	emptyPos := DiePos{}
+	if bpi.PrevPosition == emptyPos {
+		return bpi.Board[newPos.Row][newPos.Cell].Name == EMPTY && bpi.Board.IsThereFreeNeighbourCell(newPos.Row, newPos.Cell)
 	}
 
 	if (newPos.Row-1 == bpi.PrevPosition.Row && newPos.Cell == bpi.PrevPosition.Cell) ||
@@ -282,6 +283,18 @@ func (bpi *BoardPlacementInput) IsValid(newPos *DiePos) bool {
 		(newPos.Row == bpi.PrevPosition.Row && newPos.Cell-1 == bpi.PrevPosition.Cell) ||
 		(newPos.Row == bpi.PrevPosition.Row && newPos.Cell+1 == bpi.PrevPosition.Cell) {
 		return true
+	}
+
+	return false
+}
+
+func (p *Player) IsValidPlacementPossible() bool {
+	for i := 0; i < len(p.Board); i++ {
+		for j := 0; j < len(p.Board[i]); j++ {
+			if p.Board[i][j].Name == EMPTY && p.Board.IsThereFreeNeighbourCell(i, j) {
+				return true
+			}
+		}
 	}
 
 	return false

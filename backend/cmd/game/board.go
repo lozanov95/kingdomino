@@ -50,7 +50,9 @@ func (b *Board) MarshalJSON() ([]byte, error) {
 }
 
 func (b *Board) IsValidPlacementPos(row, cell int) bool {
-	if b[row][cell].Name != EMPTY {
+	if row >= len(b) || row < 0 ||
+		cell >= len(b[row]) || cell < 0 ||
+		b[row][cell].Name != EMPTY {
 		return false
 	}
 	startI := row - 1
@@ -79,4 +81,25 @@ func (b *Board) IsValidPlacementPos(row, cell int) bool {
 	}
 
 	return false
+}
+
+func (b *Board) IsThereFreeNeighbourCell(row, cell int) bool {
+	if b.doesCellMatchBadge(EMPTY, row-1, cell) ||
+		b.doesCellMatchBadge(EMPTY, row+1, cell) ||
+		b.doesCellMatchBadge(EMPTY, row, cell-1) ||
+		b.doesCellMatchBadge(EMPTY, row, cell+1) {
+		log.Printf("Cell [%d][%d] has a valid neighbour", row, cell)
+		return true
+	}
+
+	return false
+}
+
+func (b *Board) doesCellMatchBadge(bn BadgeName, row, cell int) bool {
+	if (row >= len(b) || row < 0) ||
+		(cell >= len(b[row]) || cell < 0) {
+		return false
+	}
+
+	return b[row][cell].Name == bn
 }

@@ -62,7 +62,8 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 
 	var wg sync.WaitGroup
 
-	for gr.Players[0].Connected && gr.Players[1].Connected {
+	for gr.Players[0].Connected && gr.Players[1].Connected && (gr.Players[0].IsValidPlacementPossible() || gr.Players[1].IsValidPlacementPossible()) {
+
 		dice = gr.Game.RollDice()
 
 		gr.handleDicesRound(dice, gr.Players[0], gr.Players[1])
@@ -77,7 +78,9 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 					}
 				}()
 				defer wg.Done()
-				player.PlaceDomino(dice)
+				if player.IsValidPlacementPossible() {
+					player.PlaceDomino(dice)
+				}
 			}(player)
 		}
 
@@ -85,7 +88,6 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 
 		dice := gr.Game.RollDice()
 		gr.handleDicesRound(dice, gr.Players[1], gr.Players[0])
-
 		for _, player := range gr.Players {
 			wg.Add(1)
 			go func(player *game.Player) {
@@ -96,7 +98,9 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 					}
 				}()
 				defer wg.Done()
-				player.PlaceDomino(dice)
+				if player.IsValidPlacementPossible() {
+					player.PlaceDomino(dice)
+				}
 			}(player)
 		}
 
@@ -106,6 +110,9 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 			player.ClearDice()
 		}
 	}
+	gr.Players[0].SendMessage("Game OVER!")
+	gr.Players[1].SendMessage("Game OVER!")
+	time.Sleep(10 * time.Second)
 }
 
 func (gr *GameRoom) handleDicesRound(dice *[4]game.Badge, p1, p2 *game.Player) {
