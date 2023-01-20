@@ -24,6 +24,7 @@ type DiePos struct {
 	Cell int `json:"cell"`
 	Row  int `json:"row"`
 }
+
 type ClientPayload struct {
 	Name        string `json:"name"`
 	DiePos      DiePos `json:"boardPosition"`
@@ -261,7 +262,7 @@ func (p *Player) getBoardPlacementInput(bpi BoardPlacementInput) (DiePos, error)
 			return DiePos{}, err
 		}
 
-		if !p.Board.IsValidPlacementPos(msg.DiePos.Row, msg.DiePos.Cell) || (bpi.Validate && !bpi.IsValid(&msg.DiePos)) {
+		if !p.Board.IsValidPlacementPos(msg.DiePos.Row, msg.DiePos.Cell) || !bpi.IsValid(&msg.DiePos) {
 			p.SendMessage("Invalid position. Please select a new position")
 			continue
 		}
@@ -272,6 +273,10 @@ func (p *Player) getBoardPlacementInput(bpi BoardPlacementInput) (DiePos, error)
 }
 
 func (bpi *BoardPlacementInput) IsValid(newPos *DiePos) bool {
+	if !bpi.Validate {
+		return true
+	}
+
 	if (newPos.Row-1 == bpi.PrevPosition.Row && newPos.Cell == bpi.PrevPosition.Cell) ||
 		(newPos.Row+1 == bpi.PrevPosition.Row && newPos.Cell == bpi.PrevPosition.Cell) ||
 		(newPos.Row == bpi.PrevPosition.Row && newPos.Cell-1 == bpi.PrevPosition.Cell) ||
