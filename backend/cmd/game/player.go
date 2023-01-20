@@ -262,7 +262,7 @@ func (p *Player) getBoardPlacementInput(bpi BoardPlacementInput) (DiePos, error)
 			return DiePos{}, err
 		}
 
-		if !p.Board.IsValidPlacementPos(msg.DiePos.Row, msg.DiePos.Cell) || !bpi.IsValid(&msg.DiePos) {
+		if !p.Board.IsThereOccupiedNeighbourCell(msg.DiePos.Row, msg.DiePos.Cell) || !bpi.IsValid(&msg.DiePos) {
 			p.SendMessage("Invalid position. Please select a new position")
 			continue
 		}

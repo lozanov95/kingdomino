@@ -49,56 +49,42 @@ func (b *Board) MarshalJSON() ([]byte, error) {
 	return []byte(sb.String()), nil
 }
 
-func (b *Board) IsValidPlacementPos(row, cell int) bool {
-	if row >= len(b) || row < 0 ||
-		cell >= len(b[row]) || cell < 0 ||
-		b[row][cell].Name != EMPTY {
-		return false
-	}
-	startI := row - 1
-	startJ := cell - 1
-	if startI < 0 {
-		startI = 0
-	}
-	if startJ < 0 {
-		startJ = 0
-	}
-	maxI := row + 1
-	maxJ := cell + 1
-	if maxI > 4 {
-		maxI = 4
-	}
-	if maxJ > 6 {
-		maxJ = 6
-	}
-
-	for i := startI; i <= maxI; i++ {
-		for j := startJ; j <= maxJ; j++ {
-			if b[i][j].Name != EMPTY && (i != row || j != cell) {
-				return true
-			}
-		}
-	}
-
-	return false
-}
-
-func (b *Board) IsThereFreeNeighbourCell(row, cell int) bool {
-	if b.doesCellMatchBadge(EMPTY, row-1, cell) ||
-		b.doesCellMatchBadge(EMPTY, row+1, cell) ||
-		b.doesCellMatchBadge(EMPTY, row, cell-1) ||
-		b.doesCellMatchBadge(EMPTY, row, cell+1) {
+func (b *Board) IsThereOccupiedNeighbourCell(row, cell int) bool {
+	if b.isCellOccupied(row-1, cell) ||
+		b.isCellOccupied(row+1, cell) ||
+		b.isCellOccupied(row, cell-1) ||
+		b.isCellOccupied(row, cell+1) {
 		return true
 	}
 
 	return false
 }
 
-func (b *Board) doesCellMatchBadge(bn BadgeName, row, cell int) bool {
+func (b *Board) IsThereFreeNeighbourCell(row, cell int) bool {
+	if b.isCellEmpty(row-1, cell) ||
+		b.isCellEmpty(row+1, cell) ||
+		b.isCellEmpty(row, cell-1) ||
+		b.isCellEmpty(row, cell+1) {
+		return true
+	}
+
+	return false
+}
+
+func (b *Board) isCellEmpty(row, cell int) bool {
 	if (row >= len(b) || row < 0) ||
 		(cell >= len(b[row]) || cell < 0) {
 		return false
 	}
 
-	return b[row][cell].Name == bn
+	return b[row][cell].Name == EMPTY
+}
+
+func (b *Board) isCellOccupied(row, cell int) bool {
+	if (row >= len(b) || row < 0) ||
+		(cell >= len(b[row]) || cell < 0) {
+		return false
+	}
+
+	return b[row][cell].Name != EMPTY
 }
