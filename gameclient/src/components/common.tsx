@@ -36,7 +36,7 @@ export type ServerPayload = {
         row: number,
         cell: number,
     },
-    selectedDie?: number | null,
+    selectedDie?: number,
 }
 
 export enum Badge {
