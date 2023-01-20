@@ -149,7 +149,11 @@ func (p *Player) GetInput() (ClientPayload, error) {
 
 	}
 
-	var payload ClientPayload
+	// var payload ClientPayload
+	payload := ClientPayload{
+		DiePos:      DiePos{-1, -1},
+		SelectedDie: -1,
+	}
 
 	err = json.Unmarshal(buf[:n], &payload)
 	if err != nil {
@@ -215,7 +219,7 @@ func (p *Player) getSelectedDominoChoice() int {
 
 		choice = msg.SelectedDie
 
-		if err != nil || len(p.Dices) < choice || p.Dices[choice].Name == EMPTY {
+		if err != nil || choice < 0 || len(p.Dices) < choice || p.Dices[choice].Name == EMPTY {
 			p.SendMessage("Invalid choice!")
 			log.Println("Invalid choice")
 			continue

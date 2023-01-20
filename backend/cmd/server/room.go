@@ -131,7 +131,7 @@ func (gr *GameRoom) handleDiceChoice(d *[4]game.Badge, p *game.Player, p2 *game.
 		payload, err := p.GetInput()
 		choice := payload.SelectedDie
 
-		if err != nil || len(d) < choice || d[choice].Name == game.EMPTY {
+		if err != nil || choice < 0 || len(d) < choice || d[choice].Name == game.EMPTY {
 			p.SendMessage("Invalid choice!")
 			log.Println("Invalid choice")
 			continue
