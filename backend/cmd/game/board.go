@@ -88,7 +88,6 @@ func (b *Board) IsThereFreeNeighbourCell(row, cell int) bool {
 		b.doesCellMatchBadge(EMPTY, row+1, cell) ||
 		b.doesCellMatchBadge(EMPTY, row, cell-1) ||
 		b.doesCellMatchBadge(EMPTY, row, cell+1) {
-		log.Printf("Cell [%d][%d] has a valid neighbour", row, cell)
 		return true
 	}
 
