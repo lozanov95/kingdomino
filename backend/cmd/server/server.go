@@ -46,19 +46,13 @@ func (s *Server) HandleWS(ws *websocket.Conn) {
 }
 
 func (s *Server) HandleJoinRoom(ws *websocket.Conn) {
-
-	buf := make([]byte, 1024)
-	n, err := ws.Read(buf)
+	player := game.NewPlayer(ws)
+	msg, err := player.GetInput()
 	if err != nil {
-		if err == io.EOF {
-			log.Println("eof err")
-			return
-		}
-		log.Println(err)
-		ws.Close()
+		log.Println("failed to get player input", err)
 		return
 	}
-	player := game.NewPlayer(buf[:n], ws)
+	player.Name = msg.Name
 
 	s.joinRoom(player)
 }

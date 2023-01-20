@@ -30,6 +30,15 @@ export type GameState = {
     selectedDice: Domino[],
 }
 
+export type ServerPayload = {
+    name?: string,
+    boardPosition?: {
+        row: number,
+        cell: number,
+    },
+    selectedDie?: number | null,
+}
+
 export enum Badge {
     EMPTY = 0,
     CASTLE,

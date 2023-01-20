@@ -128,13 +128,8 @@ func (gr *GameRoom) handleDiceChoice(d *[4]game.Badge, p *game.Player, p2 *game.
 			player.SendDice(d, fmt.Sprintf("Player %s's turn to pick dice", p.Name))
 		}
 
-		msg, err := p.GetInput()
-		if err != nil {
-			p.Connected = false
-			log.Println("handle dice", err)
-			return
-		}
-		choice, err := strconv.Atoi(string(msg))
+		payload, err := p.GetInput()
+		choice := payload.SelectedDie
 
 		if err != nil || len(d) < choice || d[choice].Name == game.EMPTY {
 			p.SendMessage("Invalid choice!")

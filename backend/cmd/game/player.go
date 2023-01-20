@@ -5,7 +5,6 @@ import (
 	"errors"
 	"io"
 	"log"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -24,6 +23,11 @@ const (
 type DiePos struct {
 	Cell int `json:"cell"`
 	Row  int `json:"row"`
+}
+type ClientPayload struct {
+	Name        string `json:"name"`
+	DiePos      DiePos `json:"boardPosition"`
+	SelectedDie int    `json:"selectedDie"`
 }
 
 type BoardPlacementInput struct {
@@ -55,7 +59,7 @@ type Player struct {
 }
 
 // Creates a new player instance and returns a pointer to it.
-func NewPlayer(jsonName []byte, conn *websocket.Conn) *Player {
+func NewPlayer(conn *websocket.Conn) *Player {
 
 	player := &Player{
 		Id:        time.Now().UnixNano(),
@@ -69,8 +73,6 @@ func NewPlayer(jsonName []byte, conn *websocket.Conn) *Player {
 		Dices:     []Badge{},
 		mut:       sync.RWMutex{},
 	}
-
-	json.Unmarshal(jsonName, player)
 
 	return player
 }
@@ -133,12 +135,12 @@ func (p *Player) GameStateLoop() {
 	}
 }
 
-func (p *Player) GetInput() ([]byte, error) {
+func (p *Player) GetInput() (ClientPayload, error) {
 	buf := make([]byte, 1024)
 
 	err := p.Conn.SetReadDeadline(time.Now().Add(TIMEOUT))
 	if err != nil {
-		return nil, err
+		return ClientPayload{}, err
 	}
 	n, err := p.Conn.Read(buf[0:])
 	if err != nil {
@@ -147,7 +149,15 @@ func (p *Player) GetInput() ([]byte, error) {
 
 	}
 
-	return buf[:n], nil
+	var payload ClientPayload
+
+	err = json.Unmarshal(buf[:n], &payload)
+	if err != nil {
+		log.Println("failed to parse output")
+		return ClientPayload{}, err
+	}
+
+	return payload, nil
 }
 
 func (p *Player) SendMessage(message string) {
@@ -203,7 +213,7 @@ func (p *Player) getSelectedDominoChoice() int {
 			return choice
 		}
 
-		choice, err = strconv.Atoi(string(msg))
+		choice = msg.SelectedDie
 
 		if err != nil || len(p.Dices) < choice || p.Dices[choice].Name == EMPTY {
 			p.SendMessage("Invalid choice!")
@@ -239,8 +249,6 @@ func (p *Player) getBoardPlacementInput(bpi BoardPlacementInput) (DiePos, error)
 			log.Println(err)
 			return DiePos{}, err
 		}
-		var pos DiePos
-		err = json.Unmarshal(msg, &pos)
 		if err != nil {
 			if err == io.EOF {
 				p.Connected = false
@@ -249,12 +257,12 @@ func (p *Player) getBoardPlacementInput(bpi BoardPlacementInput) (DiePos, error)
 			return DiePos{}, err
 		}
 
-		if !p.Board.IsValidPlacementPos(pos.Row, pos.Cell) || (bpi.Validate && !bpi.IsValid(&pos)) {
+		if !p.Board.IsValidPlacementPos(msg.DiePos.Row, msg.DiePos.Cell) || (bpi.Validate && !bpi.IsValid(&msg.DiePos)) {
 			p.SendMessage("Invalid position. Please select a new position")
 			continue
 		}
 
-		return pos, nil
+		return msg.DiePos, nil
 	}
 	return DiePos{}, io.EOF
 }

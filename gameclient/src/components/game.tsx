@@ -1,6 +1,6 @@
 import { useState, MouseEvent, memo } from "react"
 import BonusBoard from "./bonusboard"
-import { Bonus, Domino, GameState } from "./common"
+import { Badge, Bonus, Domino, GameState, ServerPayload } from "./common"
 import { Board } from "./board"
 import { DiceSection } from "./dice"
 
@@ -31,7 +31,11 @@ function Game() {
 
         ws.onopen = () => {
             setGameState(ws.readyState)
-            ws.send(JSON.stringify({ name: playerName }))
+            const payload: ServerPayload = {
+                name: playerName
+            }
+            ws.send(JSON.stringify(payload))
+
             setStatusMsg("Waiting for opponent.")
             setWsConn(ws)
         }
@@ -60,15 +64,21 @@ function Game() {
     }
 
     function handleDiceSelect(ev: MouseEvent<HTMLElement>) {
-        wsConn?.send(ev.currentTarget.id)
+        const payload: ServerPayload = {
+            selectedDie: Number(ev.currentTarget.id)
+        }
+
+        wsConn?.send(JSON.stringify(payload))
     }
 
     function handleBoardClick(ev: MouseEvent<HTMLElement>) {
-        const selection = {
-            row: Number(ev.currentTarget.parentElement?.parentElement?.id),
-            cell: Number(ev.currentTarget.id)
+        const payload: ServerPayload = {
+            boardPosition: {
+                row: Number(ev.currentTarget.parentElement?.parentElement?.id),
+                cell: Number(ev.currentTarget.id)
+            }
         }
-        wsConn?.send(JSON.stringify(selection))
+        wsConn?.send(JSON.stringify(payload))
     }
 
     return (
