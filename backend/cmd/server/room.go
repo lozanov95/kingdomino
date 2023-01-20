@@ -54,7 +54,7 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 		time.Sleep(500 * time.Millisecond)
 	}
 
-	var dice *[4]game.Badge
+	var dice *[]game.Badge
 	for _, p := range gr.Players {
 		p.SendGameState(dice, "Connected!")
 	}
@@ -115,7 +115,7 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 	time.Sleep(10 * time.Second)
 }
 
-func (gr *GameRoom) handleDicesRound(dice *[4]game.Badge, p1, p2 *game.Player) {
+func (gr *GameRoom) handleDicesRound(dice *[]game.Badge, p1, p2 *game.Player) {
 	for _, player := range gr.Players {
 		player.ClearDice()
 	}
@@ -126,7 +126,7 @@ func (gr *GameRoom) handleDicesRound(dice *[4]game.Badge, p1, p2 *game.Player) {
 	gr.handleDiceChoice(dice, p1, p2)
 }
 
-func (gr *GameRoom) handleDiceChoice(d *[4]game.Badge, p *game.Player, p2 *game.Player) {
+func (gr *GameRoom) handleDiceChoice(d *[]game.Badge, p *game.Player, p2 *game.Player) {
 	for {
 		for _, player := range gr.Players {
 			if !player.Connected {
@@ -138,22 +138,51 @@ func (gr *GameRoom) handleDiceChoice(d *[4]game.Badge, p *game.Player, p2 *game.
 		payload, err := p.GetInput()
 		choice := payload.SelectedDie
 
-		if err != nil || choice < 0 || len(d) < choice || d[choice].Name == game.EMPTY {
+		if err != nil || choice < 0 || len((*d)) < choice || (*d)[choice].Name == game.EMPTY {
 			p.SendMessage("Invalid choice!")
 			log.Println("Invalid choice")
 			continue
 		}
 
-		p.AddDice(d[choice])
-		p.BonusCard.AddBonus(d[choice])
-		dName := d[choice].Name
+		if (*d)[choice].Name == game.QUESTIONMARK {
+			newDice := &[]game.Badge{
+				{Name: game.DOT},
+				{Name: game.LINE},
+				{Name: game.DOUBLEDOT},
+				{Name: game.DOUBLELINE},
+				{Name: game.FILLED},
+				{Name: game.CHECKED},
+			}
+			p.SendDice(newDice, "Please select the type of badge that you need!")
+			for {
+				payload, err := p.GetInput()
+				newChoice := payload.SelectedDie
+
+				if err != nil || newChoice < 0 || len((*newDice)) < newChoice || (*newDice)[newChoice].Name == game.EMPTY {
+					p.SendMessage("Invalid choice!")
+					log.Println("Invalid choice")
+					continue
+				}
+
+				p.AddDice((*newDice)[newChoice])
+
+				(*d)[choice].Name = game.EMPTY
+				(*d)[choice].Nobles = 0
+
+				return
+			}
+		}
+
+		p.AddDice((*d)[choice])
+		p.BonusCard.AddBonus((*d)[choice])
+		dName := (*d)[choice].Name
 		if !(*p.BonusCard)[dName].Eligible {
 			p2Bonus := (*p2.BonusCard)[dName]
 			p2Bonus.Eligible = false
 			(*p2.BonusCard)[dName] = p2Bonus
 		}
-		d[choice].Name = game.EMPTY
-		d[choice].Nobles = 0
+		(*d)[choice].Name = game.EMPTY
+		(*d)[choice].Nobles = 0
 
 		return
 	}

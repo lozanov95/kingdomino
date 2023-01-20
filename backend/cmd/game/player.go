@@ -41,7 +41,7 @@ type GameState struct {
 	Message       string    `json:"message"`
 	Board         *Board    `json:"board"`
 	BonusCard     *BonusMap `json:"bonusCard"`
-	Dices         *[4]Badge `json:"dices"`
+	Dices         *[]Badge  `json:"dices"`
 	PlayerTurn    int64     `json:"playerTurn"`
 	SelectedDices []Badge   `json:"selectedDice"`
 }
@@ -169,11 +169,11 @@ func (p *Player) SendMessage(message string) {
 	p.GameState <- GameState{Message: message, SelectedDices: p.Dices}
 }
 
-func (p *Player) SendDice(d *[4]Badge, m string) {
+func (p *Player) SendDice(d *[]Badge, m string) {
 	p.GameState <- GameState{Dices: d, Message: m, SelectedDices: p.Dices}
 }
 
-func (p *Player) SendGameState(d *[4]Badge, m string) {
+func (p *Player) SendGameState(d *[]Badge, m string) {
 	p.GameState <- GameState{
 		ID:            p.Id,
 		Message:       m,
@@ -197,7 +197,7 @@ func (p *Player) ClearDice() {
 	p.Dices = make([]Badge, 0)
 }
 
-func (p *Player) PlaceDomino(d *[4]Badge) {
+func (p *Player) PlaceDomino(d *[]Badge) {
 
 	p.SendGameState(d, "Select the dice that you want to place")
 	choice := p.getSelectedDominoChoice()

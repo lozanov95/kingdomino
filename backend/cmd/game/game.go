@@ -60,8 +60,8 @@ func (g *Game) setupDice() {
 	}
 }
 
-func (g *Game) RollDice() *[4]Badge {
-	d := [4]Badge{}
+func (g *Game) RollDice() *[]Badge {
+	d := make([]Badge, 4)
 	for i, r := range g.dices {
 		d[i] = r.Roll()
 	}
