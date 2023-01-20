@@ -132,7 +132,7 @@ func (gr *GameRoom) handleDiceChoice(d *[4]game.Badge, p *game.Player, p2 *game.
 			if !player.Connected {
 				return
 			}
-			player.SendDice(d, fmt.Sprintf("Player %s's turn to pick dice", p.Name))
+			player.SendGameState(d, fmt.Sprintf("Player %s's turn to pick dice", p.Name))
 		}
 
 		payload, err := p.GetInput()
