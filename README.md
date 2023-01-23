@@ -8,9 +8,9 @@
 - Place domino on the board
   - Keep track of the game rules for placement
 - Keep track of bonuses
+- Count points and displays winner
 
 ## Remaining functionality to be implemented
 
-- Count points and display winner
 - Use of the special bonuses
 - Display the rules on the initial page
