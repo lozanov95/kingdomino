@@ -222,7 +222,6 @@ func (p *Player) getSelectedDominoChoice() int {
 
 		if err != nil || choice < 0 || len(p.Dices) <= choice || p.Dices[choice].Name == EMPTY {
 			p.SendMessage("Invalid choice!")
-			log.Println("Invalid choice")
 			continue
 		}
 
