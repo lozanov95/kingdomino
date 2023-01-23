@@ -85,7 +85,6 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 		}
 
 		wg.Wait()
-
 		dice := gr.Game.RollDice()
 		gr.handleDicesRound(dice, gr.Players[1], gr.Players[0])
 		for _, player := range gr.Players {
@@ -110,8 +109,20 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 			player.ClearDice()
 		}
 	}
-	gr.Players[0].SendMessage("Game OVER!")
-	gr.Players[1].SendMessage("Game OVER!")
+	p1_score := gr.Players[0].CalculateScore()
+	p2_score := gr.Players[1].CalculateScore()
+
+	if p1_score > p2_score {
+		gr.Players[0].SendMessage("Game OVER! You WON!")
+		gr.Players[1].SendMessage("Game OVER! You LOST!")
+	} else if p1_score < p2_score {
+		gr.Players[1].SendMessage("Game OVER! You WON!")
+		gr.Players[0].SendMessage("Game OVER! You LOST!")
+	} else {
+		gr.Players[0].SendMessage("Game OVER! The game ended in a DRAW!")
+		gr.Players[1].SendMessage("Game OVER! The game ended in a DRAW!")
+	}
+
 	time.Sleep(10 * time.Second)
 }
 
