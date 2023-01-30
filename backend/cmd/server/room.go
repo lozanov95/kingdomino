@@ -166,7 +166,7 @@ func (gr *GameRoom) handleDiceChoice(d *[]game.Badge, p *game.Player, p2 *game.P
 				{Name: game.FILLED},
 				{Name: game.CHECKED},
 			}
-			p.SendDice(newDice, "Please select the type of badge that you need!")
+			p.SendDice(newDice, "Please select the type of badge that you need")
 			for {
 				payload, err := p.GetInput()
 				newChoice := payload.SelectedDie
