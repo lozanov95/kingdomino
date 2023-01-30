@@ -62,7 +62,9 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 
 	var wg sync.WaitGroup
 
-	for gr.Players[0].Connected && gr.Players[1].Connected && (gr.Players[0].IsValidPlacementPossible() || gr.Players[1].IsValidPlacementPossible()) {
+	for gr.Players[0].Connected && gr.Players[1].Connected &&
+		(gr.Players[0].IsValidPlacementPossible() ||
+			gr.Players[1].IsValidPlacementPossible()) {
 
 		dice = gr.Game.RollDice()
 
