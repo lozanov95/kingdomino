@@ -68,7 +68,7 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 
 		dice = gr.Game.RollDice()
 
-		gr.handleDicesRound(dice, gr.Players[0], gr.Players[1])
+		gr.handleDicesSelection(dice, gr.Players[0], gr.Players[1])
 
 		for _, player := range gr.Players {
 			wg.Add(1)
@@ -88,7 +88,7 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 
 		wg.Wait()
 		dice := gr.Game.RollDice()
-		gr.handleDicesRound(dice, gr.Players[1], gr.Players[0])
+		gr.handleDicesSelection(dice, gr.Players[1], gr.Players[0])
 		for _, player := range gr.Players {
 			wg.Add(1)
 			go func(player *game.Player) {
@@ -128,7 +128,7 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 	time.Sleep(10 * time.Second)
 }
 
-func (gr *GameRoom) handleDicesRound(dice *[]game.Badge, p1, p2 *game.Player) {
+func (gr *GameRoom) handleDicesSelection(dice *[]game.Badge, p1, p2 *game.Player) {
 	for _, player := range gr.Players {
 		player.ClearDice()
 	}
