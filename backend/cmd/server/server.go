@@ -1,10 +1,8 @@
 package server
 
 import (
-	"io"
 	"log"
 	"sync"
-	"time"
 
 	"github.com/lozanov95/kingdomino/backend/cmd/game"
 	"golang.org/x/net/websocket"
@@ -31,18 +29,6 @@ func NewServer() *Server {
 	}
 
 	return s
-}
-
-func (s *Server) HandleWS(ws *websocket.Conn) {
-	log.Println("new connection from client:", ws.RemoteAddr())
-
-	conn := &ChatConn{Id: time.Now().UnixNano(), Conn: ws}
-
-	s.mut.Lock()
-	s.conns[conn.Id] = conn
-	s.mut.Unlock()
-
-	s.readLoop(conn)
 }
 
 func (s *Server) HandleJoinRoom(ws *websocket.Conn) {
@@ -74,32 +60,6 @@ func (s *Server) joinRoom(p *game.Player) {
 	}
 	s.mut.Unlock()
 	p.GameStateLoop()
-}
-
-func (s *Server) readLoop(ChatConn *ChatConn) {
-	ws := ChatConn.Conn
-	defer log.Println("dropped connection", ws.RemoteAddr())
-	defer delete(s.conns, ChatConn.Id)
-	defer ws.Close()
-	buf := make([]byte, 1024)
-
-	for {
-		n, err := ws.Read(buf)
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			log.Println("read error", err)
-			continue
-		}
-		msg := string(buf[:n])
-
-		for id := range s.conns {
-			if id != ChatConn.Id {
-				s.conns[id].Conn.Write([]byte(msg))
-			}
-		}
-	}
 }
 
 func (s *Server) CloseRoom(id string) {

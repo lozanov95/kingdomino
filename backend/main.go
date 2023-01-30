@@ -26,7 +26,6 @@ func main() {
 		}
 	}()
 
-	http.Handle("/ws", websocket.Handler(srv.HandleWS))
 	http.Handle("/join", websocket.Handler(srv.HandleJoinRoom))
 	http.Handle("/", http.FileServer(http.Dir("./ui")))
 

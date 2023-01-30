@@ -17,7 +17,7 @@ var (
 )
 
 const (
-	TIMEOUT = 60 * time.Second
+	TIMEOUT = 2 * time.Minute
 )
 
 type DiePos struct {
@@ -271,22 +271,6 @@ func (p *Player) getBoardPlacementInput(bpi BoardPlacementInput) (DiePos, error)
 	return DiePos{}, io.EOF
 }
 
-func (bpi *BoardPlacementInput) IsValid(newPos *DiePos) bool {
-	emptyPos := DiePos{}
-	if bpi.PrevPosition == emptyPos {
-		return bpi.Board[newPos.Row][newPos.Cell].Name == EMPTY && bpi.Board.IsThereFreeNeighbourCell(newPos.Row, newPos.Cell)
-	}
-
-	if (newPos.Row-1 == bpi.PrevPosition.Row && newPos.Cell == bpi.PrevPosition.Cell) ||
-		(newPos.Row+1 == bpi.PrevPosition.Row && newPos.Cell == bpi.PrevPosition.Cell) ||
-		(newPos.Row == bpi.PrevPosition.Row && newPos.Cell-1 == bpi.PrevPosition.Cell) ||
-		(newPos.Row == bpi.PrevPosition.Row && newPos.Cell+1 == bpi.PrevPosition.Cell) {
-		return true
-	}
-
-	return false
-}
-
 func (p *Player) IsValidPlacementPossible() bool {
 	for i := 0; i < len(p.Board); i++ {
 		for j := 0; j < len(p.Board[i]); j++ {
@@ -321,4 +305,20 @@ func (p *Player) CalculateScore() int {
 	}
 
 	return points
+}
+
+func (bpi *BoardPlacementInput) IsValid(newPos *DiePos) bool {
+	emptyPos := DiePos{}
+	if bpi.PrevPosition == emptyPos {
+		return bpi.Board[newPos.Row][newPos.Cell].Name == EMPTY && bpi.Board.IsThereFreeNeighbourCell(newPos.Row, newPos.Cell)
+	}
+
+	if (newPos.Row-1 == bpi.PrevPosition.Row && newPos.Cell == bpi.PrevPosition.Cell) ||
+		(newPos.Row+1 == bpi.PrevPosition.Row && newPos.Cell == bpi.PrevPosition.Cell) ||
+		(newPos.Row == bpi.PrevPosition.Row && newPos.Cell-1 == bpi.PrevPosition.Cell) ||
+		(newPos.Row == bpi.PrevPosition.Row && newPos.Cell+1 == bpi.PrevPosition.Cell) {
+		return true
+	}
+
+	return false
 }
