@@ -9,13 +9,10 @@ import (
 )
 
 func TestJoinRoom(t *testing.T) {
-	c1 := &websocket.Conn{}
-	c2 := &websocket.Conn{}
-	c3 := &websocket.Conn{}
 	gr := server.NewGameRoom(make(chan string))
-	p1 := game.NewPlayer(c1)
-	p2 := game.NewPlayer(c2)
-	p3 := game.NewPlayer(c3)
+	p1 := game.NewPlayer(&websocket.Conn{})
+	p2 := game.NewPlayer(&websocket.Conn{})
+	p3 := game.NewPlayer(&websocket.Conn{})
 
 	if err := gr.Join(p1); err != nil {
 		t.Error(err)
