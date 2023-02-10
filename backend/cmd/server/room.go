@@ -33,11 +33,11 @@ func NewGameRoom(closeChan chan string) *GameRoom {
 		mux:         sync.RWMutex{},
 	}
 
-	go gr.gameLoop(closeChan)
+	go gr.roomLoop(closeChan)
 	return gr
 }
 
-func (gr *GameRoom) gameLoop(closeChan chan<- string) {
+func (gr *GameRoom) roomLoop(closeChan chan<- string) {
 	defer func() {
 		if err := recover(); err != nil {
 			log.Println("panic in game loop", err)
@@ -60,8 +60,27 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 	}
 	log.Println("started room with", gr.Players[0].Name, "and", gr.Players[1].Name)
 
-	var wg sync.WaitGroup
+	gr.gameLoop(dice)
+	p1_score := gr.Players[0].CalculateScore()
+	p2_score := gr.Players[1].CalculateScore()
 
+	if p1_score > p2_score {
+		gr.Players[0].SendMessage("Game OVER! You WON!")
+		gr.Players[1].SendMessage("Game OVER! You LOST!")
+	} else if p1_score < p2_score {
+		gr.Players[1].SendMessage("Game OVER! You WON!")
+		gr.Players[0].SendMessage("Game OVER! You LOST!")
+	} else {
+		gr.Players[0].SendMessage("Game OVER! The game ended in a DRAW!")
+		gr.Players[1].SendMessage("Game OVER! The game ended in a DRAW!")
+	}
+
+	time.Sleep(10 * time.Second)
+}
+
+// Handles the main game loop - selecting dice and placing dominos
+func (gr *GameRoom) gameLoop(dice *[]game.Badge) {
+	var wg sync.WaitGroup
 	for gr.Players[0].Connected && gr.Players[1].Connected &&
 		(gr.Players[0].IsValidPlacementPossible() ||
 			gr.Players[1].IsValidPlacementPossible()) {
@@ -111,21 +130,6 @@ func (gr *GameRoom) gameLoop(closeChan chan<- string) {
 			player.ClearDice()
 		}
 	}
-	p1_score := gr.Players[0].CalculateScore()
-	p2_score := gr.Players[1].CalculateScore()
-
-	if p1_score > p2_score {
-		gr.Players[0].SendMessage("Game OVER! You WON!")
-		gr.Players[1].SendMessage("Game OVER! You LOST!")
-	} else if p1_score < p2_score {
-		gr.Players[1].SendMessage("Game OVER! You WON!")
-		gr.Players[0].SendMessage("Game OVER! You LOST!")
-	} else {
-		gr.Players[0].SendMessage("Game OVER! The game ended in a DRAW!")
-		gr.Players[1].SendMessage("Game OVER! The game ended in a DRAW!")
-	}
-
-	time.Sleep(10 * time.Second)
 }
 
 func (gr *GameRoom) handleDicesSelection(dice *[]game.Badge, p1, p2 *game.Player) {
