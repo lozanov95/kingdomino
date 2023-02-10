@@ -121,6 +121,16 @@ func (gr *GameRoom) gameLoop(dice *[]Badge) {
 		(gr.Players[0].IsValidPlacementPossible() ||
 			gr.Players[1].IsValidPlacementPossible()) {
 
+		if gr.Players[0].BonusCard.IsThereACompletedBonus() || gr.Players[1].BonusCard.IsThereACompletedBonus() {
+			for _, player := range gr.Players {
+				if player.BonusCard.IsThereACompletedBonus() {
+					player.useMagicPowers()
+				} else {
+					player.SendMessage("Waiting for other player")
+				}
+			}
+		}
+
 		dice = gr.Game.RollDice()
 
 		gr.handleDicesSelection(dice, gr.Players[0], gr.Players[1])
