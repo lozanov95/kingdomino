@@ -13,6 +13,44 @@ var (
 	ErrGameRoomFull = errors.New("the game room is full")
 )
 
+const (
+	// The duration after which the player will be kicked for inactivity.
+	TIMEOUT = 2 * time.Minute
+)
+
+const (
+	// The game is waiting for both players to connect
+	WaitingForPlayers int64 = iota
+
+	// The game is waiting for both players to pick dice
+	PickDice
+
+	// The game is waiting for both players to place domino
+	PlaceDomino
+
+	// The game is waiting for the Magic Powers selection
+	UseMagicPowers
+
+	// The game is over
+	GameOver
+)
+
+type ClientPayload struct {
+	Name        string `json:"name"`
+	DiePos      DiePos `json:"boardPosition"`
+	SelectedDie int    `json:"selectedDie"`
+}
+
+type GameState struct {
+	ID            int64     `json:"id"`
+	Message       string    `json:"message"`
+	Board         *Board    `json:"board"`
+	BonusCard     *BonusMap `json:"bonusCard"`
+	Dices         *[]Badge  `json:"dices"`
+	GameTurn      int64     `json:"gameTurn"`
+	SelectedDices []Badge   `json:"selectedDice"`
+}
+
 type GameRoom struct {
 	ID          string
 	Players     []*Player
