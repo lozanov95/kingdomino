@@ -72,3 +72,13 @@ func (bm *BonusMap) AddBonus(d Badge) {
 	b.Increment()
 	(*bm)[d.Name] = b
 }
+
+func (bm *BonusMap) IsThereACompletedBonus() bool {
+	for _, bonus := range *bm {
+		if bonus.IsCompleted() {
+			return true
+		}
+	}
+
+	return false
+}
