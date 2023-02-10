@@ -1,4 +1,4 @@
-package server
+package game
 
 import (
 	"errors"
@@ -7,8 +7,6 @@ import (
 	"strconv"
 	"sync"
 	"time"
-
-	"github.com/lozanov95/kingdomino/backend/cmd/game"
 )
 
 var (
@@ -17,10 +15,10 @@ var (
 
 type GameRoom struct {
 	ID          string
-	Players     []*game.Player
+	Players     []*Player
 	PlayerLimit int
 	mux         sync.RWMutex
-	Game        *game.Game
+	Game        *Game
 }
 
 // Returns a new game room instance.
@@ -28,7 +26,7 @@ func NewGameRoom(closeChan chan string) *GameRoom {
 	id := strconv.Itoa(int(time.Now().UnixMicro()))
 	gr := &GameRoom{
 		ID:          id,
-		Players:     []*game.Player{},
+		Players:     []*Player{},
 		PlayerLimit: 2,
 		mux:         sync.RWMutex{},
 	}
@@ -54,7 +52,7 @@ func (gr *GameRoom) roomLoop(closeChan chan<- string) {
 		time.Sleep(500 * time.Millisecond)
 	}
 
-	var dice *[]game.Badge
+	var dice *[]Badge
 	for _, p := range gr.Players {
 		p.SendGameState(dice, "Connected!")
 	}
@@ -79,7 +77,7 @@ func (gr *GameRoom) roomLoop(closeChan chan<- string) {
 }
 
 // Handles the main game loop - selecting dice and placing dominos
-func (gr *GameRoom) gameLoop(dice *[]game.Badge) {
+func (gr *GameRoom) gameLoop(dice *[]Badge) {
 	var wg sync.WaitGroup
 	for gr.Players[0].Connected && gr.Players[1].Connected &&
 		(gr.Players[0].IsValidPlacementPossible() ||
@@ -91,7 +89,7 @@ func (gr *GameRoom) gameLoop(dice *[]game.Badge) {
 
 		for _, player := range gr.Players {
 			wg.Add(1)
-			go func(player *game.Player) {
+			go func(player *Player) {
 				defer func() {
 					if err := recover(); err != nil {
 						log.Println(err)
@@ -110,7 +108,7 @@ func (gr *GameRoom) gameLoop(dice *[]game.Badge) {
 		gr.handleDicesSelection(dice, gr.Players[1], gr.Players[0])
 		for _, player := range gr.Players {
 			wg.Add(1)
-			go func(player *game.Player) {
+			go func(player *Player) {
 				defer func() {
 					if err := recover(); err != nil {
 						log.Println(err)
@@ -132,7 +130,7 @@ func (gr *GameRoom) gameLoop(dice *[]game.Badge) {
 	}
 }
 
-func (gr *GameRoom) handleDicesSelection(dice *[]game.Badge, p1, p2 *game.Player) {
+func (gr *GameRoom) handleDicesSelection(dice *[]Badge, p1, p2 *Player) {
 	for _, player := range gr.Players {
 		player.ClearDice()
 	}
@@ -143,7 +141,7 @@ func (gr *GameRoom) handleDicesSelection(dice *[]game.Badge, p1, p2 *game.Player
 	gr.handleDiceChoice(dice, p1, p2)
 }
 
-func (gr *GameRoom) handleDiceChoice(d *[]game.Badge, p *game.Player, p2 *game.Player) {
+func (gr *GameRoom) handleDiceChoice(d *[]Badge, p *Player, p2 *Player) {
 	for {
 		for _, player := range gr.Players {
 			if !player.Connected {
@@ -155,27 +153,27 @@ func (gr *GameRoom) handleDiceChoice(d *[]game.Badge, p *game.Player, p2 *game.P
 		payload, err := p.GetInput()
 		choice := payload.SelectedDie
 
-		if err != nil || choice < 0 || len((*d)) < choice || (*d)[choice].Name == game.EMPTY {
+		if err != nil || choice < 0 || len((*d)) < choice || (*d)[choice].Name == EMPTY {
 			p.SendMessage("Invalid choice!")
 			log.Println("Invalid choice")
 			continue
 		}
 
-		if (*d)[choice].Name == game.QUESTIONMARK {
-			newDice := &[]game.Badge{
-				{Name: game.DOT},
-				{Name: game.LINE},
-				{Name: game.DOUBLEDOT},
-				{Name: game.DOUBLELINE},
-				{Name: game.FILLED},
-				{Name: game.CHECKED},
+		if (*d)[choice].Name == QUESTIONMARK {
+			newDice := &[]Badge{
+				{Name: DOT},
+				{Name: LINE},
+				{Name: DOUBLEDOT},
+				{Name: DOUBLELINE},
+				{Name: FILLED},
+				{Name: CHECKED},
 			}
 			p.SendDice(newDice, "Please select the type of badge that you need")
 			for {
 				payload, err := p.GetInput()
 				newChoice := payload.SelectedDie
 
-				if err != nil || newChoice < 0 || len((*newDice)) < newChoice || (*newDice)[newChoice].Name == game.EMPTY {
+				if err != nil || newChoice < 0 || len((*newDice)) < newChoice || (*newDice)[newChoice].Name == EMPTY {
 					p.SendMessage("Invalid choice!")
 					log.Println("Invalid choice")
 					continue
@@ -183,7 +181,7 @@ func (gr *GameRoom) handleDiceChoice(d *[]game.Badge, p *game.Player, p2 *game.P
 
 				p.AddDice((*newDice)[newChoice])
 
-				(*d)[choice].Name = game.EMPTY
+				(*d)[choice].Name = EMPTY
 				(*d)[choice].Nobles = 0
 
 				return
@@ -198,7 +196,7 @@ func (gr *GameRoom) handleDiceChoice(d *[]game.Badge, p *game.Player, p2 *game.P
 			p2Bonus.Eligible = false
 			(*p2.BonusCard)[dName] = p2Bonus
 		}
-		(*d)[choice].Name = game.EMPTY
+		(*d)[choice].Name = EMPTY
 		(*d)[choice].Nobles = 0
 
 		return
@@ -207,7 +205,7 @@ func (gr *GameRoom) handleDiceChoice(d *[]game.Badge, p *game.Player, p2 *game.P
 
 // Joins a game room
 // Returns ErrGameRoomFull if there is no space in the room.
-func (gr *GameRoom) Join(p *game.Player) error {
+func (gr *GameRoom) Join(p *Player) error {
 	if gr.IsFull() {
 		return ErrGameRoomFull
 	}
@@ -220,7 +218,7 @@ func (gr *GameRoom) Join(p *game.Player) error {
 		return nil
 	}
 
-	gr.Game = game.NewGame(gr.Players[0], gr.Players[1])
+	gr.Game = NewGame(gr.Players[0], gr.Players[1])
 
 	return nil
 }

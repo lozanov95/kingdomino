@@ -1,18 +1,16 @@
-package server_test
+package game
 
 import (
 	"testing"
 
-	"github.com/lozanov95/kingdomino/backend/cmd/game"
-	"github.com/lozanov95/kingdomino/backend/cmd/server"
 	"golang.org/x/net/websocket"
 )
 
 func TestJoinRoom(t *testing.T) {
-	gr := server.NewGameRoom(make(chan string))
-	p1 := game.NewPlayer(&websocket.Conn{})
-	p2 := game.NewPlayer(&websocket.Conn{})
-	p3 := game.NewPlayer(&websocket.Conn{})
+	gr := NewGameRoom(make(chan string))
+	p1 := NewPlayer(&websocket.Conn{})
+	p2 := NewPlayer(&websocket.Conn{})
+	p3 := NewPlayer(&websocket.Conn{})
 
 	if err := gr.Join(p1); err != nil {
 		t.Error(err)
@@ -21,7 +19,7 @@ func TestJoinRoom(t *testing.T) {
 		t.Error(err)
 	}
 
-	if err := gr.Join(p3); err != server.ErrGameRoomFull {
+	if err := gr.Join(p3); err != ErrGameRoomFull {
 		t.Error("incorrect error on full room")
 	}
 	if len(gr.Players) != gr.PlayerLimit {

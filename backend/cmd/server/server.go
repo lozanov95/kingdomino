@@ -16,7 +16,7 @@ type ChatConn struct {
 type Server struct {
 	conns     map[int64]*ChatConn
 	mut       sync.RWMutex
-	GameRooms map[string]*GameRoom
+	GameRooms map[string]*game.GameRoom
 	CloseChan chan string
 }
 
@@ -24,7 +24,7 @@ func NewServer() *Server {
 	s := &Server{
 		conns:     make(map[int64]*ChatConn),
 		mut:       sync.RWMutex{},
-		GameRooms: map[string]*GameRoom{},
+		GameRooms: map[string]*game.GameRoom{},
 		CloseChan: make(chan string, 10),
 	}
 
@@ -54,7 +54,7 @@ func (s *Server) joinRoom(p *game.Player) {
 		}
 	}
 	if !joined {
-		room := NewGameRoom(s.CloseChan)
+		room := game.NewGameRoom(s.CloseChan)
 		room.Join(p)
 		s.GameRooms[room.ID] = room
 	}
