@@ -13,6 +13,11 @@ type BoardResult struct {
 	Nobles int
 }
 
+type BoardPlacementInput struct {
+	PrevPosition DiePos
+	Board        *Board
+}
+
 func (br *BoardResult) Add(newBR BoardResult) {
 	br.Count += newBR.Count
 	br.Nobles += newBR.Nobles
@@ -173,4 +178,20 @@ func (b Board) isCellMatching(dp DiePos, bn BadgeName) bool {
 	}
 
 	return bn == b[dp.Row][dp.Cell].Name
+}
+
+func (bpi *BoardPlacementInput) IsValid(newPos *DiePos) bool {
+	emptyPos := DiePos{}
+	if bpi.PrevPosition == emptyPos {
+		return bpi.Board[newPos.Row][newPos.Cell].Name == EMPTY && bpi.Board.IsThereFreeNeighbourCell(newPos.Row, newPos.Cell)
+	}
+
+	if (newPos.Row-1 == bpi.PrevPosition.Row && newPos.Cell == bpi.PrevPosition.Cell) ||
+		(newPos.Row+1 == bpi.PrevPosition.Row && newPos.Cell == bpi.PrevPosition.Cell) ||
+		(newPos.Row == bpi.PrevPosition.Row && newPos.Cell-1 == bpi.PrevPosition.Cell) ||
+		(newPos.Row == bpi.PrevPosition.Row && newPos.Cell+1 == bpi.PrevPosition.Cell) {
+		return true
+	}
+
+	return false
 }

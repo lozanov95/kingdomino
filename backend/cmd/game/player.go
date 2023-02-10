@@ -49,11 +49,6 @@ type ClientPayload struct {
 	SelectedDie int    `json:"selectedDie"`
 }
 
-type BoardPlacementInput struct {
-	PrevPosition DiePos
-	Board        *Board
-}
-
 type GameState struct {
 	ID            int64     `json:"id"`
 	Message       string    `json:"message"`
@@ -323,20 +318,4 @@ func (p *Player) CalculateScore() int {
 	}
 
 	return points
-}
-
-func (bpi *BoardPlacementInput) IsValid(newPos *DiePos) bool {
-	emptyPos := DiePos{}
-	if bpi.PrevPosition == emptyPos {
-		return bpi.Board[newPos.Row][newPos.Cell].Name == EMPTY && bpi.Board.IsThereFreeNeighbourCell(newPos.Row, newPos.Cell)
-	}
-
-	if (newPos.Row-1 == bpi.PrevPosition.Row && newPos.Cell == bpi.PrevPosition.Cell) ||
-		(newPos.Row+1 == bpi.PrevPosition.Row && newPos.Cell == bpi.PrevPosition.Cell) ||
-		(newPos.Row == bpi.PrevPosition.Row && newPos.Cell-1 == bpi.PrevPosition.Cell) ||
-		(newPos.Row == bpi.PrevPosition.Row && newPos.Cell+1 == bpi.PrevPosition.Cell) {
-		return true
-	}
-
-	return false
 }
