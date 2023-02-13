@@ -73,6 +73,23 @@ func NewGameRoom(closeChan chan string) *GameRoom {
 	return gr
 }
 
+// Calculates the score and sends message to the players
+func (gr *GameRoom) score() {
+	p1_score := gr.Players[0].CalculateScore()
+	p2_score := gr.Players[1].CalculateScore()
+
+	if p1_score > p2_score {
+		gr.Players[0].SendMessage("Game OVER! You WON!")
+		gr.Players[1].SendMessage("Game OVER! You LOST!")
+	} else if p1_score < p2_score {
+		gr.Players[1].SendMessage("Game OVER! You WON!")
+		gr.Players[0].SendMessage("Game OVER! You LOST!")
+	} else {
+		gr.Players[0].SendMessage("Game OVER! The game ended in a DRAW!")
+		gr.Players[1].SendMessage("Game OVER! The game ended in a DRAW!")
+	}
+}
+
 func (gr *GameRoom) roomLoop(closeChan chan<- string) {
 	defer func() {
 		if err := recover(); err != nil {
@@ -97,20 +114,7 @@ func (gr *GameRoom) roomLoop(closeChan chan<- string) {
 	log.Println("started room with", gr.Players[0].Name, "and", gr.Players[1].Name)
 
 	gr.gameLoop(dice)
-	p1_score := gr.Players[0].CalculateScore()
-	p2_score := gr.Players[1].CalculateScore()
-
-	if p1_score > p2_score {
-		gr.Players[0].SendMessage("Game OVER! You WON!")
-		gr.Players[1].SendMessage("Game OVER! You LOST!")
-	} else if p1_score < p2_score {
-		gr.Players[1].SendMessage("Game OVER! You WON!")
-		gr.Players[0].SendMessage("Game OVER! You LOST!")
-	} else {
-		gr.Players[0].SendMessage("Game OVER! The game ended in a DRAW!")
-		gr.Players[1].SendMessage("Game OVER! The game ended in a DRAW!")
-	}
-
+	gr.score()
 	time.Sleep(10 * time.Second)
 }
 
