@@ -15,37 +15,6 @@ var (
 	ErrPlayerDisconnected = errors.New("the player has been disconnected")
 )
 
-const (
-	// Grants no wizard power
-	PWRNoPower int64 = iota
-
-	//You can play your domino without following
-	// the Connection Rules.
-	PWRNoConnectionRules
-
-	// You can separate your dice to fill in your map.
-	// Each die must respect the Connection Rules.
-	PWRSeparateDominos
-
-	// During a turn where you are the player A,
-	// you can immediately pick your 2 dice
-	PWRPickTwoDice
-
-	// You can turn one of the dice in your
-	// domino around so that it shows any face
-	// of your cho
-	PWRSelectDieSideOfChoice
-
-	// Choose a coat of arms. Each different
-	// DOMAIN with this coat of arms will earn you
-	// 3 prestige points at the end of the game.
-	PWRDomainPoints
-
-	// Add one cross to the coat of arms of your
-	// choosing.
-	PWRAddNoble
-)
-
 type DiePos struct {
 	Cell int `json:"cell"`
 	Row  int `json:"row"`
@@ -295,12 +264,4 @@ func (p *Player) CalculateScore() int {
 	}
 
 	return points
-}
-
-// Handles the magic power selection
-func (p *Player) useMagicPowers() {
-	p.GameState <- GameState{
-		GameTurn: UseMagicPowers,
-		Message:  "Select a magic power",
-	}
 }
