@@ -28,12 +28,12 @@ const (
 	PWRSeparateDominos
 
 	// During a turn where you are the player A,
-	// you can immediately pick your 2 dice
+	// you can immediately pick your 2 dice.
 	PWRPickTwoDice
 
 	// You can turn one of the dice in your
 	// domino around so that it shows any face
-	// of your cho
+	// of your choice.
 	PWRSelectDieSideOfChoice
 
 	// Choose a coat of arms. Each different
