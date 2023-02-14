@@ -118,13 +118,18 @@ func (gr *GameRoom) roomLoop(closeChan chan<- string) {
 	time.Sleep(10 * time.Second)
 }
 
+// Checks if the requirements for a valid running game are satisfied
+func (gr *GameRoom) shouldLoopContinue() bool {
+	return gr.Players[0].Connected &&
+		gr.Players[1].Connected &&
+		(gr.Players[0].IsValidPlacementPossible() ||
+			gr.Players[1].IsValidPlacementPossible())
+}
+
 // Handles the main game loop - selecting dice and placing dominos
 func (gr *GameRoom) gameLoop(dice *[]Badge) {
 	var wg sync.WaitGroup
-	for gr.Players[0].Connected && gr.Players[1].Connected &&
-		(gr.Players[0].IsValidPlacementPossible() ||
-			gr.Players[1].IsValidPlacementPossible()) {
-
+	for gr.shouldLoopContinue() {
 		if gr.Players[0].BonusCard.IsThereACompletedBonus() || gr.Players[1].BonusCard.IsThereACompletedBonus() {
 			for _, player := range gr.Players {
 				if player.BonusCard.IsThereACompletedBonus() {
