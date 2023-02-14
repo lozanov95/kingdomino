@@ -5,7 +5,6 @@ import (
 	"errors"
 	"io"
 	"log"
-	"strings"
 	"sync"
 	"time"
 
@@ -111,21 +110,6 @@ func (p *Player) GetBonusCard() []byte {
 	}
 
 	return card
-}
-
-func (p *Player) GetState() []byte {
-	var sb strings.Builder
-	sb.WriteString("{")
-	board := strings.Replace(string(p.GetBoard()), "{", "", 1)
-	board = strings.TrimSuffix(board, "}")
-	bonusCard := strings.Replace(string(p.GetBonusCard()), "{", "", 1)
-	bonusCard = strings.TrimSuffix(bonusCard, "}")
-	sb.WriteString(board)
-	sb.WriteString(",")
-	sb.WriteString(bonusCard)
-	sb.WriteString("}")
-
-	return []byte(sb.String())
 }
 
 func (p *Player) GameStateLoop() {
