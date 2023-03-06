@@ -1,37 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 :root {
-    --box-size: 90px;
-    text-align: center;
-    --background-color: #0f0e0e;
-    --primary-color: #726c6c;
-    --text-color: #fff;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    --border-radius: 9px;
+  --box-size: 90px;
+  text-align: center;
+  --background-color: #0f0e0e;
+  --primary-color: #726c6c;
+  --text-color: #fff;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  --border-radius: 9px;
 }
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
-
 body {
-    background-color: var(--background-color);
-    color: var(--text-color);
-    margin: 0px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  margin: 0px;
 }
 
 button,
 input {
-    background-color: var(--primary-color);
-    color: var(--text-color);
-    font-weight: 700;
-    font-size: 16px;
-    border-radius: var(--border-radius);
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  font-weight: 700;
+  font-size: 16px;
+  border-radius: var(--border-radius);
 }
 
 .game {
-    display: grid;
-    grid-area: game;
-    grid-template-areas: 
+  display: grid;
+  grid-area: game;
+  grid-template-areas:
     "top top top"
     "dice board bonusboard"
     "dice board bonusboard"
@@ -39,148 +41,146 @@ input {
 }
 
 .chat {
-    grid-area: chat;
+  grid-area: chat;
 }
 
 .app {
-    display: grid;
-    grid-template-areas:
-        "nav nav nav nav nav"
-        "a game game game b"
-        "a game game game b"
-        "a game game game b";
+  display: grid;
+  grid-template-areas:
+    "nav nav nav nav nav"
+    "a game game game b"
+    "a game game game b"
+    "a game game game b";
 }
 
 .cell {
-    display: inherit;
-    width: var(--box-size);
-    height: var(--box-size);
-    border-style: solid;
-    border-width: 1px;
-    border-color: var(--background-color);
-    background-color: var(--primary-color);
-    justify-content: center;
-    align-items: center;
-    grid-area: cell;
+  display: inherit;
+  width: var(--box-size);
+  height: var(--box-size);
+  border-style: solid;
+  border-width: 1px;
+  border-color: var(--background-color);
+  background-color: var(--primary-color);
+  justify-content: center;
+  align-items: center;
+  grid-area: cell;
 }
 .dice-section {
-    display: flex;
-    margin: 5px;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+  display: flex;
+  margin: 5px;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
 .row {
-    display: flex;
+  display: flex;
 }
 
 .board {
-    grid-area: board                                                                                                                                                                                                                                            ;
-    text-align: center;                                         
-    display: flex;
-    flex-direction: column;
+  grid-area: board;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
 }
 
 img {
-    max-width: var(--box-size);
-    max-height: var(--box-size);
+  max-width: var(--box-size);
+  max-height: var(--box-size);
 }
 
 .msg-container {
-    width: 250px;
-    height: 250px;
-    overflow: scroll;
-    margin: auto;
-    text-align: right;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    background-color: var(--primary-color);
-    border-radius: var(--border-radius);
+  width: 250px;
+  height: 250px;
+  overflow: scroll;
+  margin: auto;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background-color: var(--primary-color);
+  border-radius: var(--border-radius);
 }
 
 .chat-msg {
-    margin: 2px;
-    border-radius: var(--border-radius);
-    padding: 6px;
-    width: fit-content;
-    min-width: 30px;
+  margin: 2px;
+  border-radius: var(--border-radius);
+  padding: 6px;
+  width: fit-content;
+  min-width: 30px;
 }
 
 .chat-you {
-    background-color: #143c94;
-    text-align: right;
-    float: right;
+  background-color: #143c94;
+  text-align: right;
+  float: right;
 }
 
 .chat-other {
-    background-color: #343f31;
-    text-align: left;
-    float: left;
+  background-color: #343f31;
+  text-align: left;
+  float: left;
 }
 
 .boardCell {
-    display: grid;
-    grid-template-areas:
-        "nobles cell cell"
-    ;
-    border-color: white;
-    border-style: solid;
-    border-width: 1px;
+  display: grid;
+  grid-template-areas: "nobles cell cell";
+  border-color: white;
+  border-style: solid;
+  border-width: 1px;
 }
 
 .nobles {
-    grid-area: nobles;
-    width: 1rem;
-    background-color: #282727;
+  grid-area: nobles;
+  width: 1rem;
+  background-color: #282727;
 }
 
 .nav {
-    grid-area: nav;
-    min-width: 15%;
-    margin-bottom: 10px;
-    font-weight: bolder;
-    padding: 10px;
-    font-size: 35px;
-    background-color: #282727;
-    text-align: initial;
+  grid-area: nav;
+  min-width: 15%;
+  margin-bottom: 10px;
+  font-weight: bolder;
+  padding: 10px;
+  font-size: 35px;
+  background-color: #282727;
+  text-align: initial;
 }
 
 .bonusboard {
-    grid-area: bonusboard;
-    width: fit-content;
+  grid-area: bonusboard;
+  width: fit-content;
 }
 
 .bonus-cell {
-    display: flex;
-    font-size: 30px;
-    border: 1px var(--primary-color) solid;
+  display: flex;
+  font-size: 30px;
+  border: 1px var(--primary-color) solid;
 }
 
 .bonus-checkbox {
-    width: 25px;
-    height: 25px;
-    display: flex;
-    align-self: center;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-self: center;
 }
 
 .ineligible {
-    background-color: #590c0c;
+  background-color: #590c0c;
 }
 
 .completed {
-    background-color: #085508;
+  background-color: #085508;
 }
 
-.status{
-    grid-area: top;
-    padding: 20px;
-    margin: 2px;
-    border-radius: var(--border-radius);
-    font-size: 30px;
-    background-color: rgb(37, 37, 152);
+.status {
+  grid-area: top;
+  padding: 20px;
+  margin: 2px;
+  border-radius: var(--border-radius);
+  font-size: 30px;
+  background-color: rgb(37, 37, 152);
 }
-.connectForm{
-    grid-area: board;
+.connectForm {
+  grid-area: board;
 }
