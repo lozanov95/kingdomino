@@ -132,7 +132,7 @@ func (p *Player) SendDice(d *[]Badge, m string) {
 	p.GameState <- GameState{Dices: d, Message: m, SelectedDices: p.Dices}
 }
 
-func (p *Player) SendGameState(d *[]Badge, m string) {
+func (p *Player) SendGameState(d *[]Badge, m string, tt GameTurn) {
 	p.GameState <- GameState{
 		ID:            p.Id,
 		Message:       m,
@@ -140,7 +140,7 @@ func (p *Player) SendGameState(d *[]Badge, m string) {
 		BonusCard:     p.BonusCard,
 		Dices:         d,
 		SelectedDices: p.Dices,
-		// PlayerTurn: 0,
+		GameTurn:      tt,
 	}
 }
 
@@ -158,15 +158,15 @@ func (p *Player) ClearDice() {
 
 func (p *Player) PlaceDomino(d *[]Badge) {
 
-	p.SendGameState(d, "Select the dice that you want to place")
+	p.SendGameState(d, "Select the dice that you want to place", GTPlaceDomino)
 	choice := p.getSelectedDominoChoice()
 	prevPos := p.placeOnBoard(choice, BoardPlacementInput{Board: p.Board})
-	p.SendGameState(d, "")
+	p.SendGameState(d, "", GTPlaceDomino)
 
 	p.SendMessage("Select the dice that you want to place")
 	choice = p.getSelectedDominoChoice()
 	p.placeOnBoard(choice, BoardPlacementInput{PrevPosition: prevPos, Board: p.Board})
-	p.SendGameState(d, "Waiting for all players to complete their turns.")
+	p.SendGameState(d, "Waiting for all players to complete their turns.", GTPlaceDomino)
 }
 
 func (p *Player) getSelectedDominoChoice() int {

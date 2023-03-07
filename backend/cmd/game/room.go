@@ -9,6 +9,34 @@ import (
 	"time"
 )
 
+type ClientPayload struct {
+	Name        string    `json:"name"`
+	DiePos      DiePos    `json:"boardPosition"`
+	SelectedDie int       `json:"selectedDie"`
+	WizardPower PowerType `json:"wizardPower"`
+}
+
+type GameState struct {
+	ID            int64     `json:"id"`
+	Message       string    `json:"message"`
+	Board         *Board    `json:"board"`
+	BonusCard     *BonusMap `json:"bonusCard"`
+	Dices         *[]Badge  `json:"dices"`
+	GameTurn      GameTurn  `json:"gameTurn"`
+	WizardPower   PowerType `json:"wizardPower"`
+	SelectedDices []Badge   `json:"selectedDice"`
+}
+
+type GameRoom struct {
+	ID          string
+	Players     []*Player
+	PlayerLimit int
+	mux         sync.RWMutex
+	Game        *Game
+}
+
+type GameTurn int64
+
 var (
 	ErrGameRoomFull = errors.New("the game room is full")
 )
@@ -20,44 +48,23 @@ const (
 
 const (
 	// The game is waiting for both players to connect
-	WaitingForPlayers int64 = iota
+	GTWaitingForPlayers GameTurn = iota
 
 	// The game is waiting for both players to pick dice
-	PickDice
+	GTPickDice
 
 	// The game is waiting for both players to place domino
-	PlaceDomino
+	GTPlaceDomino
 
 	// The game is waiting for the Magic Powers selection
-	UseMagicPowers
+	GTUseMagicPowers
+
+	// Waiting for player to conduct their turn
+	GTWaitingPlayerTurn
 
 	// The game is over
-	GameOver
+	GTGameOver
 )
-
-type ClientPayload struct {
-	Name        string `json:"name"`
-	DiePos      DiePos `json:"boardPosition"`
-	SelectedDie int    `json:"selectedDie"`
-}
-
-type GameState struct {
-	ID            int64     `json:"id"`
-	Message       string    `json:"message"`
-	Board         *Board    `json:"board"`
-	BonusCard     *BonusMap `json:"bonusCard"`
-	Dices         *[]Badge  `json:"dices"`
-	GameTurn      int64     `json:"gameTurn"`
-	SelectedDices []Badge   `json:"selectedDice"`
-}
-
-type GameRoom struct {
-	ID          string
-	Players     []*Player
-	PlayerLimit int
-	mux         sync.RWMutex
-	Game        *Game
-}
 
 // Returns a new game room instance.
 func NewGameRoom(closeChan chan string) *GameRoom {
@@ -109,7 +116,7 @@ func (gr *GameRoom) roomLoop(closeChan chan<- string) {
 
 	var dice *[]Badge
 	for _, p := range gr.Players {
-		p.SendGameState(dice, "Connected!")
+		p.SendGameState(dice, "Connected!", GTWaitingForPlayers)
 	}
 	log.Println("started room with", gr.Players[0].Name, "and", gr.Players[1].Name)
 
@@ -130,18 +137,7 @@ func (gr *GameRoom) shouldLoopContinue() bool {
 func (gr *GameRoom) gameLoop(dice *[]Badge) {
 	var wg sync.WaitGroup
 	for gr.shouldLoopContinue() {
-		if gr.Players[0].BonusCard.IsThereACompletedBonus() || gr.Players[1].BonusCard.IsThereACompletedBonus() {
-			for _, player := range gr.Players {
-				if player.BonusCard.IsThereACompletedBonus() {
-					player.useMagicPowers()
-				} else {
-					player.SendMessage("Waiting for other player")
-				}
-			}
-		}
-
 		dice = gr.Game.RollDice()
-
 		gr.handleDicesSelection(dice, gr.Players[0], gr.Players[1])
 
 		for _, player := range gr.Players {
@@ -192,10 +188,20 @@ func (gr *GameRoom) handleDicesSelection(dice *[]Badge, p1, p2 *Player) {
 		player.ClearDice()
 	}
 
-	gr.handleDiceChoice(dice, p1, p2)
-	gr.handleDiceChoice(dice, p2, p1)
-	gr.handleDiceChoice(dice, p2, p1)
-	gr.handleDiceChoice(dice, p1, p2)
+	if p1.BonusCard.IsBonusCompleted(PWRPickTwoDice) {
+		p1.SendGameState(dice, "Do you want to use your power, so you can select 2 dice?", GTUseMagicPowers)
+		p2.SendGameState(dice, fmt.Sprintf("Waiting for player %s to decide if they want to use a wizard power", p1.Name), GTWaitingPlayerTurn)
+
+		gr.handleDiceChoice(dice, p1, p2)
+		gr.handleDiceChoice(dice, p1, p2)
+		gr.handleDiceChoice(dice, p2, p1)
+		gr.handleDiceChoice(dice, p2, p1)
+	} else {
+		gr.handleDiceChoice(dice, p1, p2)
+		gr.handleDiceChoice(dice, p2, p1)
+		gr.handleDiceChoice(dice, p2, p1)
+		gr.handleDiceChoice(dice, p1, p2)
+	}
 }
 
 func (gr *GameRoom) handleDiceChoice(d *[]Badge, p *Player, p2 *Player) {
@@ -204,7 +210,7 @@ func (gr *GameRoom) handleDiceChoice(d *[]Badge, p *Player, p2 *Player) {
 			if !player.Connected {
 				return
 			}
-			player.SendGameState(d, fmt.Sprintf("Player %s's turn to pick dice", p.Name))
+			player.SendGameState(d, fmt.Sprintf("Player %s's turn to pick dice", p.Name), GTPickDice)
 		}
 
 		payload, err := p.GetInput()
