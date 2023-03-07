@@ -14,6 +14,7 @@ type ClientPayload struct {
 	DiePos      DiePos    `json:"boardPosition"`
 	SelectedDie int       `json:"selectedDie"`
 	WizardPower PowerType `json:"wizardPower"`
+	UsePower    bool      `json:"usePower"`
 }
 
 type GameState struct {
@@ -191,17 +192,27 @@ func (gr *GameRoom) handleDicesSelection(dice *[]Badge, p1, p2 *Player) {
 	if p1.BonusCard.IsBonusCompleted(PWRPickTwoDice) {
 		p1.SendGameState(dice, "Do you want to use your power, so you can select 2 dice?", GTUseMagicPowers)
 		p2.SendGameState(dice, fmt.Sprintf("Waiting for player %s to decide if they want to use a wizard power", p1.Name), GTWaitingPlayerTurn)
+		payload, err := p1.GetInput()
+		if err != nil {
+			log.Println(err)
+			p1.Connected = false
+			return
+		}
 
-		gr.handleDiceChoice(dice, p1, p2)
-		gr.handleDiceChoice(dice, p1, p2)
-		gr.handleDiceChoice(dice, p2, p1)
-		gr.handleDiceChoice(dice, p2, p1)
-	} else {
-		gr.handleDiceChoice(dice, p1, p2)
-		gr.handleDiceChoice(dice, p2, p1)
-		gr.handleDiceChoice(dice, p2, p1)
-		gr.handleDiceChoice(dice, p1, p2)
+		if payload.UsePower {
+			gr.handleDiceChoice(dice, p1, p2)
+			gr.handleDiceChoice(dice, p1, p2)
+			gr.handleDiceChoice(dice, p2, p1)
+			gr.handleDiceChoice(dice, p2, p1)
+			return
+		}
 	}
+
+	gr.handleDiceChoice(dice, p1, p2)
+	gr.handleDiceChoice(dice, p2, p1)
+	gr.handleDiceChoice(dice, p2, p1)
+	gr.handleDiceChoice(dice, p1, p2)
+
 }
 
 func (gr *GameRoom) handleDiceChoice(d *[]Badge, p *Player, p2 *Player) {
