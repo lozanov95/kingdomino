@@ -2,6 +2,8 @@ package server
 
 import (
 	"log"
+	"net/http"
+	"strconv"
 	"sync"
 
 	"github.com/lozanov95/kingdomino/backend/cmd/game"
@@ -68,4 +70,18 @@ func (s *Server) CloseRoom(id string) {
 	delete(s.GameRooms, id)
 	log.Println("closed room", id)
 	log.Println("active rooms", len(s.GameRooms))
+}
+
+func (s *Server) ListenAndServe(port int) error {
+	go func() {
+		for id := range s.CloseChan {
+			s.CloseRoom(id)
+		}
+	}()
+
+	http.Handle("/join", websocket.Handler(s.HandleJoinRoom))
+	http.Handle("/", http.FileServer(http.Dir("./ui")))
+
+	log.Println("Serving on", port)
+	return http.ListenAndServe(":"+strconv.Itoa(port), nil)
 }
