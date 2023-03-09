@@ -71,6 +71,12 @@ func (b *Bonus) Increment() {
 	}
 }
 
+func (bm *BonusMap) MarkUsed(pt PowerType) {
+	bonus := (*bm)[getBonusBadge(pt)]
+	bonus.Eligible = false
+	(*bm)[getBonusBadge(pt)] = bonus
+}
+
 func (bm *BonusMap) MarshalJSON() ([]byte, error) {
 	var sb strings.Builder
 	sb.WriteString("[")

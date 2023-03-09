@@ -200,6 +200,7 @@ func (gr *GameRoom) handleDicesSelection(dice *[]Badge, p1, p2 *Player) {
 		}
 
 		if payload.UsePower {
+			p1.BonusCard.MarkUsed(PWRPickTwoDice)
 			gr.handleDiceChoice(dice, p1, p2)
 			gr.handleDiceChoice(dice, p1, p2)
 			gr.handleDiceChoice(dice, p2, p1)
