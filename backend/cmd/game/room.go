@@ -38,6 +38,21 @@ type GameRoom struct {
 
 type GameTurn int64
 
+// type Playerable interface {
+// 	GetInput() (ClientPayload, error)
+// 	SendGameState(*[]Badge, string, GameTurn)
+// 	UsePower(PowerType)
+// 	Disconnect()
+// 	IsBonusCompleted(pt PowerType) bool
+// 	GetName() string
+// 	SendMessage(string)
+// 	AddDice(Badge)
+// 	SendDice(*[]Badge, string)
+// 	AddBonus(b Badge)
+// 	SetBonusIneligible(b Badge)
+// 	IsBonusEligible(b Badge) bool
+// }
+
 var (
 	ErrGameRoomFull = errors.New("the game room is full")
 )
@@ -189,18 +204,18 @@ func (gr *GameRoom) handleDicesSelection(dice *[]Badge, p1, p2 *Player) {
 		player.ClearDice()
 	}
 
-	if p1.BonusCard.IsBonusCompleted(PWRPickTwoDice) {
+	if p1.IsBonusCompleted(PWRPickTwoDice) {
 		p1.SendGameState(dice, "Do you want to use your power, so you can select 2 dice?", GTUseMagicPowers)
-		p2.SendGameState(dice, fmt.Sprintf("Waiting for player %s to decide if they want to use a wizard power", p1.Name), GTWaitingPlayerTurn)
+		p2.SendGameState(dice, "Waiting for your opponent to decide if they want to use a wizard power", GTWaitingPlayerTurn)
 		payload, err := p1.GetInput()
 		if err != nil {
 			log.Println(err)
-			p1.Connected = false
+			p1.Disconnect()
 			return
 		}
-
+		log.Println(payload.UsePower)
 		if payload.UsePower {
-			p1.BonusCard.MarkUsed(PWRPickTwoDice)
+			p1.UsePower(PWRPickTwoDice)
 			gr.handleDiceChoice(dice, p1, p2)
 			gr.handleDiceChoice(dice, p1, p2)
 			gr.handleDiceChoice(dice, p2, p1)
@@ -216,13 +231,13 @@ func (gr *GameRoom) handleDicesSelection(dice *[]Badge, p1, p2 *Player) {
 
 }
 
-func (gr *GameRoom) handleDiceChoice(d *[]Badge, p *Player, p2 *Player) {
+func (gr *GameRoom) handleDiceChoice(d *[]Badge, p, p2 *Player) {
 	for {
 		for _, player := range gr.Players {
 			if !player.Connected {
 				return
 			}
-			player.SendGameState(d, fmt.Sprintf("Player %s's turn to pick dice", p.Name), GTPickDice)
+			player.SendGameState(d, fmt.Sprintf("Player %s's turn to pick dice", p.GetName()), GTPickDice)
 		}
 
 		payload, err := p.GetInput()
@@ -263,14 +278,13 @@ func (gr *GameRoom) handleDiceChoice(d *[]Badge, p *Player, p2 *Player) {
 			}
 		}
 
-		p.AddDice((*d)[choice])
-		p.BonusCard.AddBonus((*d)[choice])
-		dName := (*d)[choice].Name
-		if !(*p.BonusCard)[dName].Eligible {
-			p2Bonus := (*p2.BonusCard)[dName]
-			p2Bonus.Eligible = false
-			(*p2.BonusCard)[dName] = p2Bonus
+		selectedDie := (*d)[choice]
+		p.AddDice(selectedDie)
+		p.AddBonus(selectedDie)
+		if p.IsBonusEligible(selectedDie) {
+			p2.SetBonusIneligible(selectedDie)
 		}
+
 		(*d)[choice].Name = EMPTY
 		(*d)[choice].Nobles = 0
 

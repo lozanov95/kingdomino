@@ -7,8 +7,6 @@ import (
 	"log"
 	"sync"
 	"time"
-
-	"golang.org/x/net/websocket"
 )
 
 var (
@@ -23,7 +21,7 @@ type DiePos struct {
 type Player struct {
 	Id        int64  `json:"id"`
 	Name      string `json:"name"`
-	Conn      *websocket.Conn
+	Conn      Connectionable
 	Board     *Board
 	BonusCard *BonusMap
 	Connected bool
@@ -33,8 +31,15 @@ type Player struct {
 	mut       sync.RWMutex
 }
 
+type Connectionable interface {
+	Read([]byte) (int, error)
+	Write([]byte) (int, error)
+	SetReadDeadline(time.Time) error
+	Close() error
+}
+
 // Creates a new player instance and returns a pointer to it.
-func NewPlayer(conn *websocket.Conn) *Player {
+func NewPlayer(conn Connectionable) *Player {
 
 	player := &Player{
 		Id:        time.Now().UnixNano(),
@@ -264,4 +269,34 @@ func (p *Player) CalculateScore() int {
 	}
 
 	return points
+}
+
+func (p *Player) UsePower(pt PowerType) {
+	p.BonusCard.MarkUsed(pt)
+}
+
+func (p *Player) Disconnect() {
+	p.Connected = false
+}
+
+func (p *Player) IsBonusCompleted(pt PowerType) bool {
+	return p.BonusCard.IsBonusCompleted(PWRPickTwoDice)
+}
+
+func (p *Player) GetName() string {
+	return p.Name
+}
+
+func (p *Player) AddBonus(b Badge) {
+	p.BonusCard.AddBonus(b)
+}
+
+func (p *Player) SetBonusIneligible(b Badge) {
+	bonus := (*p.BonusCard)[b.Name]
+	bonus.Eligible = false
+	(*p.BonusCard)[b.Name] = bonus
+}
+
+func (p *Player) IsBonusEligible(b Badge) bool {
+	return (*p.BonusCard)[b.Name].Eligible
 }
