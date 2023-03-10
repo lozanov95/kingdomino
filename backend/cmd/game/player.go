@@ -280,7 +280,7 @@ func (p *Player) Disconnect() {
 }
 
 func (p *Player) IsBonusCompleted(pt PowerType) bool {
-	return p.BonusCard.IsBonusCompleted(PWRPickTwoDice)
+	return p.BonusCard.IsBonusCompleted(pt)
 }
 
 func (p *Player) GetName() string {
