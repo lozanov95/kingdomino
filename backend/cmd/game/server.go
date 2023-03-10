@@ -1,4 +1,4 @@
-package server
+package game
 
 import (
 	"log"
@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/lozanov95/kingdomino/backend/cmd/game"
 	"golang.org/x/net/websocket"
 )
 
@@ -18,7 +17,7 @@ type ChatConn struct {
 type Server struct {
 	conns     map[int64]*ChatConn
 	mut       sync.RWMutex
-	GameRooms map[string]*game.GameRoom
+	GameRooms map[string]*GameRoom
 	CloseChan chan string
 }
 
@@ -26,7 +25,7 @@ func NewServer() *Server {
 	s := &Server{
 		conns:     make(map[int64]*ChatConn),
 		mut:       sync.RWMutex{},
-		GameRooms: map[string]*game.GameRoom{},
+		GameRooms: map[string]*GameRoom{},
 		CloseChan: make(chan string, 10),
 	}
 
@@ -34,7 +33,7 @@ func NewServer() *Server {
 }
 
 func (s *Server) HandleJoinRoom(ws *websocket.Conn) {
-	player := game.NewPlayer(ws)
+	player := NewPlayer(ws)
 	msg, err := player.GetInput()
 	if err != nil {
 		log.Println("failed to get player input", err)
@@ -45,7 +44,7 @@ func (s *Server) HandleJoinRoom(ws *websocket.Conn) {
 	s.joinRoom(player)
 }
 
-func (s *Server) joinRoom(p *game.Player) {
+func (s *Server) joinRoom(p *Player) {
 	s.mut.Lock()
 	joined := false
 	for _, room := range s.GameRooms {
@@ -56,7 +55,7 @@ func (s *Server) joinRoom(p *game.Player) {
 		}
 	}
 	if !joined {
-		room := game.NewGameRoom(s.CloseChan)
+		room := NewGameRoom(s.CloseChan)
 		room.Join(p)
 		s.GameRooms[room.ID] = room
 	}
