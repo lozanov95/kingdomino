@@ -131,7 +131,7 @@ func getBonusBadge(pt PowerType) BadgeName {
 	case PWRPickTwoDice:
 		return DOUBLEDOT
 	case PWRSelectDieSideOfChoice:
-		return DOUBLEDOT
+		return DOUBLELINE
 	case PWRDomainPoints:
 		return FILLED
 	case PWRAddNoble:
