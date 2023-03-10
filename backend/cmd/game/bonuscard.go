@@ -141,6 +141,25 @@ func getBonusBadge(pt PowerType) BadgeName {
 	}
 }
 
+func getBonusType(b BadgeName) PowerType {
+	switch b {
+	case DOT:
+		return PWRNoConnectionRules
+	case LINE:
+		return PWRSeparateDominos
+	case DOUBLEDOT:
+		return PWRPickTwoDice
+	case DOUBLELINE:
+		return PWRSelectDieSideOfChoice
+	case FILLED:
+		return PWRDomainPoints
+	case CHECKED:
+		return PWRAddNoble
+	default:
+		return PWRNoPower
+	}
+}
+
 // Returns if the bonus for a specific badge is completed
 func (bm *BonusMap) IsBonusCompleted(pt PowerType) bool {
 	bonus := (*bm)[getBonusBadge(pt)]
