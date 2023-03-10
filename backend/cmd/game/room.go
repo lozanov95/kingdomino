@@ -198,7 +198,7 @@ func (gr *GameRoom) handleDicesSelection(dice *[]Badge, p1, p2 *Player) {
 			p1.Disconnect()
 			return
 		}
-		log.Println(payload.UsePower)
+
 		if payload.UsePower {
 			p1.UsePower(PWRPickTwoDice)
 			gr.handleDiceChoice(dice, p1, p2)
