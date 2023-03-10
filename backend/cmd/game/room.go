@@ -281,7 +281,7 @@ func (gr *GameRoom) handleDiceChoice(d *[]Badge, p, p2 *Player) {
 		selectedDie := (*d)[choice]
 		p.AddDice(selectedDie)
 		p.AddBonus(selectedDie)
-		if p.IsBonusEligible(selectedDie) {
+		if p.IsBonusCompleted(getBonusType(selectedDie.Name)) {
 			p2.SetBonusIneligible(selectedDie)
 		}
 
