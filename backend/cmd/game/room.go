@@ -38,21 +38,6 @@ type GameRoom struct {
 
 type GameTurn int64
 
-// type Playerable interface {
-// 	GetInput() (ClientPayload, error)
-// 	SendGameState(*[]Badge, string, GameTurn)
-// 	UsePower(PowerType)
-// 	Disconnect()
-// 	IsBonusCompleted(pt PowerType) bool
-// 	GetName() string
-// 	SendMessage(string)
-// 	AddDice(Badge)
-// 	SendDice(*[]Badge, string)
-// 	AddBonus(b Badge)
-// 	SetBonusIneligible(b Badge)
-// 	IsBonusEligible(b Badge) bool
-// }
-
 var (
 	ErrGameRoomFull = errors.New("the game room is full")
 )
