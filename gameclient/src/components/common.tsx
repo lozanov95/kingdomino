@@ -28,6 +28,7 @@ export type GameState = {
     board: Domino[][],
     dices: Domino[],
     selectedDice: Domino[],
+    playerPower: PlayerPower,
 }
 
 export type ServerPayload = {
@@ -37,6 +38,7 @@ export type ServerPayload = {
         cell: number,
     },
     selectedDie?: number,
+    playerPower?: PlayerPower,
 }
 
 export enum Badge {
@@ -49,6 +51,22 @@ export enum Badge {
     FILLED,
     CHECKED,
     QUESTIONMARK,
+}
+
+export enum GameTurn {
+    GTWaitingForPlayers = 0,
+    GTPickDice,
+    GTPlaceDomino,
+    GTUseMagicPowers,
+    GTWaitingPlayerTurn,
+    GTGameOver,
+}
+
+export type PlayerPower = {
+    type: number,
+    description: string,
+    use: boolean,
+    confirmed: boolean,
 }
 
 export function getBadgeIcon(id: number) {
