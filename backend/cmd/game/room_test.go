@@ -69,7 +69,7 @@ func TestJoinRoom(t *testing.T) {
 
 func TestHandleDiceSelection(t *testing.T) {
 	p1 := NewMockPlayer([]ClientPayload{
-		{UsePower: true}, {SelectedDie: 0}, {SelectedDie: 1},
+		{PlayerPower: PlayerPower{Use: true, Confirmed: true}}, {SelectedDie: 0}, {SelectedDie: 1},
 	})
 	p2 := NewMockPlayer([]ClientPayload{
 		{SelectedDie: 1}, {SelectedDie: 3}, {SelectedDie: 2},

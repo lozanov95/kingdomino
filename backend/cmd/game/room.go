@@ -10,11 +10,10 @@ import (
 )
 
 type ClientPayload struct {
-	Name        string    `json:"name"`
-	DiePos      DiePos    `json:"boardPosition"`
-	SelectedDie int       `json:"selectedDie"`
-	WizardPower PowerType `json:"wizardPower"`
-	UsePower    bool      `json:"usePower"`
+	Name        string `json:"name"`
+	DiePos      DiePos `json:"boardPosition"`
+	SelectedDie int    `json:"selectedDie"`
+	PlayerPower `json:"playerPower"`
 }
 
 type GameState struct {
@@ -199,7 +198,7 @@ func (gr *GameRoom) handleDicesSelection(dice *[]Badge, p1, p2 *Player) {
 			return
 		}
 
-		if payload.UsePower {
+		if payload.PlayerPower.Use {
 			p1.UsePower(PWRPickTwoDice)
 			gr.handleDiceChoice(dice, p1, p2)
 			gr.handleDiceChoice(dice, p1, p2)
