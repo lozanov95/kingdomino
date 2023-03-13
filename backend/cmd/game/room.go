@@ -153,8 +153,8 @@ func (gr *GameRoom) roomLoop(closeChan chan<- string) {
 func (gr *GameRoom) shouldLoopContinue() bool {
 	return gr.Players[0].Connected &&
 		gr.Players[1].Connected &&
-		(gr.Players[0].IsValidPlacementPossible() ||
-			gr.Players[1].IsValidPlacementPossible())
+		(gr.Players[0].IsAnyPlacementPossible() ||
+			gr.Players[1].IsAnyPlacementPossible())
 }
 
 // Handles the main game loop - selecting dice and placing dominos
