@@ -12,6 +12,20 @@ type Bonus struct {
 	Eligible       bool `json:"eligible"`
 }
 
+type PlayerPower struct {
+	// The power type
+	Type PowerType `json:"type"`
+
+	// User friendly description of the power
+	Description string `json:"description"`
+
+	// Does the player wants to use the power
+	Use bool `json:"use"`
+
+	// Does the player answered the use power prompt
+	Confirmed bool `json:"confirmed"`
+}
+
 type BonusMap map[BadgeName]Bonus
 type PowerType int64
 
@@ -141,6 +155,7 @@ func getBonusBadge(pt PowerType) BadgeName {
 	}
 }
 
+// Returns the PowerType for the given badge
 func getBonusType(b BadgeName) PowerType {
 	switch b {
 	case DOT:
