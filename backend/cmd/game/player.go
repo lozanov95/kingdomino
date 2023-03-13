@@ -277,6 +277,15 @@ func (p *Player) IsValidPlacementPossible() bool {
 	return false
 }
 
+// Checks if there is a way to place a domino, either with the separate bonus (if it is completed) or not
+func (p *Player) IsAnyPlacementPossible() bool {
+	if p.IsBonusCompleted(PWRSeparateDominos) && p.IsThereAFreeSpot() {
+		return true
+	}
+
+	return p.IsValidPlacementPossible()
+}
+
 func (p *Player) CalculateScore() int {
 	badges := []BadgeName{DOT, LINE, DOUBLEDOT, DOUBLELINE, CHECKED, FILLED}
 	pChan := make(chan int, 10)
