@@ -174,9 +174,32 @@ func (gr *GameRoom) gameLoop(dice *[]Badge) {
 					}
 				}()
 				defer wg.Done()
-				if player.IsValidPlacementPossible() {
+				if !player.IsBonusCompleted(PWRSeparateDominos) && player.IsValidPlacementPossible() {
 					player.PlaceDomino(dice)
+					return
 				}
+
+				if !player.IsBonusCompleted(PWRSeparateDominos) || !player.IsThereAFreeSpot() {
+					return
+				}
+
+				player.SendPlayerPowerPrompt(nil,
+					PlayerPower{
+						Type:        PWRSeparateDominos,
+						Description: "You can separate your dice to fill in your map.Each die must respect the Connection Rules",
+					})
+				payload, err := player.GetInput()
+				if err != nil {
+					log.Println(err)
+					player.Disconnect()
+					return
+				}
+				if payload.Use && player.IsThereAFreeSpot() {
+					player.UsePower(PWRSeparateDominos)
+					player.PlaceSeparatedDomino(dice)
+					return
+				}
+
 			}(player)
 		}
 
