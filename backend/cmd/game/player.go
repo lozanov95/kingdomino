@@ -149,6 +149,10 @@ func (p *Player) SendGameState(d *[]Badge, m string, tt GameTurn) {
 	}
 }
 
+func (p *Player) SendPlayerPowerPrompt(pp PlayerPower) {
+	p.GameState <- GameState{PlayerPower: pp}
+}
+
 func (p *Player) AddDice(d Badge) {
 	p.mut.Lock()
 	defer p.mut.Unlock()
