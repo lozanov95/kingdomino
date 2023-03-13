@@ -9,13 +9,22 @@ import (
 	"time"
 )
 
+// Represents the payload that the client sends to the server
 type ClientPayload struct {
-	Name        string `json:"name"`
-	DiePos      DiePos `json:"boardPosition"`
-	SelectedDie int    `json:"selectedDie"`
+	// Name of the player
+	Name string `json:"name"`
+
+	// The placement position of the die
+	DiePos DiePos `json:"boardPosition"`
+
+	// The die that the user have selected
+	SelectedDie int `json:"selectedDie"`
+
+	// Response containing the user's choice to use/ not use the power
 	PlayerPower `json:"playerPower"`
 }
 
+// Represents the Game State that is being send to the player
 type GameState struct {
 	// The room ID
 	ID int64 `json:"id"`
