@@ -189,7 +189,7 @@ func (gr *GameRoom) handleDicesSelection(dice *[]Badge, p1, p2 *Player) {
 	}
 
 	if p1.IsBonusCompleted(PWRPickTwoDice) {
-		p1.SendPlayerPowerPrompt(PlayerPower{Type: PWRPickTwoDice, Description: "Pick two dices immediately."})
+		p1.SendPlayerPowerPrompt(dice, PlayerPower{Type: PWRPickTwoDice, Description: "Pick two dices immediately."})
 		p2.SendGameState(dice, "Waiting for your opponent to decide if they want to use a wizard power", GTWaitingPlayerTurn)
 		payload, err := p1.GetInput()
 		if err != nil {
