@@ -14,8 +14,17 @@ type BoardResult struct {
 }
 
 type BoardPlacementInput struct {
+	// Provide the previous placement position if this will be the 2nd die placement
 	PrevPosition DiePos
-	Board        *Board
+
+	// Pointer to the user's board
+	Board *Board
+
+	// Allows the user to place dice separately
+	SeparateDice bool
+
+	// Follow Connection Rules
+	IgnoreConnectionRules bool
 }
 
 func (br *BoardResult) Add(newBR BoardResult) {
@@ -108,6 +117,7 @@ func (b *Board) isCellOccupied(row, cell int) bool {
 	return b[row][cell].Name != EMPTY
 }
 
+// Calculate the points for a given badge
 func (b *Board) CalculateBadgePoints(bt BadgeName) int {
 	points := 0
 	visited := make(map[DiePos]bool)
@@ -172,6 +182,7 @@ func (b Board) findNeighbour(dp DiePos, bt BadgeName, visited map[DiePos]bool) B
 	return br
 }
 
+// Checks if the cell has a specific badge
 func (b Board) isCellMatching(dp DiePos, bn BadgeName) bool {
 	if dp.Row < 0 || dp.Row >= len(b) || dp.Cell < 0 || dp.Cell >= len(b[0]) {
 		return false
@@ -180,7 +191,14 @@ func (b Board) isCellMatching(dp DiePos, bn BadgeName) bool {
 	return bn == b[dp.Row][dp.Cell].Name
 }
 
+// Checks if you can place a domino.
+// The selected cell must be free. If this is the 1st badge of the domino, there must be a free neighbouring cell
+// If this is the 2nd badge, the position must be free and it should be a neighbour of the first domino
 func (bpi *BoardPlacementInput) IsValid(newPos *DiePos) bool {
+	if bpi.SeparateDice {
+		return bpi.Board[newPos.Row][newPos.Cell].Name == EMPTY
+	}
+
 	emptyPos := DiePos{}
 	if bpi.PrevPosition == emptyPos {
 		return bpi.Board[newPos.Row][newPos.Cell].Name == EMPTY && bpi.Board.IsThereFreeNeighbourCell(newPos.Row, newPos.Cell)
