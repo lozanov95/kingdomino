@@ -56,5 +56,69 @@ func TestCalculatePoints(t *testing.T) {
 	if score != 55 {
 		t.Errorf("expected %d, got %d", 55, score)
 	}
+}
 
+func TestPlaceDomino(t *testing.T) {
+	player := NewMockPlayer([]ClientPayload{
+		{SelectedDie: 0}, {DiePos: DiePos{Cell: 3, Row: 3}},
+		{SelectedDie: 0}, {DiePos: DiePos{Cell: 4, Row: 3}},
+	})
+	dice := []Badge{{Name: DOT}, {Name: FILLED}}
+	player.Dices = dice
+	player.PlaceDomino(&dice)
+
+	row, cell := 3, 3
+	if player.Board[row][cell].Name != DOT {
+		t.Errorf("Expected board[%d][%d] to be %s, got %s", row, cell, DOT.String(), player.Board[row][cell].Name.String())
+	}
+	row, cell = 3, 4
+	if player.Board[row][cell].Name != FILLED {
+		t.Errorf("Expected board[%d][%d] to be %s, got %s", row, cell, FILLED.String(), player.Board[row][cell].Name.String())
+	}
+}
+
+func TestPlaceDominoInvalidInput(t *testing.T) {
+	player := NewMockPlayer([]ClientPayload{
+		{SelectedDie: 0}, {DiePos: DiePos{Cell: 0, Row: 0}},
+		{SelectedDie: 0}, {DiePos: DiePos{Cell: 3, Row: 3}},
+		{SelectedDie: 0}, {DiePos: DiePos{Cell: 4, Row: 3}},
+	})
+	dice := []Badge{{Name: DOT}, {Name: FILLED}}
+	player.Dices = dice
+	player.PlaceDomino(&dice)
+
+	row, cell := 3, 3
+	if player.Board[row][cell].Name != DOT {
+		t.Errorf("Expected board[%d][%d] to be %s, got %s", row, cell, DOT.String(), player.Board[row][cell].Name.String())
+	}
+	row, cell = 3, 4
+	if player.Board[row][cell].Name != FILLED {
+		t.Errorf("Expected board[%d][%d] to be %s, got %s", row, cell, FILLED.String(), player.Board[row][cell].Name.String())
+	}
+}
+
+func TestSeparatedDomino(t *testing.T) {
+	player := NewMockPlayer([]ClientPayload{
+		{SelectedDie: 0}, {DiePos: DiePos{Row: 0, Cell: 0}},
+		{SelectedDie: 0}, {DiePos: DiePos{Row: 4, Cell: 6}},
+	})
+	player.Board = &Board{
+		{{Name: EMPTY}, {Name: LINE}, {Name: LINE}, {Name: DOT}, {Name: DOT}, {Name: DOT}, {Name: DOT}},
+		{{Name: DOT}, {Name: LINE}, {Name: LINE}, {Name: DOT}, {Name: DOT}, {Name: DOT}, {Name: DOT}},
+		{{Name: DOT}, {Name: EMPTY}, {Name: DOT}, {Name: CASTLE}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}},
+		{{Name: DOT}, {Name: LINE}, {Name: LINE}, {Name: DOT}, {Name: DOT}, {Name: DOT}, {Name: DOT}},
+		{{Name: DOT}, {Name: LINE}, {Name: LINE}, {Name: DOT}, {Name: DOT}, {Name: DOT}, {Name: EMPTY}},
+	}
+	dice := []Badge{{Name: DOT}, {Name: FILLED}}
+	player.Dices = dice
+	player.PlaceSeparatedDomino(&dice)
+	row, cell := 0, 0
+	if player.Board[row][cell].Name != DOT {
+		t.Errorf("Expected board[%d][%d] to be %s, got %s", row, cell, DOT.String(), player.Board[row][cell].Name.String())
+	}
+
+	row, cell = 4, 6
+	if player.Board[row][cell].Name != FILLED {
+		t.Errorf("Expected board[%d][%d] to be %s, got %s", row, cell, FILLED.String(), player.Board[row][cell].Name.String())
+	}
 }
