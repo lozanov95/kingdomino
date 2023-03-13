@@ -1,8 +1,9 @@
 import { useState, MouseEvent, memo } from "react"
 import BonusBoard from "./bonusboard"
-import { Badge, Bonus, Domino, GameState, ServerPayload } from "./common"
+import { Bonus, Domino, GameState, ServerPayload, GameTurn, PlayerPower } from "./common"
 import { Board } from "./board"
 import { DiceSection } from "./dice"
+import { PowerPrompt } from "./powerprompt"
 
 function Game() {
     const [gameState, setGameState] = useState(WebSocket.CLOSED)
@@ -13,7 +14,18 @@ function Game() {
     const [bonusCard, setBonusCard] = useState<Bonus[] | null>(null)
     const [dices, setDices] = useState<Domino[] | null>(null)
     const [selectedDice, setSelectedDice] = useState<Domino[] | null>(null)
+    const [gameTurn, setGameTurn] = useState<GameTurn>(0)
+    const [power, setPower] = useState<PlayerPower>({
+        type: 0,
+        description: "",
+        use: false,
+        confirmed: false,
+    })
 
+
+    function SendServerData(payload: ServerPayload) {
+        wsConn?.send(JSON.stringify(payload))
+    }
 
     function clearGameState(ws: WebSocket) {
         setGameState(ws.readyState)
@@ -53,12 +65,13 @@ function Game() {
         ws.onmessage = ({ data }: { data: string }) => {
             const d: string = data
             if (d.length > 0) {
-                const { board, bonusCard, message, dices, selectedDice }: GameState = JSON.parse(d)
-                board !== null ? setGameBoard(board) : ""
-                bonusCard !== null ? setBonusCard(bonusCard) : ""
-                message !== "" ? setStatusMsg(message) : ""
-                dices !== null ? setDices(dices) : ""
+                const { board, bonusCard, message, dices, selectedDice, playerPower }: GameState = JSON.parse(d)
+                board !== null && setGameBoard(board)
+                bonusCard !== null && setBonusCard(bonusCard)
+                message !== "" && setStatusMsg(message)
+                dices !== null && setDices(dices)
                 setSelectedDice(selectedDice)
+                setPower(playerPower)
             }
         }
     }
@@ -68,7 +81,7 @@ function Game() {
             selectedDie: Number(ev.currentTarget.id)
         }
 
-        wsConn?.send(JSON.stringify(payload))
+        SendServerData(payload)
     }
 
     function handleBoardClick(ev: MouseEvent<HTMLElement>) {
@@ -78,13 +91,20 @@ function Game() {
                 cell: Number(ev.currentTarget.id)
             }
         }
-        wsConn?.send(JSON.stringify(payload))
+        SendServerData(payload)
+    }
+
+    function handlePowerChoice(use: boolean) {
+        const pwr: PlayerPower = { ...power, use: use, confirmed: true }
+        setPower(pwr)
+        SendServerData({ playerPower: pwr })
     }
 
     return (
         <>
             <div className="game">
                 {statusMsg !== "" ? <StatusPane message={statusMsg} /> : ""}
+                {power.type !== 0 && !power.confirmed && <PowerPrompt handlePowerChoice={handlePowerChoice} power={power} />}
                 {gameState === WebSocket.OPEN && gameBoard !== undefined ? <>
                     <Board board={gameBoard} handleOnClick={handleBoardClick} />
                     <BonusBoard bonusCard={bonusCard} />
