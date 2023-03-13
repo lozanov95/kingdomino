@@ -17,13 +17,28 @@ type ClientPayload struct {
 }
 
 type GameState struct {
-	ID            int64     `json:"id"`
-	Message       string    `json:"message"`
-	Board         *Board    `json:"board"`
-	BonusCard     *BonusMap `json:"bonusCard"`
-	Dices         *[]Badge  `json:"dices"`
-	GameTurn      GameTurn  `json:"gameTurn"`
-	PlayerPower   `json:"playerPower"`
+	// The room ID
+	ID int64 `json:"id"`
+
+	// Message to the player
+	Message string `json:"message"`
+
+	// Player's domino board
+	Board *Board `json:"board"`
+
+	// The bonus card that keeps track of wizard powers
+	BonusCard *BonusMap `json:"bonusCard"`
+
+	// The available dice for selection
+	Dices *[]Badge `json:"dices"`
+
+	// The game turn
+	GameTurn GameTurn `json:"gameTurn"`
+
+	// The available wizard power to the player
+	PlayerPower `json:"playerPower"`
+
+	// The list of currently selected dice be the player
 	SelectedDices []Badge `json:"selectedDice"`
 }
 
@@ -183,6 +198,7 @@ func (gr *GameRoom) gameLoop(dice *[]Badge) {
 	}
 }
 
+// Handles the situation where two players take turns to choose a die
 func (gr *GameRoom) handleDicesSelection(dice *[]Badge, p1, p2 *Player) {
 	for _, player := range gr.Players {
 		player.ClearDice()
@@ -215,6 +231,7 @@ func (gr *GameRoom) handleDicesSelection(dice *[]Badge, p1, p2 *Player) {
 
 }
 
+// Handles the situation of a single player choosing a die
 func (gr *GameRoom) handleDiceChoice(d *[]Badge, p, p2 *Player) {
 	for {
 		for _, player := range gr.Players {
