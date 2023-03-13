@@ -165,8 +165,8 @@ func (p *Player) ClearDice() {
 	p.Dices = make([]Badge, 0)
 }
 
+// Places domino on the field, following the placement rules
 func (p *Player) PlaceDomino(d *[]Badge) {
-
 	p.SendGameState(d, "Select the dice that you want to place", GTPlaceDomino)
 	choice := p.getSelectedDominoChoice()
 	prevPos := p.placeOnBoard(choice, BoardPlacementInput{Board: p.Board})
@@ -175,6 +175,19 @@ func (p *Player) PlaceDomino(d *[]Badge) {
 	p.SendMessage("Select the dice that you want to place")
 	choice = p.getSelectedDominoChoice()
 	p.placeOnBoard(choice, BoardPlacementInput{PrevPosition: prevPos, Board: p.Board})
+	p.SendGameState(d, "Waiting for all players to complete their turns.", GTPlaceDomino)
+}
+
+// Allows the user to place 2 separate dominos
+func (p *Player) PlaceSeparatedDomino(d *[]Badge) {
+	p.SendGameState(d, "Select the dice that you want to place", GTPlaceDomino)
+	choice := p.getSelectedDominoChoice()
+	p.placeOnBoard(choice, BoardPlacementInput{Board: p.Board, SeparateDice: true})
+	p.SendGameState(d, "", GTPlaceDomino)
+
+	p.SendMessage("Select the dice that you want to place")
+	choice = p.getSelectedDominoChoice()
+	p.placeOnBoard(choice, BoardPlacementInput{Board: p.Board, SeparateDice: true})
 	p.SendGameState(d, "Waiting for all players to complete their turns.", GTPlaceDomino)
 }
 
@@ -237,6 +250,19 @@ func (p *Player) getBoardPlacementInput(bpi BoardPlacementInput) (DiePos, error)
 		return msg.DiePos, nil
 	}
 	return DiePos{}, io.EOF
+}
+
+// Returns TRUE if there is a free spot
+func (p *Player) IsThereAFreeSpot() bool {
+	for i := 0; i < len(p.Board); i++ {
+		for j := 0; j < len(p.Board[i]); j++ {
+			if p.Board[i][j].Name == EMPTY {
+				return true
+			}
+		}
+	}
+
+	return false
 }
 
 func (p *Player) IsValidPlacementPossible() bool {
