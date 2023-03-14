@@ -318,6 +318,12 @@ func (p *Player) Disconnect() {
 	p.Connected = false
 }
 
+// Returns true if the player have collected the required amount badges and haven't still used the bonus
+func (p *Player) IsBonusUsable(pt PowerType) bool {
+	return p.BonusCard.IsBonusUsable(pt)
+}
+
+// Does the player have collected the required amount of badges to unlock the specific bonus
 func (p *Player) IsBonusCompleted(pt PowerType) bool {
 	return p.BonusCard.IsBonusCompleted(pt)
 }

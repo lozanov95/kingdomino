@@ -10,6 +10,7 @@ type Bonus struct {
 	RequiredChecks int  `json:"requiredChecks"`
 	CurrentChecks  int  `json:"currentChecks"`
 	Eligible       bool `json:"eligible"`
+	Used           bool `json:"used"`
 }
 
 type PlayerPower struct {
@@ -71,8 +72,13 @@ func NewBonusMap() *BonusMap {
 	}
 }
 
+// Returns true if you have collected enough badges
 func (b *Bonus) IsCompleted() bool {
 	return b.CurrentChecks == b.RequiredChecks
+}
+
+func (b *Bonus) IsUsable() bool {
+	return b.IsCompleted() && !b.Used
 }
 
 func (b *Bonus) Increment() {
@@ -87,7 +93,7 @@ func (b *Bonus) Increment() {
 
 func (bm *BonusMap) MarkUsed(pt PowerType) {
 	bonus := (*bm)[getBonusBadge(pt)]
-	bonus.Eligible = false
+	bonus.Used = true
 	(*bm)[getBonusBadge(pt)] = bonus
 }
 
@@ -179,4 +185,10 @@ func getBonusType(b BadgeName) PowerType {
 func (bm *BonusMap) IsBonusCompleted(pt PowerType) bool {
 	bonus := (*bm)[getBonusBadge(pt)]
 	return bonus.IsCompleted()
+}
+
+// Returns if the bonus is completed and haven't been used yet
+func (bm *BonusMap) IsBonusUsable(pt PowerType) bool {
+	bonus := (*bm)[getBonusBadge(pt)]
+	return bonus.IsUsable()
 }

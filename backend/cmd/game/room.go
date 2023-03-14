@@ -174,19 +174,19 @@ func (gr *GameRoom) gameLoop(dice *[]Badge) {
 					}
 				}()
 				defer wg.Done()
-				if !player.IsBonusCompleted(PWRSeparateDominos) && player.IsValidPlacementPossible() {
+				if !player.IsBonusUsable(PWRSeparateDominos) && player.IsValidPlacementPossible() {
 					player.PlaceDomino(dice)
 					return
 				}
 
-				if !player.IsBonusCompleted(PWRSeparateDominos) || !player.IsThereAFreeSpot() {
+				if !player.IsBonusUsable(PWRSeparateDominos) || !player.IsThereAFreeSpot() {
 					return
 				}
 
-				player.SendPlayerPowerPrompt(nil,
+				player.SendPlayerPowerPrompt(dice,
 					PlayerPower{
 						Type:        PWRSeparateDominos,
-						Description: "You can separate your dice to fill in your map.Each die must respect the Connection Rules",
+						Description: "You can separate your dice to fill in your map. Each die must respect the Connection Rules",
 					})
 				payload, err := player.GetInput()
 				if err != nil {
@@ -236,7 +236,7 @@ func (gr *GameRoom) handleDicesSelection(dice *[]Badge, p1, p2 *Player) {
 		player.ClearDice()
 	}
 
-	if p1.IsBonusCompleted(PWRPickTwoDice) {
+	if p1.IsBonusUsable(PWRPickTwoDice) {
 		p1.SendPlayerPowerPrompt(dice, PlayerPower{Type: PWRPickTwoDice, Description: "Pick two dices immediately."})
 		p2.SendGameState(dice, "Waiting for your opponent to decide if they want to use a wizard power", GTWaitingPlayerTurn)
 		payload, err := p1.GetInput()
