@@ -171,12 +171,7 @@ func (gr *GameRoom) handleDicesSelection(dice *[]Badge, p1, p2 *Player) {
 	if p1.IsBonusUsable(PWRPickTwoDice) {
 		p1.SendPlayerPowerPrompt(dice, PlayerPower{Type: PWRPickTwoDice, Description: "Pick two dices immediately."})
 		p2.SendGameState(dice, "Waiting for your opponent to decide if they want to use a wizard power")
-		payload, err := p1.GetInput()
-		if err != nil {
-			log.Println(err)
-			p1.Disconnect()
-			return
-		}
+		payload := p1.GetInput()
 
 		if payload.PlayerPower.Use {
 			p1.UsePower(PWRPickTwoDice)
@@ -218,7 +213,7 @@ func (gr *GameRoom) handleDiceChoice(d *[]Badge, p, p2 *Player) {
 				p.SendMessage("Select which die you want to turn")
 				choice = func(d *[]Badge) int {
 					for {
-						payload, _ := p.GetInput()
+						payload := p.GetInput()
 						if (*d)[payload.SelectedDie].Name == EMPTY {
 							p.SendMessage("Invalid selection! Please choose another die")
 							continue
@@ -230,7 +225,7 @@ func (gr *GameRoom) handleDiceChoice(d *[]Badge, p, p2 *Player) {
 
 				p.SendDice(&gr.Game.dices[choice], "Choose die")
 
-				payload, _ := p.GetInput()
+				payload := p.GetInput()
 				selectedDie := gr.Game.dices[choice][payload.SelectedDie]
 
 				if selectedDie.Name == QUESTIONMARK {
@@ -251,7 +246,7 @@ func (gr *GameRoom) handleDiceChoice(d *[]Badge, p, p2 *Player) {
 		}
 
 		if choice == -1 {
-			payload, _ := p.GetInput()
+			payload := p.GetInput()
 			choice = payload.SelectedDie
 		}
 
@@ -303,12 +298,8 @@ func (gr *GameRoom) handlePlaceDomino(wg *sync.WaitGroup, player *Player, dice *
 			Type:        PWRSeparateDominos,
 			Description: "You can separate your dice to fill in your map. Each die must respect the Connection Rules",
 		})
-	payload, err := player.GetInput()
-	if err != nil {
-		log.Println(err)
-		player.Disconnect()
-		return
-	}
+	payload := player.GetInput()
+
 	if payload.Use && player.IsThereAFreeSpot() {
 		player.UsePower(PWRSeparateDominos)
 		player.PlaceSeparatedDomino(dice)
@@ -353,10 +344,10 @@ func handleQuestionmark(d *[]Badge, choice int, p *Player) {
 	}
 	p.SendDice(newDice, "Please select the type of badge that you need")
 	for {
-		payload, err := p.GetInput()
+		payload := p.GetInput()
 		newChoice := payload.SelectedDie
 
-		if err != nil || newChoice < 0 || len((*newDice)) < newChoice || (*newDice)[newChoice].Name == EMPTY {
+		if newChoice < 0 || len((*newDice)) < newChoice || (*newDice)[newChoice].Name == EMPTY {
 			p.SendMessage("Invalid choice!")
 			log.Println("Invalid choice")
 			continue

@@ -100,32 +100,33 @@ func (p *Player) GameStateLoop() {
 	}
 }
 
-func (p *Player) GetInput() (ClientPayload, error) {
+func (p *Player) GetInput() ClientPayload {
 	buf := make([]byte, 1024)
+	for {
 
-	err := p.Conn.SetReadDeadline(time.Now().Add(TIMEOUT))
-	if err != nil {
-		return ClientPayload{}, err
+		err := p.Conn.SetReadDeadline(time.Now().Add(TIMEOUT))
+		if err != nil {
+			p.Disconnect()
+			panic(err)
+		}
+		n, err := p.Conn.Read(buf[0:])
+		if err != nil {
+			p.Disconnect()
+			panic(ErrPlayerDisconnected)
+		}
+
+		payload := ClientPayload{
+			DiePos:      DiePos{-1, -1},
+			SelectedDie: -1,
+		}
+
+		err = json.Unmarshal(buf[:n], &payload)
+		if err != nil {
+			log.Println("failed to parse output")
+			continue
+		}
+		return payload
 	}
-	n, err := p.Conn.Read(buf[0:])
-	if err != nil {
-		p.Connected = false
-		panic(ErrPlayerDisconnected)
-
-	}
-
-	payload := ClientPayload{
-		DiePos:      DiePos{-1, -1},
-		SelectedDie: -1,
-	}
-
-	err = json.Unmarshal(buf[:n], &payload)
-	if err != nil {
-		log.Println("failed to parse output")
-		return ClientPayload{}, err
-	}
-
-	return payload, nil
 }
 
 func (p *Player) SendMessage(message string) {
@@ -195,14 +196,11 @@ func (p *Player) PlaceSeparatedDomino(d *[]Badge) {
 func (p *Player) getSelectedDominoChoice() int {
 	for {
 		var choice int
-		msg, err := p.GetInput()
-		if err != nil {
-			return choice
-		}
+		payload := p.GetInput()
 
-		choice = msg.SelectedDie
+		choice = payload.SelectedDie
 
-		if err != nil || choice < 0 || len(p.Dices) <= choice || p.Dices[choice].Name == EMPTY {
+		if choice < 0 || len(p.Dices) <= choice || p.Dices[choice].Name == EMPTY {
 			p.SendMessage("Invalid choice!")
 			continue
 		}
@@ -227,26 +225,11 @@ func (p *Player) placeOnBoard(choice int, b BoardPlacementInput) DiePos {
 func (p *Player) getBoardPlacementInput(bpi BoardPlacementInput) (DiePos, error) {
 	p.SendMessage("Select the place on the board that you want to place it on")
 	for p.Connected {
-		payload, err := p.GetInput()
-		if err != nil {
-			if err == io.EOF {
-				p.Connected = false
-			}
-			log.Println(err)
-			return DiePos{}, err
-		}
-		if err != nil {
-			if err == io.EOF {
-				p.Connected = false
-			}
-			log.Println(err)
-			return DiePos{}, err
-		}
+		payload := p.GetInput()
 
 		if bpi.IgnoreConnectionRules && bpi.IsValid(&payload.DiePos) {
 			return payload.DiePos, nil
 		}
-
 		if !p.Board.IsThereOccupiedNeighbourCell(payload.DiePos.Row, payload.DiePos.Cell) || !bpi.IsValid(&payload.DiePos) {
 			p.SendMessage("Invalid position. Please select a new position")
 			continue
@@ -359,12 +342,8 @@ func (p *Player) UseAddNoblePower() {
 	p.SendGameState(nil, "Select a badge on your board that you will add a noble to.")
 	payload := func() *ClientPayload {
 		for {
-			payload, err := p.GetInput()
-			if err != nil {
-				log.Println(err)
-				p.Disconnect()
-				return &ClientPayload{}
-			}
+			payload := p.GetInput()
+
 			if p.Board.isCellOccupied(payload.DiePos.Row, payload.DiePos.Cell) &&
 				p.Board[payload.DiePos.Row][payload.DiePos.Cell].Name != CASTLE {
 				return &payload
@@ -380,12 +359,7 @@ func (p *Player) UseAddNoblePower() {
 
 func (p *Player) GetPlayerPowerChoice() bool {
 	for {
-		payload, err := p.GetInput()
-		if err != nil {
-			log.Println(err)
-			p.Disconnect()
-			return false
-		}
+		payload := p.GetInput()
 
 		if payload.PlayerPower.Confirmed {
 			return payload.PlayerPower.Use

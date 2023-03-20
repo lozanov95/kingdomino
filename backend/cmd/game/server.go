@@ -34,12 +34,8 @@ func NewServer() *Server {
 
 func (s *Server) HandleJoinRoom(ws *websocket.Conn) {
 	player := NewPlayer(ws)
-	msg, err := player.GetInput()
-	if err != nil {
-		log.Println("failed to get player input", err)
-		return
-	}
-	player.Name = msg.Name
+	payload := player.GetInput()
+	player.Name = payload.Name
 
 	s.joinRoom(player)
 }
