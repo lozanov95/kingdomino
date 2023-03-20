@@ -345,12 +345,12 @@ func (p *Player) IsBonusEligible(b Badge) bool {
 	return (*p.BonusCard)[b.Name].Eligible
 }
 
-func (p *Player) UseAddNoblePower(dice *[]Badge) {
+func (p *Player) UseAddNoblePower() {
 	if !p.IsBonusUsable(PWRAddNoble) {
 		return
 	}
 
-	p.SendGameState(dice, "Select a badge on your board that you will add a noble to.", GTUseMagicPowers)
+	p.SendGameState(nil, "Select a badge on your board that you will add a noble to.", GTUseMagicPowers)
 	payload := func() *ClientPayload {
 		for {
 			payload, err := p.GetInput()
@@ -359,10 +359,11 @@ func (p *Player) UseAddNoblePower(dice *[]Badge) {
 				p.Disconnect()
 				return &ClientPayload{}
 			}
-			if p.Board.isCellOccupied(payload.DiePos.Row, payload.DiePos.Cell) {
+			if p.Board.isCellOccupied(payload.DiePos.Row, payload.DiePos.Cell) &&
+				p.Board[payload.DiePos.Row][payload.DiePos.Cell].Name != CASTLE {
 				return &payload
 			}
-			p.SendGameState(dice, "Invalid choice! Select a badge on your board that you will add a noble to.", GTUseMagicPowers)
+			p.SendGameState(nil, "Invalid choice! Select a badge on your board that you will add a noble to.", GTUseMagicPowers)
 		}
 	}()
 	p.UsePower(PWRAddNoble)

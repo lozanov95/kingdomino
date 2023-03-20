@@ -138,7 +138,7 @@ func TestUseAddNoblePower(t *testing.T) {
 		{{Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}},
 	}
 	p.Board = &(testBoard)
-	p.UseAddNoblePower(nil)
+	p.UseAddNoblePower()
 
 	testBadge := Badge{Name: FILLED, Nobles: 1}
 	if p.Board[2][2] != testBadge {
@@ -164,7 +164,7 @@ func TestUseAddNoblePowerEmptyValidation(t *testing.T) {
 		{{Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}},
 	}
 	p.Board = &(testBoard)
-	p.UseAddNoblePower(nil)
+	p.UseAddNoblePower()
 
 	testBadge := Badge{Name: FILLED, Nobles: 1}
 	if p.Board[2][2] != testBadge {
@@ -183,7 +183,7 @@ func TestUseAddNoblePowerNotCompletedBonus(t *testing.T) {
 		{{Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}},
 	}
 	p.Board = &(testBoard)
-	p.UseAddNoblePower(nil)
+	p.UseAddNoblePower()
 
 	testBadge := Badge{Name: FILLED, Nobles: 0}
 	if p.Board[2][2] != testBadge {
