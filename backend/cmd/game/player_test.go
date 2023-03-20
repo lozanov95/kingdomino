@@ -144,6 +144,9 @@ func TestUseAddNoblePower(t *testing.T) {
 	if p.Board[2][2] != testBadge {
 		t.Errorf("Expected %+v, got %+v", testBadge, p.Board[2][2])
 	}
+	if p.IsBonusUsable(PWRAddNoble) {
+		t.Errorf("The PWRAddNoble is not marked as used.")
+	}
 }
 func TestUseAddNoblePowerEmptyValidation(t *testing.T) {
 	p := NewMockPlayer([]ClientPayload{
