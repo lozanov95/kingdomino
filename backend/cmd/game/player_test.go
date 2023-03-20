@@ -190,3 +190,31 @@ func TestUseAddNoblePowerNotCompletedBonus(t *testing.T) {
 		t.Errorf("Expected %+v, got %+v", testBadge, p.Board[2][2])
 	}
 }
+
+func TestGetPlayerPowerChoice(t *testing.T) {
+	p := NewMockPlayer([]ClientPayload{
+		{PlayerPower: PlayerPower{Use: true}},
+		{PlayerPower: PlayerPower{Use: false, Confirmed: true}},
+	})
+	choice := p.GetPlayerPowerChoice()
+	if choice == true {
+		t.Errorf("Expected choice to be %t, got %t instead", false, choice)
+	}
+}
+
+func TestHandleIgnoreConnectionRulesPower(t *testing.T) {
+	p := NewMockPlayer([]ClientPayload{{PlayerPower: PlayerPower{Confirmed: true, Use: true}}})
+	badge := Badge{Name: getBonusBadge(PWRNoConnectionRules)}
+	for i := 0; i < 5; i++ {
+		p.IncreaseBonus(badge)
+	}
+
+	ignoreRules := p.handleIgnoreConnectionRulesPower()
+
+	if !ignoreRules {
+		t.Errorf("Expected ignoreRules to be %t, got %t instead", true, ignoreRules)
+	}
+	if p.IsBonusUsable(PWRNoConnectionRules) {
+		t.Errorf("The power is not marked correctly as unusable")
+	}
+}
