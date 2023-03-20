@@ -1,7 +1,12 @@
 package game
 
+import (
+	"math/rand"
+	"time"
+)
+
 type Game struct {
-	dices [4]Dice
+	dices [4][]Badge
 	p1    *Player
 	p2    *Player
 }
@@ -18,18 +23,15 @@ func NewGame(p1, p2 *Player) *Game {
 
 // Creates and setups the correct Dice sides
 func (g *Game) setupDice() {
-	g.dices[0] = Dice{
-		[6]Badge{
+	g.dices = [4][]Badge{
+		{
 			{Name: QUESTIONMARK, Nobles: 0},
 			{Name: DOT, Nobles: 0},
 			{Name: DOUBLELINE, Nobles: 1},
 			{Name: LINE, Nobles: 0},
 			{Name: DOUBLEDOT, Nobles: 1},
 			{Name: DOT, Nobles: 0},
-		},
-	}
-	g.dices[1] = Dice{
-		[6]Badge{
+		}, {
 			{Name: CHECKED, Nobles: 0},
 			{Name: LINE, Nobles: 0},
 			{Name: DOUBLEDOT, Nobles: 1},
@@ -37,9 +39,7 @@ func (g *Game) setupDice() {
 			{Name: DOT, Nobles: 0},
 			{Name: FILLED, Nobles: 0},
 		},
-	}
-	g.dices[2] = Dice{
-		[6]Badge{
+		{
 			{Name: DOUBLEDOT, Nobles: 0},
 			{Name: LINE, Nobles: 0},
 			{Name: FILLED, Nobles: 2},
@@ -47,9 +47,7 @@ func (g *Game) setupDice() {
 			{Name: DOT, Nobles: 0},
 			{Name: DOUBLELINE, Nobles: 0},
 		},
-	}
-	g.dices[3] = Dice{
-		[6]Badge{
+		{
 			{Name: DOUBLELINE, Nobles: 0},
 			{Name: LINE, Nobles: 1},
 			{Name: QUESTIONMARK, Nobles: 0},
@@ -63,8 +61,18 @@ func (g *Game) setupDice() {
 func (g *Game) RollDice() *[]Badge {
 	d := make([]Badge, 4)
 	for i, r := range g.dices {
-		d[i] = r.Roll()
+		d[i] = Roll(&r)
 	}
 
 	return &d
+}
+
+// Rolls a die and returns the side it landed on
+func Roll(d *[]Badge) Badge {
+	seed := time.Now().UnixNano()
+	source := rand.NewSource(seed)
+	r := rand.New(source)
+	n := r.Intn(6)
+
+	return (*d)[n]
 }
