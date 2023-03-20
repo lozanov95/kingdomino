@@ -103,7 +103,6 @@ func (p *Player) GameStateLoop() {
 func (p *Player) GetInput() ClientPayload {
 	buf := make([]byte, 1024)
 	for {
-
 		err := p.Conn.SetReadDeadline(time.Now().Add(TIMEOUT))
 		if err != nil {
 			p.Disconnect()
@@ -125,6 +124,7 @@ func (p *Player) GetInput() ClientPayload {
 			log.Println("failed to parse output")
 			continue
 		}
+
 		return payload
 	}
 }
