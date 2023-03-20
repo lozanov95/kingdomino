@@ -168,7 +168,10 @@ func (p *Player) ClearDice() {
 func (p *Player) PlaceDomino(d *[]Badge) {
 	p.SendGameState(d, "Select the dice that you want to place", GTPlaceDomino)
 	choice := p.getSelectedDominoChoice()
-	prevPos := p.placeOnBoard(choice, BoardPlacementInput{Board: p.Board})
+	prevPos := p.placeOnBoard(choice, BoardPlacementInput{
+		Board:                 p.Board,
+		IgnoreConnectionRules: p.handleIgnoreConnectionRulesPower(),
+	})
 	p.SendGameState(d, "", GTPlaceDomino)
 
 	p.SendMessage("Select the dice that you want to place")
@@ -225,7 +228,7 @@ func (p *Player) placeOnBoard(choice int, b BoardPlacementInput) DiePos {
 func (p *Player) getBoardPlacementInput(bpi BoardPlacementInput) (DiePos, error) {
 	p.SendMessage("Select the place on the board that you want to place it on")
 	for p.Connected {
-		msg, err := p.GetInput()
+		payload, err := p.GetInput()
 		if err != nil {
 			if err == io.EOF {
 				p.Connected = false
@@ -241,12 +244,16 @@ func (p *Player) getBoardPlacementInput(bpi BoardPlacementInput) (DiePos, error)
 			return DiePos{}, err
 		}
 
-		if !p.Board.IsThereOccupiedNeighbourCell(msg.DiePos.Row, msg.DiePos.Cell) || !bpi.IsValid(&msg.DiePos) {
+		if bpi.IgnoreConnectionRules && bpi.IsValid(&payload.DiePos) {
+			return payload.DiePos, nil
+		}
+
+		if !p.Board.IsThereOccupiedNeighbourCell(payload.DiePos.Row, payload.DiePos.Cell) || !bpi.IsValid(&payload.DiePos) {
 			p.SendMessage("Invalid position. Please select a new position")
 			continue
 		}
 
-		return msg.DiePos, nil
+		return payload.DiePos, nil
 	}
 	return DiePos{}, io.EOF
 }
@@ -370,4 +377,38 @@ func (p *Player) UseAddNoblePower() {
 	b := p.Board[payload.DiePos.Row][payload.DiePos.Cell]
 	b.Nobles++
 	p.Board[payload.DiePos.Row][payload.DiePos.Cell] = b
+}
+
+func (p *Player) GetPlayerPowerChoice() bool {
+	for {
+		payload, err := p.GetInput()
+		if err != nil {
+			log.Println(err)
+			p.Disconnect()
+			return false
+		}
+
+		if payload.PlayerPower.Confirmed {
+			return payload.PlayerPower.Use
+		}
+	}
+}
+
+// If the IgnoreConnectionRules power is available, prompts the player and asks if it should be played.
+func (p *Player) handleIgnoreConnectionRulesPower() bool {
+	if !p.IsBonusUsable(PWRNoConnectionRules) {
+		return false
+	}
+
+	p.SendPlayerPowerPrompt(nil, PlayerPower{
+		Type:        PWRNoConnectionRules,
+		Description: "You can play your domino without following the Connection Rules",
+	})
+
+	if p.GetPlayerPowerChoice() {
+		p.UsePower(PWRNoConnectionRules)
+		return true
+	}
+
+	return false
 }
