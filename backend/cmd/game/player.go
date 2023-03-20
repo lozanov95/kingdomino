@@ -114,7 +114,6 @@ func (p *Player) GetInput() (ClientPayload, error) {
 
 	}
 
-	// var payload ClientPayload
 	payload := ClientPayload{
 		DiePos:      DiePos{-1, -1},
 		SelectedDie: -1,
@@ -350,7 +349,7 @@ func (p *Player) UseAddNoblePower(dice *[]Badge) {
 	if !p.IsBonusUsable(PWRAddNoble) {
 		return
 	}
-	// payload := ClientPayload{}
+
 	p.SendGameState(dice, "Select a badge on your board that you will add a noble to.", GTUseMagicPowers)
 	payload := func() *ClientPayload {
 		for {
