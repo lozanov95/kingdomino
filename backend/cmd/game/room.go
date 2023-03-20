@@ -205,10 +205,51 @@ func (gr *GameRoom) handleDiceChoice(d *[]Badge, p, p2 *Player) {
 			player.SendGameState(d, fmt.Sprintf("Player %s's turn to pick dice", p.GetName()))
 		}
 
-		payload, err := p.GetInput()
-		choice := payload.SelectedDie
+		choice := -1
+		if p.IsBonusUsable(PWRSelectDieSideOfChoice) {
+			p.SendPlayerPowerPrompt(d,
+				PlayerPower{
+					Type:        PWRSelectDieSideOfChoice,
+					Description: "You can turn one of the dice in your domino around so that it shows any face of your choice"},
+			)
 
-		if err != nil || choice < 0 || len((*d)) < choice || (*d)[choice].Name == EMPTY {
+			if p.GetPlayerPowerChoice() {
+				p.SendMessage("Select which die you want to turn")
+				choice = func(d *[]Badge) int {
+					for {
+						payload, _ := p.GetInput()
+						if (*d)[payload.SelectedDie].Name == EMPTY {
+							p.SendMessage("Invalid selection! Please choose another die")
+							continue
+						}
+
+						return payload.SelectedDie
+					}
+				}(d)
+
+				p.SendDice(&gr.Game.dices[choice], "Choose die")
+
+				payload, _ := p.GetInput()
+				selectedDie := gr.Game.dices[choice][payload.SelectedDie]
+
+				p.AddDice(selectedDie)
+				p.AddBonus(selectedDie)
+				if p.IsBonusCompleted(getBonusType(selectedDie.Name)) {
+					p2.SetBonusIneligible(selectedDie)
+				}
+
+				(*d)[choice].Name = EMPTY
+				(*d)[choice].Nobles = 0
+				return
+			}
+		}
+
+		if choice == -1 {
+			payload, _ := p.GetInput()
+			choice = payload.SelectedDie
+		}
+
+		if choice < 0 || len((*d)) < choice || (*d)[choice].Name == EMPTY {
 			p.SendMessage("Invalid choice!")
 			log.Println("Invalid choice")
 			continue
