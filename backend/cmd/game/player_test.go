@@ -122,3 +122,68 @@ func TestSeparatedDomino(t *testing.T) {
 		t.Errorf("Expected board[%d][%d] to be %s, got %s", row, cell, FILLED.String(), player.Board[row][cell].Name.String())
 	}
 }
+
+func TestUseAddNoblePower(t *testing.T) {
+	p := NewMockPlayer([]ClientPayload{
+		{DiePos: DiePos{Row: 2, Cell: 2}},
+	})
+	p.AddBonus(Badge{Name: CHECKED})
+	p.AddBonus(Badge{Name: CHECKED})
+	p.AddBonus(Badge{Name: CHECKED})
+	testBoard := Board{
+		{{Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}},
+		{{Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}},
+		{{Name: FILLED}, {Name: FILLED}, {Name: FILLED}, {Name: CASTLE}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}},
+		{{Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}},
+		{{Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}},
+	}
+	p.Board = &(testBoard)
+	p.UseAddNoblePower(nil)
+
+	testBadge := Badge{Name: FILLED, Nobles: 1}
+	if p.Board[2][2] != testBadge {
+		t.Errorf("Expected %+v, got %+v", testBadge, p.Board[2][2])
+	}
+}
+func TestUseAddNoblePowerEmptyValidation(t *testing.T) {
+	p := NewMockPlayer([]ClientPayload{
+		{DiePos: DiePos{Row: 0, Cell: 0}},
+		{DiePos: DiePos{Row: 2, Cell: 2}},
+	})
+	p.AddBonus(Badge{Name: CHECKED})
+	p.AddBonus(Badge{Name: CHECKED})
+	p.AddBonus(Badge{Name: CHECKED})
+	testBoard := Board{
+		{{Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}},
+		{{Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}},
+		{{Name: FILLED}, {Name: FILLED}, {Name: FILLED}, {Name: CASTLE}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}},
+		{{Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}},
+		{{Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}},
+	}
+	p.Board = &(testBoard)
+	p.UseAddNoblePower(nil)
+
+	testBadge := Badge{Name: FILLED, Nobles: 1}
+	if p.Board[2][2] != testBadge {
+		t.Errorf("Expected %+v, got %+v", testBadge, p.Board[2][2])
+	}
+}
+func TestUseAddNoblePowerNotCompletedBonus(t *testing.T) {
+	p := NewMockPlayer([]ClientPayload{
+		{DiePos: DiePos{Row: 2, Cell: 2}},
+	})
+	testBoard := Board{
+		{{Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}},
+		{{Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}},
+		{{Name: FILLED}, {Name: FILLED}, {Name: FILLED}, {Name: CASTLE}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}},
+		{{Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}},
+		{{Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}},
+	}
+	p.Board = &(testBoard)
+	p.UseAddNoblePower(nil)
+
+	testBadge := Badge{Name: FILLED, Nobles: 0}
+	if p.Board[2][2] != testBadge {
+		t.Errorf("Expected %+v, got %+v", testBadge, p.Board[2][2])
+	}
+}

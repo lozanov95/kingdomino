@@ -236,6 +236,9 @@ func (gr *GameRoom) handleDicesSelection(dice *[]Badge, p1, p2 *Player) {
 		player.ClearDice()
 	}
 
+	p1.UseAddNoblePower(dice)
+	p2.UseAddNoblePower(dice)
+
 	if p1.IsBonusUsable(PWRPickTwoDice) {
 		p1.SendPlayerPowerPrompt(dice, PlayerPower{Type: PWRPickTwoDice, Description: "Pick two dices immediately."})
 		p2.SendGameState(dice, "Waiting for your opponent to decide if they want to use a wizard power", GTWaitingPlayerTurn)
