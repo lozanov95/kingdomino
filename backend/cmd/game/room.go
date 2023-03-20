@@ -214,6 +214,7 @@ func (gr *GameRoom) handleDiceChoice(d *[]Badge, p, p2 *Player) {
 			)
 
 			if p.GetPlayerPowerChoice() {
+				p.UsePower(PWRSelectDieSideOfChoice)
 				p.SendMessage("Select which die you want to turn")
 				choice = func(d *[]Badge) int {
 					for {
