@@ -232,6 +232,11 @@ func (gr *GameRoom) handleDiceChoice(d *[]Badge, p, p2 *Player) {
 				payload, _ := p.GetInput()
 				selectedDie := gr.Game.dices[choice][payload.SelectedDie]
 
+				if selectedDie.Name == QUESTIONMARK {
+					handleQuestionmark(d, choice, p)
+					return
+				}
+
 				p.AddDice(selectedDie)
 				p.AddBonus(selectedDie)
 				if p.IsBonusCompleted(getBonusType(selectedDie.Name)) {
@@ -256,32 +261,8 @@ func (gr *GameRoom) handleDiceChoice(d *[]Badge, p, p2 *Player) {
 		}
 
 		if (*d)[choice].Name == QUESTIONMARK {
-			newDice := &[]Badge{
-				{Name: DOT},
-				{Name: LINE},
-				{Name: DOUBLEDOT},
-				{Name: DOUBLELINE},
-				{Name: FILLED},
-				{Name: CHECKED},
-			}
-			p.SendDice(newDice, "Please select the type of badge that you need")
-			for {
-				payload, err := p.GetInput()
-				newChoice := payload.SelectedDie
-
-				if err != nil || newChoice < 0 || len((*newDice)) < newChoice || (*newDice)[newChoice].Name == EMPTY {
-					p.SendMessage("Invalid choice!")
-					log.Println("Invalid choice")
-					continue
-				}
-
-				p.AddDice((*newDice)[newChoice])
-
-				(*d)[choice].Name = EMPTY
-				(*d)[choice].Nobles = 0
-
-				return
-			}
+			handleQuestionmark(d, choice, p)
+			return
 		}
 
 		selectedDie := (*d)[choice]
@@ -358,4 +339,33 @@ func (gr *GameRoom) Join(p *Player) error {
 // Checks if a the game room is full
 func (gr *GameRoom) IsFull() bool {
 	return len(gr.Players) >= gr.PlayerLimit
+}
+
+func handleQuestionmark(d *[]Badge, choice int, p *Player) {
+	newDice := &[]Badge{
+		{Name: DOT},
+		{Name: LINE},
+		{Name: DOUBLEDOT},
+		{Name: DOUBLELINE},
+		{Name: FILLED},
+		{Name: CHECKED},
+	}
+	p.SendDice(newDice, "Please select the type of badge that you need")
+	for {
+		payload, err := p.GetInput()
+		newChoice := payload.SelectedDie
+
+		if err != nil || newChoice < 0 || len((*newDice)) < newChoice || (*newDice)[newChoice].Name == EMPTY {
+			p.SendMessage("Invalid choice!")
+			log.Println("Invalid choice")
+			continue
+		}
+
+		p.AddDice((*newDice)[newChoice])
+
+		(*d)[choice].Name = EMPTY
+		(*d)[choice].Nobles = 0
+
+		return
+	}
 }
