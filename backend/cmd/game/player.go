@@ -149,7 +149,7 @@ func (p *Player) SendGameState(d *[]Badge, m string, tt GameTurn) {
 }
 
 func (p *Player) SendPlayerPowerPrompt(d *[]Badge, pp PlayerPower) {
-	p.GameState <- GameState{PlayerPower: pp, Dices: d}
+	p.GameState <- GameState{PlayerPower: pp, Dices: d, SelectedDices: p.Dices}
 }
 
 func (p *Player) AddDice(d Badge) {

@@ -138,13 +138,12 @@ func (gr *GameRoom) roomLoop(closeChan chan<- string) {
 		time.Sleep(500 * time.Millisecond)
 	}
 
-	var dice *[]Badge
 	for _, p := range gr.Players {
-		p.SendGameState(dice, "Connected!", GTWaitingForPlayers)
+		p.SendGameState(nil, "Connected!", GTWaitingForPlayers)
 	}
 	log.Println("started room with", gr.Players[0].Name, "and", gr.Players[1].Name)
 
-	gr.gameLoop(dice)
+	gr.gameLoop()
 	gr.score()
 	time.Sleep(10 * time.Second)
 }
@@ -158,68 +157,23 @@ func (gr *GameRoom) shouldLoopContinue() bool {
 }
 
 // Handles the main game loop - selecting dice and placing dominos
-func (gr *GameRoom) gameLoop(dice *[]Badge) {
+func (gr *GameRoom) gameLoop() {
 	var wg sync.WaitGroup
 	for gr.shouldLoopContinue() {
-		dice = gr.Game.RollDice()
+		dice := gr.Game.RollDice()
 		gr.handleDicesSelection(dice, gr.Players[0], gr.Players[1])
 
 		for _, player := range gr.Players {
 			wg.Add(1)
-			go func(player *Player) {
-				defer func() {
-					if err := recover(); err != nil {
-						log.Println(err)
-						player.Connected = false
-					}
-				}()
-				defer wg.Done()
-				if !player.IsBonusUsable(PWRSeparateDominos) && player.IsValidPlacementPossible() {
-					player.PlaceDomino(dice)
-					return
-				}
-
-				if !player.IsBonusUsable(PWRSeparateDominos) || !player.IsThereAFreeSpot() {
-					return
-				}
-
-				player.SendPlayerPowerPrompt(dice,
-					PlayerPower{
-						Type:        PWRSeparateDominos,
-						Description: "You can separate your dice to fill in your map. Each die must respect the Connection Rules",
-					})
-				payload, err := player.GetInput()
-				if err != nil {
-					log.Println(err)
-					player.Disconnect()
-					return
-				}
-				if payload.Use && player.IsThereAFreeSpot() {
-					player.UsePower(PWRSeparateDominos)
-					player.PlaceSeparatedDomino(dice)
-					return
-				}
-
-			}(player)
+			go gr.handlePlaceDomino(&wg, player, dice)
 		}
 
 		wg.Wait()
-		dice := gr.Game.RollDice()
+		dice = gr.Game.RollDice()
 		gr.handleDicesSelection(dice, gr.Players[1], gr.Players[0])
 		for _, player := range gr.Players {
 			wg.Add(1)
-			go func(player *Player) {
-				defer func() {
-					if err := recover(); err != nil {
-						log.Println(err)
-						player.Connected = false
-					}
-				}()
-				defer wg.Done()
-				if player.IsValidPlacementPossible() {
-					player.PlaceDomino(dice)
-				}
-			}(player)
+			go gr.handlePlaceDomino(&wg, player, dice)
 		}
 
 		wg.Wait()
@@ -326,6 +280,43 @@ func (gr *GameRoom) handleDiceChoice(d *[]Badge, p, p2 *Player) {
 
 		return
 	}
+}
+
+// Handles the place domino section
+func (gr *GameRoom) handlePlaceDomino(wg *sync.WaitGroup, player *Player, dice *[]Badge) {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Println(err)
+			player.Connected = false
+		}
+	}()
+	defer wg.Done()
+	if !player.IsBonusUsable(PWRSeparateDominos) && player.IsValidPlacementPossible() {
+		player.PlaceDomino(dice)
+		return
+	}
+
+	if !player.IsBonusUsable(PWRSeparateDominos) || !player.IsThereAFreeSpot() {
+		return
+	}
+
+	player.SendPlayerPowerPrompt(dice,
+		PlayerPower{
+			Type:        PWRSeparateDominos,
+			Description: "You can separate your dice to fill in your map. Each die must respect the Connection Rules",
+		})
+	payload, err := player.GetInput()
+	if err != nil {
+		log.Println(err)
+		player.Disconnect()
+		return
+	}
+	if payload.Use && player.IsThereAFreeSpot() {
+		player.UsePower(PWRSeparateDominos)
+		player.PlaceSeparatedDomino(dice)
+		return
+	}
+	player.PlaceDomino(dice)
 }
 
 // Joins a game room
