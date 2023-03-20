@@ -53,15 +53,6 @@ export enum Badge {
     QUESTIONMARK,
 }
 
-export enum GameTurn {
-    GTWaitingForPlayers = 0,
-    GTPickDice,
-    GTPlaceDomino,
-    GTUseMagicPowers,
-    GTWaitingPlayerTurn,
-    GTGameOver,
-}
-
 export type PlayerPower = {
     type: number,
     description: string,

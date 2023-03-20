@@ -41,9 +41,6 @@ type GameState struct {
 	// The available dice for selection
 	Dices *[]Badge `json:"dices"`
 
-	// The game turn
-	GameTurn GameTurn `json:"gameTurn"`
-
 	// The available wizard power to the player
 	PlayerPower `json:"playerPower"`
 
@@ -59,8 +56,6 @@ type GameRoom struct {
 	Game        *Game
 }
 
-type GameTurn int64
-
 var (
 	ErrGameRoomFull = errors.New("the game room is full")
 )
@@ -68,26 +63,6 @@ var (
 const (
 	// The duration after which the player will be kicked for inactivity.
 	TIMEOUT = 2 * time.Minute
-)
-
-const (
-	// The game is waiting for both players to connect
-	GTWaitingForPlayers GameTurn = iota
-
-	// The game is waiting for both players to pick dice
-	GTPickDice
-
-	// The game is waiting for both players to place domino
-	GTPlaceDomino
-
-	// The game is waiting for the Magic Powers selection
-	GTUseMagicPowers
-
-	// Waiting for player to conduct their turn
-	GTWaitingPlayerTurn
-
-	// The game is over
-	GTGameOver
 )
 
 // Returns a new game room instance.
@@ -139,7 +114,7 @@ func (gr *GameRoom) roomLoop(closeChan chan<- string) {
 	}
 
 	for _, p := range gr.Players {
-		p.SendGameState(nil, "Connected!", GTWaitingForPlayers)
+		p.SendGameState(nil, "Connected!")
 	}
 	log.Println("started room with", gr.Players[0].Name, "and", gr.Players[1].Name)
 
@@ -195,7 +170,7 @@ func (gr *GameRoom) handleDicesSelection(dice *[]Badge, p1, p2 *Player) {
 
 	if p1.IsBonusUsable(PWRPickTwoDice) {
 		p1.SendPlayerPowerPrompt(dice, PlayerPower{Type: PWRPickTwoDice, Description: "Pick two dices immediately."})
-		p2.SendGameState(dice, "Waiting for your opponent to decide if they want to use a wizard power", GTWaitingPlayerTurn)
+		p2.SendGameState(dice, "Waiting for your opponent to decide if they want to use a wizard power")
 		payload, err := p1.GetInput()
 		if err != nil {
 			log.Println(err)
@@ -227,7 +202,7 @@ func (gr *GameRoom) handleDiceChoice(d *[]Badge, p, p2 *Player) {
 			if !player.Connected {
 				return
 			}
-			player.SendGameState(d, fmt.Sprintf("Player %s's turn to pick dice", p.GetName()), GTPickDice)
+			player.SendGameState(d, fmt.Sprintf("Player %s's turn to pick dice", p.GetName()))
 		}
 
 		payload, err := p.GetInput()

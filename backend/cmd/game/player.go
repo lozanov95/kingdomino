@@ -136,7 +136,7 @@ func (p *Player) SendDice(d *[]Badge, m string) {
 	p.GameState <- GameState{Dices: d, Message: m, SelectedDices: p.Dices}
 }
 
-func (p *Player) SendGameState(d *[]Badge, m string, tt GameTurn) {
+func (p *Player) SendGameState(d *[]Badge, m string) {
 	p.GameState <- GameState{
 		ID:            p.Id,
 		Message:       m,
@@ -144,7 +144,6 @@ func (p *Player) SendGameState(d *[]Badge, m string, tt GameTurn) {
 		BonusCard:     p.BonusCard,
 		Dices:         d,
 		SelectedDices: p.Dices,
-		GameTurn:      tt,
 	}
 }
 
@@ -166,31 +165,31 @@ func (p *Player) ClearDice() {
 
 // Places domino on the field, following the placement rules
 func (p *Player) PlaceDomino(d *[]Badge) {
-	p.SendGameState(d, "Select the dice that you want to place", GTPlaceDomino)
+	p.SendGameState(d, "Select the dice that you want to place")
 	choice := p.getSelectedDominoChoice()
 	prevPos := p.placeOnBoard(choice, BoardPlacementInput{
 		Board:                 p.Board,
 		IgnoreConnectionRules: p.handleIgnoreConnectionRulesPower(),
 	})
-	p.SendGameState(d, "", GTPlaceDomino)
+	p.SendGameState(d, "")
 
 	p.SendMessage("Select the dice that you want to place")
 	choice = p.getSelectedDominoChoice()
 	p.placeOnBoard(choice, BoardPlacementInput{PrevPosition: prevPos, Board: p.Board})
-	p.SendGameState(d, "Waiting for all players to complete their turns.", GTPlaceDomino)
+	p.SendGameState(d, "Waiting for all players to complete their turns.")
 }
 
 // Allows the user to place 2 separate dominos
 func (p *Player) PlaceSeparatedDomino(d *[]Badge) {
-	p.SendGameState(d, "Select the dice that you want to place", GTPlaceDomino)
+	p.SendGameState(d, "Select the dice that you want to place")
 	choice := p.getSelectedDominoChoice()
 	p.placeOnBoard(choice, BoardPlacementInput{Board: p.Board, SeparateDice: true})
-	p.SendGameState(d, "", GTPlaceDomino)
+	p.SendGameState(d, "")
 
 	p.SendMessage("Select the dice that you want to place")
 	choice = p.getSelectedDominoChoice()
 	p.placeOnBoard(choice, BoardPlacementInput{Board: p.Board, SeparateDice: true})
-	p.SendGameState(d, "Waiting for all players to complete their turns.", GTPlaceDomino)
+	p.SendGameState(d, "Waiting for all players to complete their turns.")
 }
 
 func (p *Player) getSelectedDominoChoice() int {
@@ -357,7 +356,7 @@ func (p *Player) UseAddNoblePower() {
 		return
 	}
 
-	p.SendGameState(nil, "Select a badge on your board that you will add a noble to.", GTUseMagicPowers)
+	p.SendGameState(nil, "Select a badge on your board that you will add a noble to.")
 	payload := func() *ClientPayload {
 		for {
 			payload, err := p.GetInput()
@@ -370,7 +369,7 @@ func (p *Player) UseAddNoblePower() {
 				p.Board[payload.DiePos.Row][payload.DiePos.Cell].Name != CASTLE {
 				return &payload
 			}
-			p.SendGameState(nil, "Invalid choice! Select a badge on your board that you will add a noble to.", GTUseMagicPowers)
+			p.SendGameState(nil, "Invalid choice! Select a badge on your board that you will add a noble to.")
 		}
 	}()
 	p.UsePower(PWRAddNoble)

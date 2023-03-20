@@ -1,6 +1,6 @@
 import { useState, MouseEvent, memo } from "react"
 import BonusBoard from "./bonusboard"
-import { Bonus, Domino, GameState, ServerPayload, GameTurn, PlayerPower } from "./common"
+import { Bonus, Domino, GameState, ServerPayload, PlayerPower } from "./common"
 import { Board } from "./board"
 import { DiceSection } from "./dice"
 import { PowerPrompt } from "./powerprompt"
@@ -14,7 +14,6 @@ function Game() {
     const [bonusCard, setBonusCard] = useState<Bonus[] | null>(null)
     const [dices, setDices] = useState<Domino[] | null>(null)
     const [selectedDice, setSelectedDice] = useState<Domino[] | null>(null)
-    const [gameTurn, setGameTurn] = useState<GameTurn>(0)
     const [power, setPower] = useState<PlayerPower>({
         type: 0,
         description: "",
