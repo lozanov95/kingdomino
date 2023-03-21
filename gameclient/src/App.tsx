@@ -7,7 +7,6 @@ function App() {
     <div className="app">
       <Navigation />
       <Game />
-      {/* <RulesSection /> */}
     </div>
   )
 }
