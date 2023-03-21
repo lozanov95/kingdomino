@@ -118,26 +118,32 @@ func (b *Board) isCellOccupied(row, cell int) bool {
 }
 
 // Calculate the points for a given badge
-func (b *Board) CalculateBadgePoints(bt BadgeName) int {
-	points := 0
+func (b *Board) CalculateBadgePoints(bt BadgeName) (points, domains int) {
+	points = 0
+	domains = 0
 	visited := make(map[DiePos]bool)
 	for i := 0; i < len(b); i++ {
 		for j := 0; j < len(b[i]); j++ {
 			dp := DiePos{Row: i, Cell: j}
-			if !visited[dp] {
-				visited[dp] = true
-				br := BoardResult{}
-				if b.isCellMatching(dp, bt) {
-					br.Count++
-					br.Nobles += b[i][j].Nobles
-				}
-				br.Add(b.findNeighbour(dp, bt, visited))
-				points += br.CalculatePoints()
+			if visited[dp] {
+				continue
 			}
+
+			visited[dp] = true
+			if !b.isCellMatching(dp, bt) {
+				continue
+			}
+
+			br := BoardResult{}
+			br.Count++
+			br.Nobles += b[i][j].Nobles
+			domains++
+			br.Add(b.findNeighbour(dp, bt, visited))
+			points += br.CalculatePoints()
 		}
 	}
 
-	return points
+	return points, domains
 }
 
 func (b Board) findNeighbour(dp DiePos, bt BadgeName, visited map[DiePos]bool) BoardResult {

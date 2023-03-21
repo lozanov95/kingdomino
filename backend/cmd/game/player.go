@@ -276,13 +276,14 @@ func (p *Player) IsAnyPlacementPossible() bool {
 
 func (p *Player) CalculateScore() int {
 	badges := []BadgeName{DOT, LINE, DOUBLEDOT, DOUBLELINE, CHECKED, FILLED}
-	pChan := make(chan int, 10)
+	pChan := make(chan int, 6)
 	var wg sync.WaitGroup
 	for _, badge := range badges {
 		wg.Add(1)
 		go func(badge BadgeName) {
 			defer wg.Done()
-			pChan <- p.Board.CalculateBadgePoints(badge)
+			pts, _ := p.Board.CalculateBadgePoints(badge)
+			pChan <- pts
 		}(badge)
 	}
 
