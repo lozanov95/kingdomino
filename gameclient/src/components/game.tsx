@@ -122,9 +122,9 @@ function Connect({ connectHandler, playerName, setPlayerName }: { connectHandler
     return (
         <div className="game m-auto">
             <form onSubmitCapture={connectHandler} className="connectForm object-center">
-                <h2>Enter your name</h2>
-                <input placeholder="name" minLength={3} value={playerName} onChange={e => setPlayerName(e.target.value)} required />
-                <button>Connect</button>
+                <h2 className="font-bold text-lg">Enter your name</h2>
+                <input className="p-1 m-2" placeholder="name" minLength={3} value={playerName} onChange={e => setPlayerName(e.target.value)} required />
+                <button className="p-1">Connect</button>
                 <RulesSection />
             </form>
         </div>
