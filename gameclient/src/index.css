@@ -184,3 +184,6 @@ img {
 .connectForm {
   grid-area: board;
 }
+.col-1 {
+  background: var(--primary-color);
+}

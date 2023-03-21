@@ -4,6 +4,7 @@ import { Bonus, Domino, GameState, ServerPayload, PlayerPower } from "./common"
 import { Board } from "./board"
 import { DiceSection } from "./dice"
 import { PowerPrompt } from "./powerprompt"
+import { RulesSection } from "./rules"
 
 function Game() {
     const [gameState, setGameState] = useState(WebSocket.CLOSED)
@@ -101,16 +102,17 @@ function Game() {
 
     return (
         <>
-            <div className="game">
-                {statusMsg !== "" ? <StatusPane message={statusMsg} /> : ""}
-                {power.type !== 0 && !power.confirmed && <PowerPrompt handlePowerChoice={handlePowerChoice} power={power} />}
-                {gameState === WebSocket.OPEN && gameBoard !== undefined ? <>
-                    <Board board={gameBoard} handleOnClick={handleBoardClick} />
-                    <BonusBoard bonusCard={bonusCard} />
-                    <DiceSection selectedDice={selectedDice} dices={dices} handleDiceSelect={handleDiceSelect} />
-                </> : ""}
-                {gameState !== WebSocket.OPEN ? <Connect connectHandler={handleConnect} playerName={playerName} setPlayerName={setPlayerName} /> : ""}
-            </div>
+            {gameState !== WebSocket.OPEN ? <Connect connectHandler={handleConnect} playerName={playerName} setPlayerName={setPlayerName} /> :
+                <div className="game">
+                    {statusMsg !== "" ? <StatusPane message={statusMsg} /> : ""}
+                    {power.type !== 0 && !power.confirmed && <PowerPrompt handlePowerChoice={handlePowerChoice} power={power} />}
+                    {gameState === WebSocket.OPEN && gameBoard !== undefined ? <>
+                        <Board board={gameBoard} handleOnClick={handleBoardClick} />
+                        <BonusBoard bonusCard={bonusCard} />
+                        <DiceSection selectedDice={selectedDice} dices={dices} handleDiceSelect={handleDiceSelect} />
+                    </> : ""}
+                </div>
+            }
         </>
     )
 }
@@ -118,11 +120,14 @@ function Game() {
 function Connect({ connectHandler, playerName, setPlayerName }: { connectHandler: any, playerName: string, setPlayerName: any }) {
 
     return (
-        <form onSubmitCapture={connectHandler} className="connectForm">
-            <h2>Enter your name</h2>
-            <input placeholder="name" minLength={3} value={playerName} onChange={e => setPlayerName(e.target.value)} required />
-            <button>Connect</button>
-        </form>
+        <div className="game m-auto">
+            <form onSubmitCapture={connectHandler} className="connectForm object-center">
+                <h2>Enter your name</h2>
+                <input placeholder="name" minLength={3} value={playerName} onChange={e => setPlayerName(e.target.value)} required />
+                <button>Connect</button>
+                <RulesSection />
+            </form>
+        </div>
     )
 }
 
