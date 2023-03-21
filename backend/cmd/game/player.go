@@ -335,7 +335,7 @@ func (p *Player) IsBonusEligible(b Badge) bool {
 	return (*p.BonusCard)[b.Name].Eligible
 }
 
-func (p *Player) UseAddNoblePower() {
+func (p *Player) handleUseAddNoblePower() {
 	if !p.IsBonusUsable(PWRAddNoble) {
 		return
 	}

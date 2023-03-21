@@ -165,8 +165,8 @@ func (gr *GameRoom) handleDicesSelection(dice *[]Badge, p1, p2 *Player) {
 		player.ClearDice()
 	}
 
-	p1.UseAddNoblePower()
-	p2.UseAddNoblePower()
+	p1.handleUseAddNoblePower()
+	p2.handleUseAddNoblePower()
 
 	if p1.IsBonusUsable(PWRPickTwoDice) {
 		p1.SendPlayerPowerPrompt(dice, PlayerPower{Type: PWRPickTwoDice, Description: "Pick two dices immediately."})
