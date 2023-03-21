@@ -32,9 +32,9 @@ function BonusCell({ imgSrc, currentChecks, requiredChecks, eligible }: { imgSrc
         const els = Array.from(Array(requiredChecks)).map((_, idx) => {
 
             if (idx < currentChecks) {
-                return <input key={idx} className="bonus-checkbox" type="checkbox" disabled checked />
+                return <input key={idx} value="" className="bonus-checkbox" type="checkbox" disabled checked />
             }
-            return <input key={idx} className="bonus-checkbox" type="checkbox" disabled />
+            return <input key={idx} value="" className="bonus-checkbox" type="checkbox" disabled />
         })
 
         setElements(els)
