@@ -19,16 +19,17 @@ type DiePos struct {
 }
 
 type Player struct {
-	Id        int64  `json:"id"`
-	Name      string `json:"name"`
-	Conn      Connectionable
-	Board     *Board
-	BonusCard *BonusMap
-	Connected bool
-	GameState chan GameState
-	ClientMsg chan string
-	Dices     []Badge
-	mut       sync.RWMutex
+	Id                 int64  `json:"id"`
+	Name               string `json:"name"`
+	Conn               Connectionable
+	Board              *Board
+	BonusCard          *BonusMap
+	Connected          bool
+	GameState          chan GameState
+	ClientMsg          chan string
+	Dices              []Badge
+	mut                sync.RWMutex
+	SelectedCoatOfArms BadgeName
 }
 
 type Connectionable interface {
@@ -282,7 +283,10 @@ func (p *Player) CalculateScore() int {
 		wg.Add(1)
 		go func(badge BadgeName) {
 			defer wg.Done()
-			pts, _ := p.Board.CalculateBadgePoints(badge)
+			pts, dms := p.Board.CalculateBadgePoints(badge)
+			if p.SelectedCoatOfArms == badge {
+				pts += dms * 3
+			}
 			pChan <- pts
 		}(badge)
 	}
@@ -385,4 +389,26 @@ func (p *Player) handleIgnoreConnectionRulesPower() bool {
 	}
 
 	return false
+}
+
+func (p *Player) handleAddDomainPointsPower() {
+	if !p.IsBonusUsable(PWRDomainPoints) {
+		return
+	}
+
+	p.SendGameState(nil, "Choose a coat of arms. Each different	DOMAIN with this coat of arms will earn you	3 prestige points at the end of the game.")
+	payload := func() *ClientPayload {
+		for {
+			payload := p.GetInput()
+
+			if p.Board.isCellOccupied(payload.DiePos.Row, payload.DiePos.Cell) &&
+				p.Board[payload.DiePos.Row][payload.DiePos.Cell].Name != CASTLE {
+				return &payload
+			}
+			p.SendGameState(nil, "Invalid choice! Select a coat of arms that you want to get prestige points from.")
+		}
+	}()
+
+	p.UsePower(PWRDomainPoints)
+	p.SelectedCoatOfArms = p.Board[payload.DiePos.Row][payload.DiePos.Cell].Name
 }

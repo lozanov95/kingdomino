@@ -44,6 +44,7 @@ func TestCalculatePoints(t *testing.T) {
 	}
 
 	p1 := NewPlayer(&websocket.Conn{})
+	p1.SelectedCoatOfArms = LINE
 	p1.Board = &Board{
 		[7]Badge{{Name: LINE, Nobles: 1}, {Name: DOT, Nobles: 0}, {Name: CHECKED, Nobles: 2}, {Name: LINE, Nobles: 1}, {Name: LINE, Nobles: 0}, {Name: FILLED, Nobles: 1}, {Name: FILLED, Nobles: 2}},
 		[7]Badge{{Name: LINE, Nobles: 0}, {Name: LINE, Nobles: 0}, {Name: CHECKED, Nobles: 0}, {Name: CHECKED, Nobles: 0}, {Name: LINE, Nobles: 0}, {Name: FILLED, Nobles: 0}, {Name: DOT, Nobles: 0}},
@@ -53,8 +54,8 @@ func TestCalculatePoints(t *testing.T) {
 	}
 
 	score = p1.CalculateScore()
-	if score != 55 {
-		t.Errorf("expected %d, got %d", 55, score)
+	if score != 64 {
+		t.Errorf("expected %d, got %d", 64, score)
 	}
 }
 
