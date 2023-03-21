@@ -1,9 +1,5 @@
 function Navigation() {
-    return (
-        <nav className="nav">
-            KingDomino
-        </nav>
-    )
+  return <nav className="nav">KingDomino</nav>;
 }
 
-export default Navigation
+export default Navigation;

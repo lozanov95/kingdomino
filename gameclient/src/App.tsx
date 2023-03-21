@@ -1,6 +1,5 @@
-import Game from './components/game'
-import Navigation from './components/nav'
-import { RulesSection } from './components/rules'
+import Game from "./components/game";
+import Navigation from "./components/nav";
 
 function App() {
   return (
@@ -8,7 +7,7 @@ function App() {
       <Navigation />
       <Game />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

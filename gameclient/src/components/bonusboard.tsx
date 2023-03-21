@@ -1,51 +1,87 @@
-import { Cell } from "./common"
-import { Bonus, getBadgeIcon } from "./common"
+import { Cell } from "./common";
+import { Bonus, getBadgeIcon } from "./common";
 import { useEffect, useState, memo } from "react";
 
+const BonusBoard = memo(function BonusBoard({
+  bonusCard,
+}: {
+  bonusCard: Bonus[] | null;
+}) {
+  return (
+    <div className="bonusboard">
+      {bonusCard
+        ?.sort((a: Bonus, b: Bonus) => (a.name > b.name ? 1 : -1))
+        .map(({ name, currentChecks, requiredChecks, eligible }, idx) => {
+          return (
+            <BonusCell
+              key={idx}
+              imgSrc={getBadgeIcon(name)}
+              currentChecks={currentChecks}
+              requiredChecks={requiredChecks}
+              eligible={eligible}
+            />
+          );
+        })}
+    </div>
+  );
+});
 
-const BonusBoard = memo(
-    function BonusBoard({ bonusCard }: { bonusCard: Bonus[] | null }) {
+function BonusCell({
+  imgSrc,
+  currentChecks,
+  requiredChecks,
+  eligible,
+}: {
+  imgSrc: string;
+  currentChecks: number;
+  requiredChecks: number;
+  eligible: boolean;
+}) {
+  const [elements, setElements] = useState<JSX.Element[]>([]);
+  const [elClass, setElClass] = useState("");
 
-        return (
-            <div className="bonusboard">
-                {bonusCard?.sort((a: Bonus, b: Bonus) => a.name > b.name ? 1 : -1).map(({ name, currentChecks, requiredChecks, eligible }, idx) => {
-                    return <BonusCell key={idx} imgSrc={getBadgeIcon(name)} currentChecks={currentChecks} requiredChecks={requiredChecks} eligible={eligible} />
-                })}
-            </div>
-        )
+  useEffect(() => {
+    let cs = "";
+    if (currentChecks == requiredChecks) {
+      cs = " completed";
+    } else if (!eligible) {
+      cs = " ineligible";
     }
-)
+    setElClass(cs);
 
-function BonusCell({ imgSrc, currentChecks, requiredChecks, eligible }: { imgSrc: string, currentChecks: number, requiredChecks: number, eligible: boolean }) {
-    const [elements, setElements] = useState<JSX.Element[]>([])
-    const [elClass, setElClass] = useState("")
+    const els = Array.from(Array(requiredChecks)).map((_, idx) => {
+      if (idx < currentChecks) {
+        return (
+          <input
+            key={idx}
+            value=""
+            className="bonus-checkbox"
+            type="checkbox"
+            disabled
+            checked
+          />
+        );
+      }
+      return (
+        <input
+          key={idx}
+          value=""
+          className="bonus-checkbox"
+          type="checkbox"
+          disabled
+        />
+      );
+    });
 
-    useEffect(() => {
-        let cs = ""
-        if (currentChecks == requiredChecks) {
-            cs = " completed"
-        } else if (!eligible) {
-            cs = " ineligible"
-        }
-        setElClass(cs)
+    setElements(els);
+  }, [currentChecks, eligible]);
 
-        const els = Array.from(Array(requiredChecks)).map((_, idx) => {
-
-            if (idx < currentChecks) {
-                return <input key={idx} value="" className="bonus-checkbox" type="checkbox" disabled checked />
-            }
-            return <input key={idx} value="" className="bonus-checkbox" type="checkbox" disabled />
-        })
-
-        setElements(els)
-    }, [currentChecks, eligible])
-
-    return (
-        <div className={"bonus-cell" + elClass}>
-            <Cell imgSrc={imgSrc} id="" />
-            {elements}
-        </div>
-    )
+  return (
+    <div className={"bonus-cell" + elClass}>
+      <Cell imgSrc={imgSrc} id="" />
+      {elements}
+    </div>
+  );
 }
 
-export default BonusBoard
+export default BonusBoard;
