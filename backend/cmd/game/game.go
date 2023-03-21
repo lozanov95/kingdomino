@@ -61,18 +61,12 @@ func (g *Game) setupDice() {
 func (g *Game) RollDice() *[]Badge {
 	d := make([]Badge, 4)
 	seed := time.Now().UnixNano()
-	for i, r := range g.dices {
-		d[i] = Roll(&r, seed)
+	source := rand.NewSource(seed)
+	r := rand.New(source)
+
+	for i, badge := range g.dices {
+		d[i] = badge[r.Intn(6)]
 	}
 
 	return &d
-}
-
-// Rolls a die and returns the side it landed on
-func Roll(d *[]Badge, seed int64) Badge {
-	source := rand.NewSource(seed)
-	r := rand.New(source)
-	n := r.Intn(6)
-
-	return (*d)[n]
 }
