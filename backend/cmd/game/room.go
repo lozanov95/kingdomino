@@ -47,7 +47,7 @@ type GameState struct {
 	// The list of currently selected dice be the player
 	SelectedDices []Badge `json:"selectedDice"`
 
-	Scoreboards [2]Scoreboard `json:"scoreboards"`
+	Scoreboards []Scoreboard `json:"scoreboards"`
 }
 
 type GameRoom struct {

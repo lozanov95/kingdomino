@@ -165,7 +165,7 @@ func (p *Player) SendPlayerPowerPrompt(d *[]Badge, pp PlayerPower) {
 }
 
 func (p *Player) SendScoreboard(p1Score, p2Score *Scoreboard, m string) {
-	p.GameState <- GameState{Scoreboards: [2]Scoreboard{*p1Score, *p2Score}, Message: m}
+	p.GameState <- GameState{Scoreboards: []Scoreboard{*p1Score, *p2Score}, Message: m}
 }
 
 func (p *Player) AddDice(d Badge) {

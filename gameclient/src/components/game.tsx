@@ -139,7 +139,7 @@ function Game() {
           )}
         </div>
       )}
-      {scoreboards && <ScoreSection scoreboards={scoreboards} />}
+      {scoreboards !== null && <ScoreSection scoreboards={scoreboards} />}
     </>
   );
 }
