@@ -10,7 +10,7 @@ export const Board = memo(function Board({
   handleOnClick: MouseEventHandler;
 }) {
   return (
-    <div className="board center">
+    <div>
       {board?.map((el, idx) => {
         return (
           <Row
@@ -35,7 +35,7 @@ export function Row({
   onClick?: MouseEventHandler;
 }) {
   return (
-    <div className="row" id={id}>
+    <div id={id}>
       {elements?.map(({ name, nobles }, idx) => {
         return (
           <BoardCell
@@ -63,7 +63,7 @@ export function BoardCell({
   onClick?: MouseEventHandler;
 }) {
   return (
-    <div className="boardCell">
+    <div>
       <Nobles amount={nobles} />
       <Cell id={id} imgSrc={getBadgeIcon(name)} onClick={onClick} />
     </div>

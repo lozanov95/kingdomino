@@ -8,12 +8,11 @@ export function PowerPrompt({
   handlePowerChoice: any;
 }) {
   return (
-    <div className="status">
+    <div>
       <span>
         Do you want to use the following power: <p>{power.description}</p>
       </span>
       <button
-        className="font-bold text-xl px-5 mr-5"
         onClick={() => {
           handlePowerChoice(true);
         }}
@@ -21,7 +20,6 @@ export function PowerPrompt({
         Yes
       </button>
       <button
-        className="font-bold text-xl px-5"
         onClick={() => {
           handlePowerChoice(false);
         }}

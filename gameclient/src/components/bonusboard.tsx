@@ -8,7 +8,7 @@ const BonusBoard = memo(function BonusBoard({
   bonusCard: Bonus[] | null;
 }) {
   return (
-    <div className="bonusboard">
+    <div>
       {bonusCard
         ?.sort((a: Bonus, b: Bonus) => (a.name > b.name ? 1 : -1))
         .map(({ name, currentChecks, requiredChecks, eligible }, idx) => {
@@ -51,26 +51,9 @@ function BonusCell({
 
     const els = Array.from(Array(requiredChecks)).map((_, idx) => {
       if (idx < currentChecks) {
-        return (
-          <input
-            key={idx}
-            value=""
-            className="bonus-checkbox"
-            type="checkbox"
-            disabled
-            checked
-          />
-        );
+        return <input key={idx} value="" type="checkbox" disabled checked />;
       }
-      return (
-        <input
-          key={idx}
-          value=""
-          className="bonus-checkbox"
-          type="checkbox"
-          disabled
-        />
-      );
+      return <input key={idx} value="" type="checkbox" disabled />;
     });
 
     setElements(els);

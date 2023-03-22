@@ -34,7 +34,7 @@ export function RulesSection() {
   ];
 
   return (
-    <div className="container max-w-xl center object-center">
+    <div>
       {paragraphs.map((paragraph, idx) => {
         return (
           <Paragraph
@@ -50,9 +50,9 @@ export function RulesSection() {
 
 function Paragraph({ header, text }: { header: string; text: string }) {
   return (
-    <div className="container max-w-xl object- col-1 py-2 m-3 rounded-xl">
-      <p className="text-xl font-bold mb-5">{header}</p>
-      <span className="flex text-justify px-3">{text}</span>
+    <div>
+      <p>{header}</p>
+      <span>{text}</span>
     </div>
   );
 }

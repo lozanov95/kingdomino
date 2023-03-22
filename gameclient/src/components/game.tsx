@@ -1,6 +1,13 @@
 import { useState, MouseEvent, memo } from "react";
 import BonusBoard from "./bonusboard";
-import { Bonus, Domino, GameState, ServerPayload, PlayerPower, Scoreboard } from "./common";
+import {
+  Bonus,
+  Domino,
+  GameState,
+  ServerPayload,
+  PlayerPower,
+  Scoreboard,
+} from "./common";
 import { Board } from "./board";
 import { DiceSection } from "./dice";
 import { PowerPrompt } from "./powerprompt";
@@ -14,7 +21,7 @@ function Game() {
   const [playerName, setPlayerName] = useState("");
   const [gameBoard, setGameBoard] = useState<Domino[][] | null>(null);
   const [bonusCard, setBonusCard] = useState<Bonus[] | null>(null);
-  const [scoreboards, setScoreboards] = useState<Scoreboard[] | null>(null)
+  const [scoreboards, setScoreboards] = useState<Scoreboard[] | null>(null);
   const [dices, setDices] = useState<Domino[] | null>(null);
   const [selectedDice, setSelectedDice] = useState<Domino[] | null>(null);
   const [power, setPower] = useState<PlayerPower>({
@@ -119,7 +126,7 @@ function Game() {
           setPlayerName={setPlayerName}
         />
       ) : (
-        <div className="game">
+        <div>
           {statusMsg !== "" ? <StatusPane message={statusMsg} /> : ""}
           {power.type !== 0 && !power.confirmed && (
             <PowerPrompt handlePowerChoice={handlePowerChoice} power={power} />
@@ -154,21 +161,17 @@ function Connect({
   setPlayerName: any;
 }) {
   return (
-    <div className="game m-auto">
-      <form
-        onSubmitCapture={connectHandler}
-        className="connectForm object-center"
-      >
-        <h2 className="font-bold text-lg">Enter your name</h2>
+    <div>
+      <form onSubmitCapture={connectHandler}>
+        <h2>Enter your name</h2>
         <input
-          className="p-1 m-2"
           placeholder="name"
           minLength={3}
           value={playerName}
           onChange={(e) => setPlayerName(e.target.value)}
           required
         />
-        <button className="p-1">Connect</button>
+        <button>Connect</button>
         <RulesSection />
       </form>
     </div>
@@ -176,7 +179,7 @@ function Connect({
 }
 
 const StatusPane = memo(function StatusPane({ message }: { message: string }) {
-  return <div className="status">{message}</div>;
+  return <div>{message}</div>;
 });
 
 export default Game;

@@ -106,7 +106,7 @@ export function Cell({
   onClick?: MouseEventHandler;
 }) {
   return (
-    <div className="cell" id={id} onClick={onClick}>
+    <div id={id} onClick={onClick}>
       <img src={imgSrc} alt="badge icon" />
     </div>
   );
@@ -130,7 +130,7 @@ export function Nobles({ amount }: { amount: number }) {
         return null;
     }
   }
-  return <div className="nobles">{renderNobles()}</div>;
+  return <div>{renderNobles()}</div>;
 }
 
 export function Noble() {
