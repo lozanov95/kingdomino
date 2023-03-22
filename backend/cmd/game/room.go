@@ -46,6 +46,8 @@ type GameState struct {
 
 	// The list of currently selected dice be the player
 	SelectedDices []Badge `json:"selectedDice"`
+
+	Scoreboards [2]Scoreboard `json:"scoreboards"`
 }
 
 type GameRoom struct {
@@ -81,18 +83,18 @@ func NewGameRoom(closeChan chan string) *GameRoom {
 
 // Calculates the score and sends message to the players
 func (gr *GameRoom) score() {
-	p1_score := gr.Players[0].CalculateScore()
-	p2_score := gr.Players[1].CalculateScore()
+	p1_sb := gr.Players[0].CalculateScore()
+	p2_sb := gr.Players[1].CalculateScore()
 
-	if p1_score > p2_score {
-		gr.Players[0].SendMessage("Game OVER! You WON!")
-		gr.Players[1].SendMessage("Game OVER! You LOST!")
-	} else if p1_score < p2_score {
-		gr.Players[1].SendMessage("Game OVER! You WON!")
-		gr.Players[0].SendMessage("Game OVER! You LOST!")
+	if p1_sb.TotalScore > p2_sb.TotalScore {
+		gr.Players[0].SendScoreboard(&p1_sb, &p2_sb, "Game OVER! You WON!")
+		gr.Players[1].SendScoreboard(&p2_sb, &p1_sb, "Game OVER! You LOST!")
+	} else if p1_sb.TotalScore < p2_sb.TotalScore {
+		gr.Players[0].SendScoreboard(&p1_sb, &p2_sb, "Game OVER! You WON!")
+		gr.Players[1].SendScoreboard(&p2_sb, &p1_sb, "Game OVER! You LOST!")
 	} else {
-		gr.Players[0].SendMessage("Game OVER! The game ended in a DRAW!")
-		gr.Players[1].SendMessage("Game OVER! The game ended in a DRAW!")
+		gr.Players[0].SendScoreboard(&p1_sb, &p2_sb, "Game OVER! The game ended in a DRAW!")
+		gr.Players[1].SendScoreboard(&p2_sb, &p1_sb, "Game OVER! The game ended in a DRAW!")
 	}
 }
 

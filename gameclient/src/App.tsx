@@ -3,7 +3,7 @@ import Navigation from "./components/nav";
 
 function App() {
   return (
-    <div className="app">
+    <div className="app font-mono">
       <Navigation />
       <Game />
     </div>

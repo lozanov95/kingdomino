@@ -21,6 +21,17 @@ export type Bonus = {
   eligible: boolean;
 };
 
+export type BadgeScore = {
+  badge: number;
+  score: number;
+};
+
+export type Scoreboard = {
+  name: string;
+  scores: BadgeScore[];
+  totalScore: number;
+};
+
 export type GameState = {
   bonusCard: Bonus[];
   message: string;
@@ -28,6 +39,7 @@ export type GameState = {
   dices: Domino[];
   selectedDice: Domino[];
   playerPower: PlayerPower;
+  scoreboards: Scoreboard[];
 };
 
 export type ServerPayload = {

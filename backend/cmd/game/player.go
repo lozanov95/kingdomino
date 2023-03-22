@@ -39,6 +39,17 @@ type Connectionable interface {
 	Close() error
 }
 
+type Scoreboard struct {
+	PlayerName string       `json:"name"`
+	Scores     []BadgeScore `json:"scores"`
+	TotalScore int          `json:"totalScore"`
+}
+
+type BadgeScore struct {
+	Badge BadgeName `json:"badge"`
+	Score int       `json:"score"`
+}
+
 // Creates a new player instance and returns a pointer to it.
 func NewPlayer(conn Connectionable) *Player {
 
@@ -151,6 +162,10 @@ func (p *Player) SendGameState(d *[]Badge, m string) {
 
 func (p *Player) SendPlayerPowerPrompt(d *[]Badge, pp PlayerPower) {
 	p.GameState <- GameState{PlayerPower: pp, Dices: d, SelectedDices: p.Dices}
+}
+
+func (p *Player) SendScoreboard(p1Score, p2Score *Scoreboard, m string) {
+	p.GameState <- GameState{Scoreboards: [2]Scoreboard{*p1Score, *p2Score}, Message: m}
 }
 
 func (p *Player) AddDice(d Badge) {
@@ -275,9 +290,9 @@ func (p *Player) IsAnyPlacementPossible() bool {
 	return p.IsValidPlacementPossible()
 }
 
-func (p *Player) CalculateScore() int {
+func (p *Player) CalculateScore() Scoreboard {
 	badges := []BadgeName{DOT, LINE, DOUBLEDOT, DOUBLELINE, CHECKED, FILLED}
-	pChan := make(chan int, 6)
+	pChan := make(chan BadgeScore, 6)
 	var wg sync.WaitGroup
 	for _, badge := range badges {
 		wg.Add(1)
@@ -287,20 +302,23 @@ func (p *Player) CalculateScore() int {
 			if p.SelectedCoatOfArms == badge {
 				pts += dms * 3
 			}
-			pChan <- pts
+			pChan <- BadgeScore{Badge: badge, Score: pts}
 		}(badge)
 	}
 
-	points := 0
+	sb := Scoreboard{
+		PlayerName: p.Name,
+	}
 
 	wg.Wait()
 	close(pChan)
 
 	for p := range pChan {
-		points += p
+		sb.Scores[int(p.Badge)] = p
+		sb.TotalScore += p.Score
 	}
 
-	return points
+	return sb
 }
 
 func (p *Player) UsePower(pt PowerType) {

@@ -39,8 +39,8 @@ func TestCalculatePoints(t *testing.T) {
 	}
 
 	score := p.CalculateScore()
-	if score != 0 {
-		t.Errorf("expected %d, got %d", 0, score)
+	if score.TotalScore != 0 {
+		t.Errorf("expected %d, got %d", 0, score.TotalScore)
 	}
 
 	p1 := NewPlayer(&websocket.Conn{})
@@ -54,8 +54,8 @@ func TestCalculatePoints(t *testing.T) {
 	}
 
 	score = p1.CalculateScore()
-	if score != 64 {
-		t.Errorf("expected %d, got %d", 64, score)
+	if score.TotalScore != 64 {
+		t.Errorf("expected %d, got %d", 64, score.TotalScore)
 	}
 }
 

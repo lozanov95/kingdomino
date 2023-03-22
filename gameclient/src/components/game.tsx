@@ -1,10 +1,11 @@
 import { useState, MouseEvent, memo } from "react";
 import BonusBoard from "./bonusboard";
-import { Bonus, Domino, GameState, ServerPayload, PlayerPower } from "./common";
+import { Bonus, Domino, GameState, ServerPayload, PlayerPower, Scoreboard } from "./common";
 import { Board } from "./board";
 import { DiceSection } from "./dice";
 import { PowerPrompt } from "./powerprompt";
 import { RulesSection } from "./rules";
+import { ScoreSection } from "./scoreboard";
 
 function Game() {
   const [gameState, setGameState] = useState(WebSocket.CLOSED);
@@ -13,6 +14,7 @@ function Game() {
   const [playerName, setPlayerName] = useState("");
   const [gameBoard, setGameBoard] = useState<Domino[][] | null>(null);
   const [bonusCard, setBonusCard] = useState<Bonus[] | null>(null);
+  const [scoreboards, setScoreboards] = useState<Scoreboard[] | null>(null)
   const [dices, setDices] = useState<Domino[] | null>(null);
   const [selectedDice, setSelectedDice] = useState<Domino[] | null>(null);
   const [power, setPower] = useState<PlayerPower>({
@@ -71,6 +73,7 @@ function Game() {
           dices,
           selectedDice,
           playerPower,
+          scoreboards,
         }: GameState = JSON.parse(d);
         board !== null && setGameBoard(board);
         bonusCard !== null && setBonusCard(bonusCard);
@@ -78,6 +81,7 @@ function Game() {
         dices !== null && setDices(dices);
         setSelectedDice(selectedDice);
         setPower(playerPower);
+        setScoreboards(scoreboards);
       }
     };
   }
@@ -135,6 +139,7 @@ function Game() {
           )}
         </div>
       )}
+      {scoreboards && <ScoreSection scoreboards={scoreboards} />}
     </>
   );
 }
