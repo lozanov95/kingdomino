@@ -126,7 +126,7 @@ function Game() {
           setPlayerName={setPlayerName}
         />
       ) : (
-        <div>
+        <div className="lg:text-3xl">
           {statusMsg !== "" ? <StatusPane message={statusMsg} /> : ""}
           {power.type !== 0 && !power.confirmed && (
             <PowerPrompt handlePowerChoice={handlePowerChoice} power={power} />
@@ -179,7 +179,7 @@ function Connect({
 }
 
 const StatusPane = memo(function StatusPane({ message }: { message: string }) {
-  return <div>{message}</div>;
+  return <div className="bg-blue-900 text-white text-center py-1 lg:py-2">{message}</div>;
 });
 
 export default Game;
