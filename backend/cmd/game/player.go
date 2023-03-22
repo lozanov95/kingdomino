@@ -308,13 +308,14 @@ func (p *Player) CalculateScore() Scoreboard {
 
 	sb := Scoreboard{
 		PlayerName: p.Name,
+		Scores:     make([]BadgeScore, 6),
 	}
 
 	wg.Wait()
 	close(pChan)
 
 	for p := range pChan {
-		sb.Scores[int(p.Badge)] = p
+		sb.Scores[int(p.Badge)-2] = p
 		sb.TotalScore += p.Score
 	}
 
