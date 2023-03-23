@@ -160,23 +160,27 @@ function Connect({
   playerName: string;
   setPlayerName: any;
 }) {
+  const placeholderText = "Enter name here";
+
   return (
     <div className="text-center">
       <form
         onSubmitCapture={connectHandler}
         className="flex flex-col max-w-fit p-2 m-auto"
       >
-        <h2>Enter your name</h2>
-        <div>
+        <h2 className="text-2xl">Enter your name</h2>
+        <div className="text-md">
           <input
-            placeholder="name"
+            placeholder={placeholderText}
             minLength={3}
             value={playerName}
             onChange={(e) => setPlayerName(e.target.value)}
             required
-            className="rounded text-gray-500"
+            className="rounded text-gray-900 indent-1 p-0.5"
           />
-          <button className="m-2 p-1 rounded-lg bg-gray-700">Connect</button>
+          <button className="m-2 p-1 px-3 rounded-lg bg-gray-700 hover:bg-gray-600">
+            Connect
+          </button>
         </div>
       </form>
       <RulesSection />
