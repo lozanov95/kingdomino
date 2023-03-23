@@ -106,8 +106,12 @@ export function Cell({
   onClick?: MouseEventHandler;
 }) {
   return (
-    <div id={id} onClick={onClick}>
-      <img src={imgSrc} alt="badge icon" />
+    <div
+      className="max-w-[40px] max-h-[40px] lg:max-w-[90px] lg:max-h-[90px]"
+      id={id}
+      onClick={onClick}
+    >
+      <img src={imgSrc} alt="badge icon" className="" />
     </div>
   );
 }
@@ -130,9 +134,13 @@ export function Nobles({ amount }: { amount: number }) {
         return null;
     }
   }
-  return <div>{renderNobles()}</div>;
+  return (
+    <div className="w-[15px] lg:w-[20px] mr-1 border-solid border-r-2 -m-1">
+      {renderNobles()}
+    </div>
+  );
 }
 
 export function Noble() {
-  return <div>X</div>;
+  return <div className="lg:text-xl">X</div>;
 }

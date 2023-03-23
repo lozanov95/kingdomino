@@ -12,8 +12,8 @@ export const DiceSection = memo(function DiceSection({
   handleDiceSelect: MouseEventHandler;
 }) {
   return (
-    <div className="dice-section font-bold">
-      <div>
+    <div className="max-w-screen-lg">
+      <div className="text-lg max-w-max text-center">
         {dices ? <h2>Available dice</h2> : ""}
         {dices?.map(({ name, nobles }, idx) => {
           return (
