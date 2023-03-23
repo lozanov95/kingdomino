@@ -34,7 +34,7 @@ export function RulesSection() {
   ];
 
   return (
-    <div>
+    <div className="max-w-screen-md m-auto">
       {paragraphs.map((paragraph, idx) => {
         return (
           <Paragraph
@@ -50,9 +50,9 @@ export function RulesSection() {
 
 function Paragraph({ header, text }: { header: string; text: string }) {
   return (
-    <div>
-      <p>{header}</p>
-      <span>{text}</span>
+    <div className="m-2 p-2">
+      <p className="text-2xl text-center">{header}</p>
+      <div className="text-justify indent-5">{text}</div>
     </div>
   );
 }
