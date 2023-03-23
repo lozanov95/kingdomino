@@ -128,13 +128,7 @@ function Game() {
       ) : (
         <div className="lg:text-3xl">
           {statusMsg !== "" ? <StatusPane message={statusMsg} /> : ""}
-          <div className="grid grid-cols-4">
-            {power.type !== 0 && !power.confirmed && (
-              <PowerPrompt
-                handlePowerChoice={handlePowerChoice}
-                power={power}
-              />
-            )}
+          <div className="grid grid-cols-4 grid-rows-1">
             {gameState === WebSocket.OPEN && gameBoard !== undefined ? (
               <>
                 <DiceSection
@@ -142,6 +136,12 @@ function Game() {
                   dices={dices}
                   handleDiceSelect={handleDiceSelect}
                 />
+                {power.type !== 0 && !power.confirmed && (
+                  <PowerPrompt
+                    handlePowerChoice={handlePowerChoice}
+                    power={power}
+                  />
+                )}
                 <Board board={gameBoard} handleOnClick={handleBoardClick} />
                 <BonusBoard bonusCard={bonusCard} />
               </>
