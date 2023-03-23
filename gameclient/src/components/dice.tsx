@@ -19,7 +19,7 @@ export const DiceSection = memo(function DiceSection({
       </div>
       <div className="text-lg">
         {selectedDice?.length ?? 0 > 0 ? (
-          <h2 className="font-bold">Selected</h2>
+          <h2 className="font-bold">Selected dice</h2>
         ) : (
           ""
         )}

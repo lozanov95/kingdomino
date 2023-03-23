@@ -41,7 +41,7 @@ function BonusCell({
   const [elements, setElements] = useState<JSX.Element[]>([]);
   const [elClass, setElClass] = useState("");
 
-  const checkboxClass = "lg:w-[30px]"
+  const checkboxClass = "lg:w-[30px]";
 
   useEffect(() => {
     let cs = "";
@@ -54,16 +54,38 @@ function BonusCell({
 
     const els = Array.from(Array(requiredChecks)).map((_, idx) => {
       if (idx < currentChecks) {
-        return <input key={idx} value="" type="checkbox" className={checkboxClass} disabled checked />;
+        return (
+          <input
+            key={idx}
+            value=""
+            type="checkbox"
+            className={checkboxClass}
+            disabled
+            checked
+          />
+        );
       }
-      return <input key={idx} value="" type="checkbox" className={checkboxClass} disabled />;
+      return (
+        <input
+          key={idx}
+          value=""
+          type="checkbox"
+          className={checkboxClass}
+          disabled
+        />
+      );
     });
 
     setElements(els);
   }, [currentChecks, eligible]);
 
   return (
-    <div className={[elClass, "flex w-full pr-2 border-2 border-b-0 border-solid last-of-type:border-b-2",].join(" ")}>
+    <div
+      className={[
+        elClass,
+        "flex w-full pr-2 border-2 border-b-0 border-solid last-of-type:border-b-2",
+      ].join(" ")}
+    >
       <Cell imgSrc={imgSrc} id="" className="border-r-2" />
       {elements}
     </div>

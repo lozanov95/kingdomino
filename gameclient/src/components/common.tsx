@@ -105,11 +105,14 @@ export function Cell({
   id: string;
   imgSrc: string;
   onClick?: MouseEventHandler;
-  className?: string
+  className?: string;
 }) {
   return (
     <div
-      className={["max-w-[40px] max-h-[40px] lg:max-w-[90px] lg:max-h-[90px]", className].join(" ")}
+      className={[
+        "max-w-[40px] max-h-[40px] lg:max-w-[90px] lg:max-h-[90px] bg-zinc-600",
+        className,
+      ].join(" ")}
       id={id}
       onClick={onClick}
     >
@@ -137,7 +140,7 @@ export function Nobles({ amount }: { amount: number }) {
     }
   }
   return (
-    <div className="w-[15px] lg:w-[20px] mr-1 border-solid border-r-2 -m-1">
+    <div className="w-[15px] lg:w-[20px] bg-gray-600 text-center">
       {renderNobles()}
     </div>
   );
