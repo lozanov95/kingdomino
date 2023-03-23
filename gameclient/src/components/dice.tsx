@@ -12,23 +12,17 @@ export const DiceSection = memo(function DiceSection({
   handleDiceSelect: MouseEventHandler;
 }) {
   return (
-    <div className="max-w-screen-lg">
-      <div className="text-lg max-w-max text-center">
-        {dices ? <h2>Available dice</h2> : ""}
-        {dices?.map(({ name, nobles }, idx) => {
-          return (
-            <BoardCell
-              id={idx.toString()}
-              key={idx}
-              name={name}
-              nobles={nobles}
-              onClick={handleDiceSelect}
-            />
-          );
-        })}
+    <div className="max-w-[20%] text-center">
+      <div className="text-lg">
+        {dices ? <h2 className="font-bold">Available dice</h2> : ""}
+        <Row elements={dices} onClick={handleDiceSelect} />
       </div>
-      <div>
-        {selectedDice?.length ?? 0 > 0 ? <h2>Selected</h2> : ""}
+      <div className="text-lg">
+        {selectedDice?.length ?? 0 > 0 ? (
+          <h2 className="font-bold">Selected</h2>
+        ) : (
+          ""
+        )}
         <Row elements={selectedDice} onClick={handleDiceSelect} />
       </div>
     </div>
