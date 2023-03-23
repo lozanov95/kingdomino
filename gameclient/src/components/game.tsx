@@ -46,7 +46,7 @@ function Game() {
   function handleConnect(ev: SubmitEvent) {
     ev.preventDefault();
     setGameState(WebSocket.CONNECTING);
-    const ws = new WebSocket("ws://localhost:8080/join");
+    const ws = new WebSocket("ws://192.168.1.2:8080/join");
     setStatusMsg("Connecting...");
 
     ws.onopen = () => {
@@ -161,25 +161,35 @@ function Connect({
   setPlayerName: any;
 }) {
   return (
-    <div>
-      <form onSubmitCapture={connectHandler}>
+    <div className="text-center">
+      <form
+        onSubmitCapture={connectHandler}
+        className="flex flex-col max-w-fit p-2 m-auto"
+      >
         <h2>Enter your name</h2>
-        <input
-          placeholder="name"
-          minLength={3}
-          value={playerName}
-          onChange={(e) => setPlayerName(e.target.value)}
-          required
-        />
-        <button>Connect</button>
-        <RulesSection />
+        <div>
+          <input
+            placeholder="name"
+            minLength={3}
+            value={playerName}
+            onChange={(e) => setPlayerName(e.target.value)}
+            required
+            className="rounded text-gray-500"
+          />
+          <button className="m-2 p-1 rounded-lg bg-gray-700">Connect</button>
+        </div>
       </form>
+      <RulesSection />
     </div>
   );
 }
 
 const StatusPane = memo(function StatusPane({ message }: { message: string }) {
-  return <div className="bg-blue-900 text-white text-center py-1 lg:py-2">{message}</div>;
+  return (
+    <div className="bg-blue-900 text-white text-center py-1 lg:py-2">
+      {message}
+    </div>
+  );
 });
 
 export default Game;
