@@ -100,14 +100,16 @@ export function Cell({
   id,
   imgSrc,
   onClick,
+  className,
 }: {
   id: string;
   imgSrc: string;
   onClick?: MouseEventHandler;
+  className?: string
 }) {
   return (
     <div
-      className="max-w-[40px] max-h-[40px] lg:max-w-[90px] lg:max-h-[90px]"
+      className={["max-w-[40px] max-h-[40px] lg:max-w-[90px] lg:max-h-[90px]", className].join(" ")}
       id={id}
       onClick={onClick}
     >

@@ -10,7 +10,7 @@ export const Board = memo(function Board({
   handleOnClick: MouseEventHandler;
 }) {
   return (
-    <div className="flex flex-col max-w-fit col-start-2 col-end-4">
+    <div className="flex flex-col max-w-fit col-start-2 col-end-4 m-auto">
       {board?.map((el, idx) => {
         return (
           <Row
