@@ -10,7 +10,7 @@ export const Board = memo(function Board({
   handleOnClick: MouseEventHandler;
 }) {
   return (
-    <div>
+    <div className="flex flex-col max-w-fit col-start-2 col-end-4">
       {board?.map((el, idx) => {
         return (
           <Row
@@ -29,13 +29,15 @@ export function Row({
   elements,
   id,
   onClick,
+  className,
 }: {
   id?: string;
   elements: Domino[] | null;
   onClick?: MouseEventHandler;
+  className?: string;
 }) {
   return (
-    <div id={id}>
+    <div className={["flex flex-row", className].join(" ")} id={id}>
       {elements?.map(({ name, nobles }, idx) => {
         return (
           <BoardCell
@@ -63,7 +65,7 @@ export function BoardCell({
   onClick?: MouseEventHandler;
 }) {
   return (
-    <div>
+    <div className="flex border-solid first-of-type:border-t-2 border-x-2 border-b-2 max-w-fit p-1 m-0">
       <Nobles amount={nobles} />
       <Cell id={id} imgSrc={getBadgeIcon(name)} onClick={onClick} />
     </div>

@@ -8,7 +8,7 @@ const BonusBoard = memo(function BonusBoard({
   bonusCard: Bonus[] | null;
 }) {
   return (
-    <div>
+    <div className="col-start-4">
       {bonusCard
         ?.sort((a: Bonus, b: Bonus) => (a.name > b.name ? 1 : -1))
         .map(({ name, currentChecks, requiredChecks, eligible }, idx) => {

@@ -128,22 +128,27 @@ function Game() {
       ) : (
         <div className="lg:text-3xl">
           {statusMsg !== "" ? <StatusPane message={statusMsg} /> : ""}
-          {power.type !== 0 && !power.confirmed && (
-            <PowerPrompt handlePowerChoice={handlePowerChoice} power={power} />
-          )}
-          {gameState === WebSocket.OPEN && gameBoard !== undefined ? (
-            <>
-              <Board board={gameBoard} handleOnClick={handleBoardClick} />
-              <BonusBoard bonusCard={bonusCard} />
-              <DiceSection
-                selectedDice={selectedDice}
-                dices={dices}
-                handleDiceSelect={handleDiceSelect}
+          <div className="grid grid-cols-4">
+            {power.type !== 0 && !power.confirmed && (
+              <PowerPrompt
+                handlePowerChoice={handlePowerChoice}
+                power={power}
               />
-            </>
-          ) : (
-            ""
-          )}
+            )}
+            {gameState === WebSocket.OPEN && gameBoard !== undefined ? (
+              <>
+                <DiceSection
+                  selectedDice={selectedDice}
+                  dices={dices}
+                  handleDiceSelect={handleDiceSelect}
+                />
+                <Board board={gameBoard} handleOnClick={handleBoardClick} />
+                <BonusBoard bonusCard={bonusCard} />
+              </>
+            ) : (
+              ""
+            )}
+          </div>
         </div>
       )}
       {scoreboards !== null && <ScoreSection scoreboards={scoreboards} />}
