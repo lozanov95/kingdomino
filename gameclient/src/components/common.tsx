@@ -140,12 +140,12 @@ export function Nobles({ amount }: { amount: number }) {
     }
   }
   return (
-    <div className="w-[15px] lg:w-[20px] bg-gray-600 text-center">
+    <div className="w-[16px] lg:w-[20px] bg-gray-600 text-center">
       {renderNobles()}
     </div>
   );
 }
 
 export function Noble() {
-  return <div className="lg:text-xl">+</div>;
+  return <div className="w-[14px] h-[14px] bg-black rounded-full m-0.5 lg:w-[18px] lg:h-[18px]"></div>;
 }
