@@ -13,7 +13,7 @@ const BonusBoard = memo(function BonusBoard({
     <>
       {bonusCard !== null ?
         <div className="col-start-5 w-fit m-auto">
-          <h2>Bonuses</h2>
+          <h2 className="text-2xl font-bold text-center">Bonuses</h2>
           {bonusCard
             .sort((a: Bonus, b: Bonus) => (a.name > b.name ? 1 : -1))
             .map(({ name, currentChecks, requiredChecks, eligible }, idx) => {
@@ -47,7 +47,7 @@ function BonusCell({
   const [elements, setElements] = useState<JSX.Element[]>([]);
   const [elClass, setElClass] = useState("");
 
-  const checkboxClass = "lg:w-[30px]";
+  const checkboxClass = "lg:w-[30px] first-of-type:ml-1";
 
   useEffect(() => {
     let cs = "";
@@ -89,10 +89,10 @@ function BonusCell({
     <div
       className={[
         elClass,
-        "flex w-full pr-2 border-2 border-b-0 border-solid last-of-type:border-b-2",
+        "flex w-full m-2",
       ].join(" ")}
     >
-      <Cell imgSrc={imgSrc} id="" className="border-r-2" />
+      <Cell imgSrc={imgSrc} id={imgSrc} />
       {elements}
     </div>
   );
