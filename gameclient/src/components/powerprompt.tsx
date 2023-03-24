@@ -9,7 +9,7 @@ export function PowerPrompt({
 }) {
   return (
     <div className="row-start-1 col-start-2 col-end-4 bg-neutral-900 h-fit p-3 rounded-lg m-auto fixed top-[50%] left-[50%] translate-y-[-50%] translate-x-[-50%] opacity-90">
-      <div >
+      <div>
         <p className="text-center text-xl font-bold">
           Do you want to use the following power:
         </p>

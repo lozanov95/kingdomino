@@ -110,7 +110,7 @@ export function Cell({
   return (
     <div
       className={[
-        "max-w-[40px] max-h-[40px] lg:max-w-[90px] lg:max-h-[90px] bg-zinc-600",
+        "w-[40px] h-[40px] lg:w-[90px] lg:h-[90px] bg-zinc-600",
         className,
       ].join(" ")}
       id={id}

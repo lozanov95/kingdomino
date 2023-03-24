@@ -1,8 +1,8 @@
-import { getBadgeIcon, Scoreboard } from "./common";
+import { Cell, getBadgeIcon, Scoreboard } from "./common";
 
 export function ScoreSection({ scoreboards }: { scoreboards: Scoreboard[] }) {
   return (
-    <div>
+    <div className="flex justify-evenly">
       {scoreboards.map((scoreboard, idx) => {
         return <PlayerScoreboard scoreboard={scoreboard} key={idx} />;
       })}
@@ -13,7 +13,7 @@ export function ScoreSection({ scoreboards }: { scoreboards: Scoreboard[] }) {
 export function PlayerScoreboard({ scoreboard }: { scoreboard: Scoreboard }) {
   return (
     <div>
-      <p>{scoreboard.name}</p>
+      <p className="text-3xl">{scoreboard.name}</p>
       {scoreboard.scores.map((badgeScore, idx) => {
         return (
           <ScoreRow
@@ -23,8 +23,8 @@ export function PlayerScoreboard({ scoreboard }: { scoreboard: Scoreboard }) {
           />
         );
       })}
-      <div>
-        <span>Total score: {scoreboard.totalScore}</span>
+      <div className="text-2xl font-bold">
+        Total score: {scoreboard.totalScore}
       </div>
     </div>
   );
@@ -32,9 +32,9 @@ export function PlayerScoreboard({ scoreboard }: { scoreboard: Scoreboard }) {
 
 function ScoreRow({ badgeId, score }: { badgeId: number; score: number }) {
   return (
-    <div>
-      <img src={getBadgeIcon(badgeId)} />
-      <input value={score} disabled />
+    <div className="flex">
+      <Cell id="" imgSrc={getBadgeIcon(badgeId)} />
+      <input className="text-2xl font-bold text-center w-[40px] lg:w-[90px]" value={score} disabled />
     </div>
   );
 }
