@@ -3,7 +3,7 @@ import Navigation from "./components/nav";
 
 function App() {
   return (
-    <div className="mont-mono bg-zinc-800 text-white lg:h-screen box-border">
+    <div>
       <Navigation />
       <Game />
     </div>
