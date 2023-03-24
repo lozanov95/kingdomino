@@ -147,5 +147,5 @@ export function Nobles({ amount }: { amount: number }) {
 }
 
 export function Noble() {
-  return <div className="lg:text-xl">X</div>;
+  return <div className="lg:text-xl">+</div>;
 }

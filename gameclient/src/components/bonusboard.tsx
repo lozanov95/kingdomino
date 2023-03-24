@@ -7,23 +7,29 @@ const BonusBoard = memo(function BonusBoard({
 }: {
   bonusCard: Bonus[] | null;
 }) {
+
+
   return (
-    <div className="col-start-4 w-fit m-auto">
-      <h2>Bonuses</h2>
-      {bonusCard
-        ?.sort((a: Bonus, b: Bonus) => (a.name > b.name ? 1 : -1))
-        .map(({ name, currentChecks, requiredChecks, eligible }, idx) => {
-          return (
-            <BonusCell
-              key={idx}
-              imgSrc={getBadgeIcon(name)}
-              currentChecks={currentChecks}
-              requiredChecks={requiredChecks}
-              eligible={eligible}
-            />
-          );
-        })}
-    </div>
+    <>
+      {bonusCard !== null ?
+        <div className="col-start-5 w-fit m-auto">
+          <h2>Bonuses</h2>
+          {bonusCard
+            .sort((a: Bonus, b: Bonus) => (a.name > b.name ? 1 : -1))
+            .map(({ name, currentChecks, requiredChecks, eligible }, idx) => {
+              return (
+                <BonusCell
+                  key={idx}
+                  imgSrc={getBadgeIcon(name)}
+                  currentChecks={currentChecks}
+                  requiredChecks={requiredChecks}
+                  eligible={eligible}
+                />
+              );
+            })}
+        </div>
+        : ""}
+    </>
   );
 });
 

@@ -128,7 +128,7 @@ function Game() {
       ) : (
         <div className="lg:text-3xl">
           {statusMsg !== "" ? <StatusPane message={statusMsg} /> : ""}
-          <div className="grid grid-cols-4 grid-rows-1">
+          <div className="grid grid-cols-5 grid-rows-1">
             {gameState === WebSocket.OPEN && gameBoard !== undefined ? (
               <>
                 <DiceSection
