@@ -34,7 +34,11 @@ function ScoreRow({ badgeId, score }: { badgeId: number; score: number }) {
   return (
     <div className="flex">
       <Cell id="" imgSrc={getBadgeIcon(badgeId)} />
-      <input className="text-2xl font-bold text-center w-[40px] lg:w-[90px]" value={score} disabled />
+      <input
+        className="text-2xl font-bold text-center w-[40px] lg:w-[90px]"
+        value={score}
+        disabled
+      />
     </div>
   );
 }
