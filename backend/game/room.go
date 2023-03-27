@@ -64,7 +64,7 @@ var (
 
 const (
 	// The duration after which the player will be kicked for inactivity.
-	TIMEOUT = 2 * time.Minute
+	TIMEOUT = 60 * time.Minute
 )
 
 // Returns a new game room instance.
