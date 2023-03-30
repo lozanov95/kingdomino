@@ -10,6 +10,6 @@ WORKDIR /usr/src/kingdomino
 COPY ./go.mod ./go.sum ./main.go ./
 RUN go mod download && go mod verify
 COPY ./backend ./backend/
-RUN go build -v -o /usr/local/bin/kingdomino ./...
+RUN go build -v -o /usr/local/bin/ ./...
 COPY --from=fe /fe/dist/ ./ui/
 CMD ["kingdomino"]
