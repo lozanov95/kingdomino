@@ -1,23 +1,20 @@
+prod:
+	git pull
+	make run-container
+
 pretty:
 	npx prettier --write .
 
-build-fe:
-	npm --prefix ./gameclient run build
+dev:
+	make -j 2 dev-fe dev-be
 
-run-dev:
-	make -j 2 run-dev-fe run-dev-be
-
-run-dev-fe:
+dev-fe:
 	npm run --prefix gameclient dev
 
-run-dev-be:
+dev-be:
 	go run main.go -port 8080
 
-image:
-	docker image build -t dominoapp .
-
-container:
-	docker container rm dominocontainer -f
-	docker container run -dp 8080:80 --rm --name dominocontainer dominoapp
-
-run-prod:	build-fe 	image 	container
+run-container:
+	docker image build . -t domino
+	docker container rm -f c-domino
+	docker container run --restart always -dp 8080:80 --name c-domino domino
