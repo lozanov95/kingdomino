@@ -27,7 +27,7 @@ type Player struct {
 	Connected          bool
 	GameState          chan GameState
 	ClientMsg          chan string
-	Dices              []Badge
+	Dices              []Dice
 	mut                sync.RWMutex
 	SelectedCoatOfArms BadgeName
 }
@@ -62,7 +62,7 @@ func NewPlayer(conn Connectionable) *Player {
 		Connected: true,
 		GameState: make(chan GameState),
 		ClientMsg: make(chan string),
-		Dices:     []Badge{},
+		Dices:     []Dice{},
 		mut:       sync.RWMutex{},
 	}
 
@@ -70,7 +70,7 @@ func NewPlayer(conn Connectionable) *Player {
 }
 
 // Increases the bonus of a specific card
-func (p *Player) IncreaseBonus(b Badge) {
+func (p *Player) IncreaseBonus(b Dice) {
 	if b.Nobles != 0 {
 		return
 	}
@@ -145,11 +145,11 @@ func (p *Player) SendMessage(message string) {
 	p.GameState <- GameState{Message: message, SelectedDices: p.Dices}
 }
 
-func (p *Player) SendDice(d *[]Badge, m string) {
+func (p *Player) SendDice(d *[]Dice, m string) {
 	p.GameState <- GameState{Dices: d, Message: m, SelectedDices: p.Dices}
 }
 
-func (p *Player) SendGameState(d *[]Badge, m string) {
+func (p *Player) SendGameState(d *[]Dice, m string) {
 	p.GameState <- GameState{
 		ID:            p.Id,
 		Message:       m,
@@ -160,7 +160,7 @@ func (p *Player) SendGameState(d *[]Badge, m string) {
 	}
 }
 
-func (p *Player) SendPlayerPowerPrompt(d *[]Badge, pp PlayerPower) {
+func (p *Player) SendPlayerPowerPrompt(d *[]Dice, pp PlayerPower) {
 	p.GameState <- GameState{PlayerPower: pp, Dices: d, SelectedDices: p.Dices}
 }
 
@@ -168,7 +168,7 @@ func (p *Player) SendScoreboard(p1Score, p2Score *Scoreboard, m string) {
 	p.GameState <- GameState{Scoreboards: []Scoreboard{*p1Score, *p2Score}, Message: m}
 }
 
-func (p *Player) AddDice(d Badge) {
+func (p *Player) AddDice(d Dice) {
 	p.mut.Lock()
 	defer p.mut.Unlock()
 	p.Dices = append(p.Dices, d)
@@ -177,11 +177,11 @@ func (p *Player) AddDice(d Badge) {
 func (p *Player) ClearDice() {
 	p.mut.Lock()
 	defer p.mut.Unlock()
-	p.Dices = make([]Badge, 0)
+	p.Dices = make([]Dice, 0)
 }
 
 // Places domino on the field, following the placement rules
-func (p *Player) PlaceDomino(d *[]Badge) {
+func (p *Player) PlaceDomino(d *[]Dice) {
 	p.SendGameState(d, "Select the dice that you want to place")
 	choice := p.getSelectedDominoChoice()
 	prevPos := p.placeOnBoard(choice, BoardPlacementInput{
@@ -197,7 +197,7 @@ func (p *Player) PlaceDomino(d *[]Badge) {
 }
 
 // Allows the user to place 2 separate dominos
-func (p *Player) PlaceSeparatedDomino(d *[]Badge) {
+func (p *Player) PlaceSeparatedDomino(d *[]Dice) {
 	p.SendGameState(d, "Select the dice that you want to place")
 	choice := p.getSelectedDominoChoice()
 	p.placeOnBoard(choice, BoardPlacementInput{Board: p.Board, SeparateDice: true})
@@ -344,17 +344,17 @@ func (p *Player) GetName() string {
 	return p.Name
 }
 
-func (p *Player) AddBonus(b Badge) {
+func (p *Player) AddBonus(b Dice) {
 	p.BonusCard.AddBonus(b)
 }
 
-func (p *Player) SetBonusIneligible(b Badge) {
+func (p *Player) SetBonusIneligible(b Dice) {
 	bonus := (*p.BonusCard)[b.Name]
 	bonus.Eligible = false
 	(*p.BonusCard)[b.Name] = bonus
 }
 
-func (p *Player) IsBonusEligible(b Badge) bool {
+func (p *Player) IsBonusEligible(b Dice) bool {
 	return (*p.BonusCard)[b.Name].Eligible
 }
 

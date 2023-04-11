@@ -2,7 +2,7 @@ package game
 
 type BadgeName int
 
-type Badge struct {
+type Dice struct {
 	Name   BadgeName `json:"name"`
 	Nobles int       `json:"nobles"`
 }

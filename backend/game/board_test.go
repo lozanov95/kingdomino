@@ -4,11 +4,11 @@ import "testing"
 
 func TestIsCellMatching(t *testing.T) {
 	board := Board{
-		[7]Badge{{Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
-		[7]Badge{{Name: LINE, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
-		[7]Badge{{Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: CASTLE, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
-		[7]Badge{{Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
-		[7]Badge{{Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
+		[7]Dice{{Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
+		[7]Dice{{Name: LINE, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
+		[7]Dice{{Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: CASTLE, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
+		[7]Dice{{Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
+		[7]Dice{{Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
 	}
 
 	if !board.isCellMatching(DiePos{Row: 0, Cell: 0}, DOT) {
@@ -21,11 +21,11 @@ func TestIsCellMatching(t *testing.T) {
 
 func TestCalculateBadgePoints(t *testing.T) {
 	board := Board{
-		[7]Badge{{Name: DOT, Nobles: 0}, {Name: CHECKED, Nobles: 0}, {Name: DOUBLEDOT, Nobles: 1}, {Name: DOUBLEDOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
-		[7]Badge{{Name: CHECKED, Nobles: 0}, {Name: CHECKED, Nobles: 1}, {Name: CHECKED, Nobles: 0}, {Name: DOUBLEDOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
-		[7]Badge{{Name: DOT, Nobles: 0}, {Name: FILLED, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: CASTLE, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
-		[7]Badge{{Name: FILLED, Nobles: 2}, {Name: FILLED, Nobles: 0}, {Name: FILLED, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOUBLEDOT, Nobles: 1}, {Name: DOUBLEDOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
-		[7]Badge{{Name: FILLED, Nobles: 1}, {Name: FILLED, Nobles: 1}, {Name: FILLED, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOUBLEDOT, Nobles: 1}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
+		[7]Dice{{Name: DOT, Nobles: 0}, {Name: CHECKED, Nobles: 0}, {Name: DOUBLEDOT, Nobles: 1}, {Name: DOUBLEDOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
+		[7]Dice{{Name: CHECKED, Nobles: 0}, {Name: CHECKED, Nobles: 1}, {Name: CHECKED, Nobles: 0}, {Name: DOUBLEDOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
+		[7]Dice{{Name: DOT, Nobles: 0}, {Name: FILLED, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: CASTLE, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
+		[7]Dice{{Name: FILLED, Nobles: 2}, {Name: FILLED, Nobles: 0}, {Name: FILLED, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOUBLEDOT, Nobles: 1}, {Name: DOUBLEDOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
+		[7]Dice{{Name: FILLED, Nobles: 1}, {Name: FILLED, Nobles: 1}, {Name: FILLED, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOUBLEDOT, Nobles: 1}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
 	}
 
 	pts, dms := board.CalculateBadgePoints(CHECKED)

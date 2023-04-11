@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-type Board [5][7]Badge
+type Board [5][7]Dice
 
 type BoardResult struct {
 	Count  int
@@ -38,7 +38,7 @@ func (br *BoardResult) CalculatePoints() int {
 
 func NewBoard() *Board {
 	var newB Board
-	newB[2][3] = Badge{CASTLE, 0}
+	newB[2][3] = Dice{CASTLE, 0}
 	return &newB
 }
 

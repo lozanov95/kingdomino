@@ -7,7 +7,7 @@ import (
 )
 
 func TestIncrementWithoutNobles(t *testing.T) {
-	b := Badge{Name: LINE, Nobles: 0}
+	b := Dice{Name: LINE, Nobles: 0}
 	p := NewPlayer(&websocket.Conn{})
 
 	p.IncreaseBonus(b)
@@ -18,7 +18,7 @@ func TestIncrementWithoutNobles(t *testing.T) {
 }
 
 func TestIncrementWithNobles(t *testing.T) {
-	b := Badge{Name: LINE, Nobles: 1}
+	b := Dice{Name: LINE, Nobles: 1}
 	p := NewPlayer(&websocket.Conn{})
 
 	p.IncreaseBonus(b)
@@ -31,11 +31,11 @@ func TestIncrementWithNobles(t *testing.T) {
 func TestCalculatePoints(t *testing.T) {
 	p := NewPlayer(&websocket.Conn{})
 	p.Board = &Board{
-		[7]Badge{{Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
-		[7]Badge{{Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
-		[7]Badge{{Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: CASTLE, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
-		[7]Badge{{Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
-		[7]Badge{{Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
+		[7]Dice{{Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
+		[7]Dice{{Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
+		[7]Dice{{Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: CASTLE, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
+		[7]Dice{{Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
+		[7]Dice{{Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
 	}
 
 	score := p.CalculateScore()
@@ -46,11 +46,11 @@ func TestCalculatePoints(t *testing.T) {
 	p1 := NewPlayer(&websocket.Conn{})
 	p1.SelectedCoatOfArms = LINE
 	p1.Board = &Board{
-		[7]Badge{{Name: LINE, Nobles: 1}, {Name: DOT, Nobles: 0}, {Name: CHECKED, Nobles: 2}, {Name: LINE, Nobles: 1}, {Name: LINE, Nobles: 0}, {Name: FILLED, Nobles: 1}, {Name: FILLED, Nobles: 2}},
-		[7]Badge{{Name: LINE, Nobles: 0}, {Name: LINE, Nobles: 0}, {Name: CHECKED, Nobles: 0}, {Name: CHECKED, Nobles: 0}, {Name: LINE, Nobles: 0}, {Name: FILLED, Nobles: 0}, {Name: DOT, Nobles: 0}},
-		[7]Badge{{Name: LINE, Nobles: 1}, {Name: LINE, Nobles: 2}, {Name: CHECKED, Nobles: 1}, {Name: CASTLE, Nobles: 0}, {Name: LINE, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
-		[7]Badge{{Name: LINE, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: CHECKED, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: LINE, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
-		[7]Badge{{Name: DOT, Nobles: 0}, {Name: LINE, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: LINE, Nobles: 0}, {Name: LINE, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
+		[7]Dice{{Name: LINE, Nobles: 1}, {Name: DOT, Nobles: 0}, {Name: CHECKED, Nobles: 2}, {Name: LINE, Nobles: 1}, {Name: LINE, Nobles: 0}, {Name: FILLED, Nobles: 1}, {Name: FILLED, Nobles: 2}},
+		[7]Dice{{Name: LINE, Nobles: 0}, {Name: LINE, Nobles: 0}, {Name: CHECKED, Nobles: 0}, {Name: CHECKED, Nobles: 0}, {Name: LINE, Nobles: 0}, {Name: FILLED, Nobles: 0}, {Name: DOT, Nobles: 0}},
+		[7]Dice{{Name: LINE, Nobles: 1}, {Name: LINE, Nobles: 2}, {Name: CHECKED, Nobles: 1}, {Name: CASTLE, Nobles: 0}, {Name: LINE, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
+		[7]Dice{{Name: LINE, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: CHECKED, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: LINE, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
+		[7]Dice{{Name: DOT, Nobles: 0}, {Name: LINE, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: LINE, Nobles: 0}, {Name: LINE, Nobles: 0}, {Name: DOT, Nobles: 0}, {Name: DOT, Nobles: 0}},
 	}
 
 	score = p1.CalculateScore()
@@ -64,7 +64,7 @@ func TestPlaceDomino(t *testing.T) {
 		{SelectedDie: 0}, {DiePos: DiePos{Cell: 3, Row: 3}},
 		{SelectedDie: 0}, {DiePos: DiePos{Cell: 4, Row: 3}},
 	})
-	dice := []Badge{{Name: DOT}, {Name: FILLED}}
+	dice := []Dice{{Name: DOT}, {Name: FILLED}}
 	player.Dices = dice
 	player.PlaceDomino(&dice)
 
@@ -84,7 +84,7 @@ func TestPlaceDominoInvalidInput(t *testing.T) {
 		{SelectedDie: 0}, {DiePos: DiePos{Cell: 3, Row: 3}},
 		{SelectedDie: 0}, {DiePos: DiePos{Cell: 4, Row: 3}},
 	})
-	dice := []Badge{{Name: DOT}, {Name: FILLED}}
+	dice := []Dice{{Name: DOT}, {Name: FILLED}}
 	player.Dices = dice
 	player.PlaceDomino(&dice)
 
@@ -110,7 +110,7 @@ func TestSeparatedDomino(t *testing.T) {
 		{{Name: DOT}, {Name: LINE}, {Name: LINE}, {Name: DOT}, {Name: DOT}, {Name: DOT}, {Name: DOT}},
 		{{Name: DOT}, {Name: LINE}, {Name: LINE}, {Name: DOT}, {Name: DOT}, {Name: DOT}, {Name: EMPTY}},
 	}
-	dice := []Badge{{Name: DOT}, {Name: FILLED}}
+	dice := []Dice{{Name: DOT}, {Name: FILLED}}
 	player.Dices = dice
 	player.PlaceSeparatedDomino(&dice)
 	row, cell := 0, 0
@@ -128,9 +128,9 @@ func TestUseAddNoblePower(t *testing.T) {
 	p := NewMockPlayer([]ClientPayload{
 		{DiePos: DiePos{Row: 2, Cell: 2}},
 	})
-	p.AddBonus(Badge{Name: CHECKED})
-	p.AddBonus(Badge{Name: CHECKED})
-	p.AddBonus(Badge{Name: CHECKED})
+	p.AddBonus(Dice{Name: CHECKED})
+	p.AddBonus(Dice{Name: CHECKED})
+	p.AddBonus(Dice{Name: CHECKED})
 	testBoard := Board{
 		{{Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}},
 		{{Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}},
@@ -141,7 +141,7 @@ func TestUseAddNoblePower(t *testing.T) {
 	p.Board = &(testBoard)
 	p.handleUseAddNoblePower()
 
-	testBadge := Badge{Name: FILLED, Nobles: 1}
+	testBadge := Dice{Name: FILLED, Nobles: 1}
 	if p.Board[2][2] != testBadge {
 		t.Errorf("Expected %+v, got %+v", testBadge, p.Board[2][2])
 	}
@@ -154,9 +154,9 @@ func TestUseAddNoblePowerEmptyValidation(t *testing.T) {
 		{DiePos: DiePos{Row: 0, Cell: 0}},
 		{DiePos: DiePos{Row: 2, Cell: 2}},
 	})
-	p.AddBonus(Badge{Name: CHECKED})
-	p.AddBonus(Badge{Name: CHECKED})
-	p.AddBonus(Badge{Name: CHECKED})
+	p.AddBonus(Dice{Name: CHECKED})
+	p.AddBonus(Dice{Name: CHECKED})
+	p.AddBonus(Dice{Name: CHECKED})
 	testBoard := Board{
 		{{Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}},
 		{{Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}, {Name: EMPTY}},
@@ -167,7 +167,7 @@ func TestUseAddNoblePowerEmptyValidation(t *testing.T) {
 	p.Board = &(testBoard)
 	p.handleUseAddNoblePower()
 
-	testBadge := Badge{Name: FILLED, Nobles: 1}
+	testBadge := Dice{Name: FILLED, Nobles: 1}
 	if p.Board[2][2] != testBadge {
 		t.Errorf("Expected %+v, got %+v", testBadge, p.Board[2][2])
 	}
@@ -186,7 +186,7 @@ func TestUseAddNoblePowerNotCompletedBonus(t *testing.T) {
 	p.Board = &(testBoard)
 	p.handleUseAddNoblePower()
 
-	testBadge := Badge{Name: FILLED, Nobles: 0}
+	testBadge := Dice{Name: FILLED, Nobles: 0}
 	if p.Board[2][2] != testBadge {
 		t.Errorf("Expected %+v, got %+v", testBadge, p.Board[2][2])
 	}
@@ -205,7 +205,7 @@ func TestGetPlayerPowerChoice(t *testing.T) {
 
 func TestHandleIgnoreConnectionRulesPower(t *testing.T) {
 	p := NewMockPlayer([]ClientPayload{{PlayerPower: PlayerPower{Confirmed: true, Use: true}}})
-	badge := Badge{Name: getBonusBadge(PWRNoConnectionRules)}
+	badge := Dice{Name: getBonusBadge(PWRNoConnectionRules)}
 	for i := 0; i < 5; i++ {
 		p.IncreaseBonus(badge)
 	}

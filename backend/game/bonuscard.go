@@ -121,7 +121,7 @@ func (bm *BonusMap) MarshalJSON() ([]byte, error) {
 	return []byte(sb.String()), nil
 }
 
-func (bm *BonusMap) AddBonus(d Badge) {
+func (bm *BonusMap) AddBonus(d Dice) {
 	if d.Nobles > 0 {
 		return
 	}

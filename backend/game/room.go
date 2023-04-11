@@ -39,13 +39,13 @@ type GameState struct {
 	BonusCard *BonusMap `json:"bonusCard"`
 
 	// The available dice for selection
-	Dices *[]Badge `json:"dices"`
+	Dices *[]Dice `json:"dices"`
 
 	// The available wizard power to the player
 	PlayerPower `json:"playerPower"`
 
 	// The list of currently selected dice be the player
-	SelectedDices []Badge `json:"selectedDice"`
+	SelectedDices []Dice `json:"selectedDice"`
 
 	Scoreboards []Scoreboard `json:"scoreboards"`
 }
@@ -162,7 +162,7 @@ func (gr *GameRoom) gameLoop() {
 }
 
 // Handles the situation where two players take turns to choose a die
-func (gr *GameRoom) handleDicesSelection(dice *[]Badge, p1, p2 *Player) {
+func (gr *GameRoom) handleDicesSelection(dice *[]Dice, p1, p2 *Player) {
 	for _, player := range gr.Players {
 		player.ClearDice()
 	}
@@ -195,7 +195,7 @@ func (gr *GameRoom) handleDicesSelection(dice *[]Badge, p1, p2 *Player) {
 }
 
 // Handles the situation of a single player choosing a die
-func (gr *GameRoom) handleDiceChoice(d *[]Badge, p, p2 *Player) {
+func (gr *GameRoom) handleDiceChoice(d *[]Dice, p, p2 *Player) {
 	for {
 		for _, player := range gr.Players {
 			if !player.Connected {
@@ -215,7 +215,7 @@ func (gr *GameRoom) handleDiceChoice(d *[]Badge, p, p2 *Player) {
 			if p.GetPlayerPowerChoice() {
 				p.UsePower(PWRSelectDieSideOfChoice)
 				p.SendMessage("Select which die you want to turn")
-				choice = func(d *[]Badge) int {
+				choice = func(d *[]Dice) int {
 					for {
 						payload := p.GetInput()
 						if (*d)[payload.SelectedDie].Name == EMPTY {
@@ -280,7 +280,7 @@ func (gr *GameRoom) handleDiceChoice(d *[]Badge, p, p2 *Player) {
 }
 
 // Handles the place domino section
-func (gr *GameRoom) handlePlaceDomino(wg *sync.WaitGroup, player *Player, dice *[]Badge) {
+func (gr *GameRoom) handlePlaceDomino(wg *sync.WaitGroup, player *Player, dice *[]Dice) {
 	defer func() {
 		if err := recover(); err != nil {
 			log.Println(err)
@@ -337,8 +337,8 @@ func (gr *GameRoom) IsFull() bool {
 	return len(gr.Players) >= gr.PlayerLimit
 }
 
-func handleQuestionmark(d *[]Badge, choice int, p *Player) {
-	newDice := &[]Badge{
+func handleQuestionmark(d *[]Dice, choice int, p *Player) {
+	newDice := &[]Dice{
 		{Name: DOT},
 		{Name: LINE},
 		{Name: DOUBLEDOT},

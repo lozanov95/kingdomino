@@ -6,7 +6,7 @@ import (
 )
 
 type Game struct {
-	dices [4][]Badge
+	dices [4][]Dice
 	p1    *Player
 	p2    *Player
 }
@@ -23,7 +23,7 @@ func NewGame(p1, p2 *Player) *Game {
 
 // Creates and setups the correct Dice sides
 func (g *Game) setupDice() {
-	g.dices = [4][]Badge{
+	g.dices = [4][]Dice{
 		{
 			{Name: QUESTIONMARK, Nobles: 0},
 			{Name: DOT, Nobles: 0},
@@ -58,8 +58,8 @@ func (g *Game) setupDice() {
 	}
 }
 
-func (g *Game) RollDice() *[]Badge {
-	d := make([]Badge, 4)
+func (g *Game) RollDice() *[]Dice {
+	d := make([]Dice, 4)
 	seed := time.Now().UnixNano()
 	source := rand.NewSource(seed)
 	r := rand.New(source)
