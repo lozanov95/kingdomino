@@ -18,3 +18,6 @@ run-container:
 	docker image build . -t domino
 	docker container rm -f c-domino
 	docker container run --restart always -dp 8080:80 --name c-domino domino
+
+test:
+	go test -v ./...
