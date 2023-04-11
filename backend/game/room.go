@@ -58,6 +58,12 @@ type GameRoom struct {
 	Game        *Game
 }
 
+type DiceResult struct {
+	*Dice      `json:"dice"`
+	IsSelected bool  `json:"isSelected"`
+	PlayerId   int64 `json:"playerId"`
+}
+
 var (
 	ErrGameRoomFull = errors.New("the game room is full")
 )
