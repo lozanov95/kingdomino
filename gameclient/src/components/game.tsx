@@ -1,4 +1,4 @@
-import { useState, MouseEvent, memo, useContext } from "react";
+import { useState, MouseEvent, memo } from "react";
 import BonusBoard from "./bonusboard";
 import {
   Bonus,
