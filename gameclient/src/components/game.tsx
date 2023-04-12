@@ -89,7 +89,7 @@ function Game() {
         dices !== null && setDices(dices);
         setPower(playerPower);
         setScoreboards(scoreboards);
-        setPlayerId(id);
+        id !== 0 ? setPlayerId(id) : ""
       }
     };
   }

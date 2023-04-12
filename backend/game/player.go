@@ -27,7 +27,7 @@ type Player struct {
 	Connected          bool
 	GameState          chan GameState
 	ClientMsg          chan string
-	Dices              []Dice
+	Dices              []DiceResult
 	mut                sync.RWMutex
 	SelectedCoatOfArms BadgeName
 }
@@ -166,18 +166,6 @@ func (p *Player) SendScoreboard(p1Score, p2Score *Scoreboard, m string) {
 	p.GameState <- GameState{Scoreboards: []Scoreboard{*p1Score, *p2Score}, Message: m}
 }
 
-func (p *Player) AddDice(d Dice) {
-	p.mut.Lock()
-	defer p.mut.Unlock()
-	p.Dices = append(p.Dices, d)
-}
-
-func (p *Player) ClearDice() {
-	p.mut.Lock()
-	defer p.mut.Unlock()
-	p.Dices = make([]Dice, 0)
-}
-
 // Places domino on the field, following the placement rules
 func (p *Player) PlaceDomino(d *[]DiceResult) {
 	p.SendGameState(d, "Select the dice that you want to place")
@@ -186,9 +174,8 @@ func (p *Player) PlaceDomino(d *[]DiceResult) {
 		Board:                 p.Board,
 		IgnoreConnectionRules: p.handleIgnoreConnectionRulesPower(),
 	})
-	p.SendGameState(d, "")
 
-	p.SendMessage("Select the dice that you want to place")
+	p.SendGameState(d, "Select the dice that you want to place")
 	choice = p.getSelectedDominoChoice(d)
 	p.placeOnBoard(d, choice, BoardPlacementInput{PrevPosition: prevPos, Board: p.Board})
 	p.SendGameState(d, "Waiting for all players to complete their turns.")
@@ -199,9 +186,8 @@ func (p *Player) PlaceSeparatedDomino(d *[]DiceResult) {
 	p.SendGameState(d, "Select the dice that you want to place")
 	choice := p.getSelectedDominoChoice(d)
 	p.placeOnBoard(d, choice, BoardPlacementInput{Board: p.Board, SeparateDice: true})
-	p.SendGameState(d, "")
 
-	p.SendMessage("Select the dice that you want to place")
+	p.SendGameState(d, "Select the dice that you want to place")
 	choice = p.getSelectedDominoChoice(d)
 	p.placeOnBoard(d, choice, BoardPlacementInput{Board: p.Board, SeparateDice: true})
 	p.SendGameState(d, "Waiting for all players to complete their turns.")

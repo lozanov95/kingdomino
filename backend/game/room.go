@@ -157,19 +157,11 @@ func (gr *GameRoom) gameLoop() {
 		}
 
 		wg.Wait()
-
-		for _, player := range gr.Players {
-			player.ClearDice()
-		}
 	}
 }
 
 // Handles the situation where two players take turns to choose a die
 func (gr *GameRoom) handleDicesSelection(dice *[]DiceResult, p1, p2 *Player) {
-	for _, player := range gr.Players {
-		player.ClearDice()
-	}
-
 	p1.handleUseAddNoblePower()
 	p2.handleUseAddNoblePower()
 	p1.handleAddDomainPointsPower()
