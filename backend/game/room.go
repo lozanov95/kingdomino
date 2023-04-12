@@ -237,7 +237,7 @@ func (gr *GameRoom) handleDiceChoice(d *[]DiceResult, p, p2 *Player) {
 				selectedDie := gr.Game.dices[choice][payload.SelectedDie]
 
 				if selectedDie.Name == QUESTIONMARK {
-					handleQuestionmark(d, p)
+					handleQuestionmark(d, choice, p)
 					return
 				}
 
@@ -261,7 +261,7 @@ func (gr *GameRoom) handleDiceChoice(d *[]DiceResult, p, p2 *Player) {
 		}
 
 		if (*d)[choice].Name == QUESTIONMARK {
-			handleQuestionmark(d, p)
+			handleQuestionmark(d, choice, p)
 			return
 		}
 
@@ -354,7 +354,7 @@ func isDicePlaceChoiceValid(availableDice *[]DiceResult, choice int) bool {
 	return true
 }
 
-func handleQuestionmark(d *[]DiceResult, p *Player) {
+func handleQuestionmark(d *[]DiceResult, initialChoice int, p *Player) {
 	newDice := &[]DiceResult{
 		*NewDiceResult(&Dice{Name: DOT}),
 		*NewDiceResult(&Dice{Name: LINE}),
@@ -374,8 +374,8 @@ func handleQuestionmark(d *[]DiceResult, p *Player) {
 			log.Println("Invalid choice")
 			continue
 		}
-
-		p.SelectDie(&(*newDice)[choice])
+		(*d)[initialChoice] = (*newDice)[choice]
+		p.SelectDie(&(*d)[initialChoice])
 
 		return
 	}
