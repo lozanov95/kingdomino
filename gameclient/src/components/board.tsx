@@ -1,4 +1,4 @@
-import { memo, MouseEventHandler, MouseEvent } from "react";
+import { memo, MouseEventHandler } from "react";
 import { Domino, Badge, getBadgeIcon } from "./common";
 import { Nobles, Cell } from "./common";
 
@@ -36,6 +36,7 @@ export function Row({
   onClick?: MouseEventHandler;
   className?: string;
 }) {
+
   return (
     <div
       className={["flex flex-row max-w-fit m-auto", className].join(" ")}
@@ -63,16 +64,18 @@ export function BoardCell({
   nobles,
   onClick,
   className,
+  nobleColor,
 }: {
   id: string;
   name: Badge;
   nobles: number;
   onClick?: MouseEventHandler;
   className?: string;
+  nobleColor?: string;
 }) {
   return (
     <div className={["flex max-w-fit p-1", className].join(" ")}>
-      <Nobles amount={nobles} />
+      <Nobles amount={nobles} color={nobleColor} />
       <Cell id={id} imgSrc={getBadgeIcon(name)} onClick={onClick} />
     </div>
   );

@@ -32,12 +32,17 @@ export type Scoreboard = {
   totalScore: number;
 };
 
+export type DiceResult = {
+  dice: Domino;
+  isSelected: boolean;
+  playerId: number;
+}
+
 export type GameState = {
   bonusCard: Bonus[];
   message: string;
   board: Domino[][];
-  dices: Domino[];
-  selectedDice: Domino[];
+  dices: DiceResult[];
   playerPower: PlayerPower;
   scoreboards: Scoreboard[];
 };
@@ -121,7 +126,7 @@ export function Cell({
   );
 }
 
-export function Nobles({ amount }: { amount: number }) {
+export function Nobles({ amount, color }: { amount: number, color?: string }) {
   function renderNobles() {
     switch (amount) {
       case 0:
@@ -140,7 +145,7 @@ export function Nobles({ amount }: { amount: number }) {
     }
   }
   return (
-    <div className="w-[16px] lg:w-[20px] bg-gray-600 text-center">
+    <div className={["w-[16px] lg:w-[20px] text-center", color ?? "bg-gray-600"].join(" ")}>
       {renderNobles()}
     </div>
   );

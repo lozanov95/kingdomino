@@ -7,6 +7,7 @@ import {
   ServerPayload,
   PlayerPower,
   Scoreboard,
+  DiceResult,
 } from "./common";
 import { Board } from "./board";
 import { DiceSection } from "./dice";
@@ -15,14 +16,14 @@ import { RulesSection } from "./rules";
 import { ScoreSection } from "./scoreboard";
 
 function Game() {
-  const [gameState, setGameState] = useState(WebSocket.CLOSED);
+  const [gameState, setGameState] = useState<number>(WebSocket.CLOSED);
   const [wsConn, setWsConn] = useState<WebSocket | null>(null);
   const [statusMsg, setStatusMsg] = useState("");
   const [playerName, setPlayerName] = useState("");
   const [gameBoard, setGameBoard] = useState<Domino[][] | null>(null);
   const [bonusCard, setBonusCard] = useState<Bonus[] | null>(null);
   const [scoreboards, setScoreboards] = useState<Scoreboard[] | null>(null);
-  const [dices, setDices] = useState<Domino[] | null>(null);
+  const [dices, setDices] = useState<DiceResult[] | null>(null);
   const [selectedDice, setSelectedDice] = useState<Domino[] | null>(null);
   const [power, setPower] = useState<PlayerPower>({
     type: 0,
@@ -78,7 +79,6 @@ function Game() {
           bonusCard,
           message,
           dices,
-          selectedDice,
           playerPower,
           scoreboards,
         }: GameState = JSON.parse(d);
