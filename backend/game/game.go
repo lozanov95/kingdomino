@@ -59,7 +59,7 @@ func (g *Game) setupDice() {
 }
 
 func (g *Game) RollDice() *[]DiceResult {
-	d := []DiceResult{}
+	d := make([]DiceResult, 4)
 	seed := time.Now().UnixNano()
 	source := rand.NewSource(seed)
 	r := rand.New(source)
