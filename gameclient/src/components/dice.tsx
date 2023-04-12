@@ -25,11 +25,11 @@ export const DiceSection = memo(function DiceSection({
 function DiceSelectCell({ diceResult, id, onClick, playerId }: { diceResult: DiceResult, id: string, onClick: MouseEventHandler, playerId: number }) {
 
   return (
-    <BoardCell onClick={onClick} name={diceResult.dice.name} nobles={diceResult.dice.nobles} id={id} nobleColor={GetNobleColor(playerId, diceResult.playerId, diceResult.isSelected)} />
+    <BoardCell className={diceResult.isPlaced && diceResult.playerId === playerId ? "grayscale" : ""} onClick={onClick} name={diceResult.dice.name} nobles={diceResult.dice.nobles} id={id} nobleColor={GetNobleColor(playerId, diceResult.playerId, diceResult.isSelected)} />
   )
 }
 
-function GetNobleColor(playerId: number, dicePlayerId: number, isSelected: boolean,) {
+function GetNobleColor(playerId: number, dicePlayerId: number, isSelected: boolean) {
   if (!isSelected) {
     return "bg-gray-600"
   }
