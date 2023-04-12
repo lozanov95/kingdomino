@@ -254,7 +254,7 @@ func (gr *GameRoom) handleDiceChoice(d *[]DiceResult, p, p2 *Player) {
 			choice = payload.SelectedDie
 		}
 
-		if !isDiceChoiceValid(d, choice) {
+		if !isDicePickChoiceValid(d, choice) {
 			p.SendMessage("Invalid choice!")
 			log.Println("Invalid choice")
 			continue
@@ -332,10 +332,21 @@ func (gr *GameRoom) IsFull() bool {
 	return len(gr.Players) >= gr.PlayerLimit
 }
 
-func isDiceChoiceValid(availableDice *[]DiceResult, choice int) bool {
+func isDicePickChoiceValid(availableDice *[]DiceResult, choice int) bool {
 	if choice < 0 ||
 		choice >= len(*availableDice) ||
 		(*availableDice)[choice].IsSelected {
+
+		return false
+	}
+
+	return true
+}
+
+func isDicePlaceChoiceValid(availableDice *[]DiceResult, choice int) bool {
+	if choice < 0 ||
+		choice >= len(*availableDice) ||
+		(*availableDice)[choice].IsPlaced {
 
 		return false
 	}
@@ -358,7 +369,7 @@ func handleQuestionmark(d *[]DiceResult, p *Player) {
 		payload := p.GetInput()
 		choice := payload.SelectedDie
 
-		if !isDiceChoiceValid(newDice, choice) {
+		if !isDicePickChoiceValid(newDice, choice) {
 			p.SendMessage("Invalid choice!")
 			log.Println("Invalid choice")
 			continue
