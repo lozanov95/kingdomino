@@ -58,6 +58,7 @@ type DiceResult struct {
 	*Dice      `json:"dice"`
 	IsSelected bool  `json:"isSelected"`
 	PlayerId   int64 `json:"playerId"`
+	IsPlaced   bool  `json:"isPlaced"`
 }
 
 var (

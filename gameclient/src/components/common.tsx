@@ -36,6 +36,7 @@ export type DiceResult = {
   dice: Domino;
   isSelected: boolean;
   playerId: number;
+  isPlaced: boolean;
 }
 
 export type GameState = {
