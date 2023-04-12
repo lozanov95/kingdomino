@@ -62,7 +62,6 @@ func NewPlayer(conn Connectionable) *Player {
 		Connected: true,
 		GameState: make(chan GameState),
 		ClientMsg: make(chan string),
-		Dices:     []Dice{},
 		mut:       sync.RWMutex{},
 	}
 
@@ -142,26 +141,25 @@ func (p *Player) GetInput() ClientPayload {
 }
 
 func (p *Player) SendMessage(message string) {
-	p.GameState <- GameState{Message: message, SelectedDices: p.Dices}
+	p.GameState <- GameState{Message: message}
 }
 
-func (p *Player) SendDice(d *[]Dice, m string) {
-	p.GameState <- GameState{Dices: d, Message: m, SelectedDices: p.Dices}
+func (p *Player) SendDice(d *[]DiceResult, m string) {
+	p.GameState <- GameState{Dices: d, Message: m}
 }
 
-func (p *Player) SendGameState(d *[]Dice, m string) {
+func (p *Player) SendGameState(d *[]DiceResult, m string) {
 	p.GameState <- GameState{
-		ID:            p.Id,
-		Message:       m,
-		Board:         p.Board,
-		BonusCard:     p.BonusCard,
-		Dices:         d,
-		SelectedDices: p.Dices,
+		ID:        p.Id,
+		Message:   m,
+		Board:     p.Board,
+		BonusCard: p.BonusCard,
+		Dices:     d,
 	}
 }
 
-func (p *Player) SendPlayerPowerPrompt(d *[]Dice, pp PlayerPower) {
-	p.GameState <- GameState{PlayerPower: pp, Dices: d, SelectedDices: p.Dices}
+func (p *Player) SendPlayerPowerPrompt(d *[]DiceResult, pp PlayerPower) {
+	p.GameState <- GameState{PlayerPower: pp, Dices: d}
 }
 
 func (p *Player) SendScoreboard(p1Score, p2Score *Scoreboard, m string) {
@@ -181,9 +179,9 @@ func (p *Player) ClearDice() {
 }
 
 // Places domino on the field, following the placement rules
-func (p *Player) PlaceDomino(d *[]Dice) {
+func (p *Player) PlaceDomino(d *[]DiceResult) {
 	p.SendGameState(d, "Select the dice that you want to place")
-	choice := p.getSelectedDominoChoice()
+	choice := p.getSelectedDominoChoice(d)
 	prevPos := p.placeOnBoard(choice, BoardPlacementInput{
 		Board:                 p.Board,
 		IgnoreConnectionRules: p.handleIgnoreConnectionRulesPower(),
@@ -191,32 +189,32 @@ func (p *Player) PlaceDomino(d *[]Dice) {
 	p.SendGameState(d, "")
 
 	p.SendMessage("Select the dice that you want to place")
-	choice = p.getSelectedDominoChoice()
+	choice = p.getSelectedDominoChoice(d)
 	p.placeOnBoard(choice, BoardPlacementInput{PrevPosition: prevPos, Board: p.Board})
 	p.SendGameState(d, "Waiting for all players to complete their turns.")
 }
 
 // Allows the user to place 2 separate dominos
-func (p *Player) PlaceSeparatedDomino(d *[]Dice) {
+func (p *Player) PlaceSeparatedDomino(d *[]DiceResult) {
 	p.SendGameState(d, "Select the dice that you want to place")
-	choice := p.getSelectedDominoChoice()
+	choice := p.getSelectedDominoChoice(d)
 	p.placeOnBoard(choice, BoardPlacementInput{Board: p.Board, SeparateDice: true})
 	p.SendGameState(d, "")
 
 	p.SendMessage("Select the dice that you want to place")
-	choice = p.getSelectedDominoChoice()
+	choice = p.getSelectedDominoChoice(d)
 	p.placeOnBoard(choice, BoardPlacementInput{Board: p.Board, SeparateDice: true})
 	p.SendGameState(d, "Waiting for all players to complete their turns.")
 }
 
-func (p *Player) getSelectedDominoChoice() int {
+func (p *Player) getSelectedDominoChoice(dr *[]DiceResult) int {
 	for {
 		var choice int
 		payload := p.GetInput()
 
 		choice = payload.SelectedDie
 
-		if choice < 0 || len(p.Dices) <= choice || p.Dices[choice].Name == EMPTY {
+		if !isDiceChoiceValid(dr, choice) {
 			p.SendMessage("Invalid choice!")
 			continue
 		}
@@ -430,4 +428,10 @@ func (p *Player) handleAddDomainPointsPower() {
 
 	p.UsePower(PWRDomainPoints)
 	p.SelectedCoatOfArms = p.Board[payload.DiePos.Row][payload.DiePos.Cell].Name
+}
+
+func (p *Player) SelectDie(dr *DiceResult) {
+	dr.IsSelected = true
+	dr.PlayerId = p.Id
+	p.AddBonus(*dr.Dice)
 }

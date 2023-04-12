@@ -38,14 +38,10 @@ type GameState struct {
 	// The bonus card that keeps track of wizard powers
 	BonusCard *BonusMap `json:"bonusCard"`
 
-	// The available dice for selection
-	Dices *[]Dice `json:"dices"`
+	Dices *[]DiceResult `json:"dices"`
 
 	// The available wizard power to the player
 	PlayerPower `json:"playerPower"`
-
-	// The list of currently selected dice be the player
-	SelectedDices []Dice `json:"selectedDice"`
 
 	Scoreboards []Scoreboard `json:"scoreboards"`
 }
@@ -168,7 +164,7 @@ func (gr *GameRoom) gameLoop() {
 }
 
 // Handles the situation where two players take turns to choose a die
-func (gr *GameRoom) handleDicesSelection(dice *[]Dice, p1, p2 *Player) {
+func (gr *GameRoom) handleDicesSelection(dice *[]DiceResult, p1, p2 *Player) {
 	for _, player := range gr.Players {
 		player.ClearDice()
 	}
@@ -201,7 +197,7 @@ func (gr *GameRoom) handleDicesSelection(dice *[]Dice, p1, p2 *Player) {
 }
 
 // Handles the situation of a single player choosing a die
-func (gr *GameRoom) handleDiceChoice(d *[]Dice, p, p2 *Player) {
+func (gr *GameRoom) handleDiceChoice(d *[]DiceResult, p, p2 *Player) {
 	for {
 		for _, player := range gr.Players {
 			if !player.Connected {
@@ -221,7 +217,7 @@ func (gr *GameRoom) handleDiceChoice(d *[]Dice, p, p2 *Player) {
 			if p.GetPlayerPowerChoice() {
 				p.UsePower(PWRSelectDieSideOfChoice)
 				p.SendMessage("Select which die you want to turn")
-				choice = func(d *[]Dice) int {
+				choice = func(d *[]DiceResult) int {
 					for {
 						payload := p.GetInput()
 						if (*d)[payload.SelectedDie].Name == EMPTY {
@@ -233,24 +229,21 @@ func (gr *GameRoom) handleDiceChoice(d *[]Dice, p, p2 *Player) {
 					}
 				}(d)
 
-				p.SendDice(&gr.Game.dices[choice], "Choose die")
+				dice := gr.Game.GetDieAllSides(choice)
+				p.SendDice(&dice, "Choose die")
 
 				payload := p.GetInput()
 				selectedDie := gr.Game.dices[choice][payload.SelectedDie]
 
 				if selectedDie.Name == QUESTIONMARK {
-					handleQuestionmark(d, choice, p)
+					handleQuestionmark(d, p)
 					return
 				}
 
-				p.AddDice(selectedDie)
-				p.AddBonus(selectedDie)
+				p.SelectDie(&dice[choice])
 				if p.IsBonusCompleted(getBonusType(selectedDie.Name)) {
 					p2.SetBonusIneligible(selectedDie)
 				}
-
-				(*d)[choice].Name = EMPTY
-				(*d)[choice].Nobles = 0
 				return
 			}
 		}
@@ -260,33 +253,28 @@ func (gr *GameRoom) handleDiceChoice(d *[]Dice, p, p2 *Player) {
 			choice = payload.SelectedDie
 		}
 
-		if choice < 0 || len((*d)) < choice || (*d)[choice].Name == EMPTY {
+		if !isDiceChoiceValid(d, choice) {
 			p.SendMessage("Invalid choice!")
 			log.Println("Invalid choice")
 			continue
 		}
 
 		if (*d)[choice].Name == QUESTIONMARK {
-			handleQuestionmark(d, choice, p)
+			handleQuestionmark(d, p)
 			return
 		}
 
-		selectedDie := (*d)[choice]
-		p.AddDice(selectedDie)
-		p.AddBonus(selectedDie)
-		if p.IsBonusCompleted(getBonusType(selectedDie.Name)) {
-			p2.SetBonusIneligible(selectedDie)
+		p.SelectDie(&(*d)[choice])
+		if p.IsBonusCompleted(getBonusType((*d)[choice].Dice.Name)) {
+			p2.SetBonusIneligible(*(*d)[choice].Dice)
 		}
-
-		(*d)[choice].Name = EMPTY
-		(*d)[choice].Nobles = 0
 
 		return
 	}
 }
 
 // Handles the place domino section
-func (gr *GameRoom) handlePlaceDomino(wg *sync.WaitGroup, player *Player, dice *[]Dice) {
+func (gr *GameRoom) handlePlaceDomino(wg *sync.WaitGroup, player *Player, dice *[]DiceResult) {
 	defer func() {
 		if err := recover(); err != nil {
 			log.Println(err)
@@ -343,30 +331,39 @@ func (gr *GameRoom) IsFull() bool {
 	return len(gr.Players) >= gr.PlayerLimit
 }
 
-func handleQuestionmark(d *[]Dice, choice int, p *Player) {
-	newDice := &[]Dice{
-		{Name: DOT},
-		{Name: LINE},
-		{Name: DOUBLEDOT},
-		{Name: DOUBLELINE},
-		{Name: FILLED},
-		{Name: CHECKED},
+func isDiceChoiceValid(availableDice *[]DiceResult, choice int) bool {
+	if choice < 0 ||
+		choice > len(*availableDice) ||
+		(*availableDice)[choice].IsSelected {
+
+		return false
 	}
+
+	return true
+}
+
+func handleQuestionmark(d *[]DiceResult, p *Player) {
+	newDice := &[]DiceResult{
+		*NewDiceResult(&Dice{Name: DOT}),
+		*NewDiceResult(&Dice{Name: LINE}),
+		*NewDiceResult(&Dice{Name: DOUBLEDOT}),
+		*NewDiceResult(&Dice{Name: DOUBLELINE}),
+		*NewDiceResult(&Dice{Name: FILLED}),
+		*NewDiceResult(&Dice{Name: CHECKED}),
+	}
+
 	p.SendDice(newDice, "Please select the type of badge that you need")
 	for {
 		payload := p.GetInput()
-		newChoice := payload.SelectedDie
+		choice := payload.SelectedDie
 
-		if newChoice < 0 || len((*newDice)) < newChoice || (*newDice)[newChoice].Name == EMPTY {
+		if !isDiceChoiceValid(newDice, choice) {
 			p.SendMessage("Invalid choice!")
 			log.Println("Invalid choice")
 			continue
 		}
 
-		p.AddDice((*newDice)[newChoice])
-
-		(*d)[choice].Name = EMPTY
-		(*d)[choice].Nobles = 0
+		p.SelectDie(&(*newDice)[choice])
 
 		return
 	}

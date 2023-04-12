@@ -82,18 +82,21 @@ func TestHandleDiceSelection(t *testing.T) {
 
 	log.Println(p1.IsBonusCompleted(PWRPickTwoDice))
 	gr := GameRoom{Players: []*Player{p1, p2}}
-	gr.handleDicesSelection(&[]Dice{
-		{Name: CHECKED},
-		{Name: CHECKED},
-		{Name: DOT},
-		{Name: DOT}},
+	dices := &[]DiceResult{
+		*NewDiceResult(&Dice{Name: CHECKED}),
+		*NewDiceResult(&Dice{Name: CHECKED}),
+		*NewDiceResult(&Dice{Name: DOT}),
+		*NewDiceResult(&Dice{Name: DOT})}
+	gr.handleDicesSelection(dices,
 		p1, p2)
 
 	if p1.IsBonusEligible(Dice{Name: DOUBLEDOT}) {
 		t.Error("Expected the bonus to be ineligible")
 	}
-	if p1.Dices[0].Name != CHECKED && p1.Dices[1].Name != CHECKED {
-		t.Errorf("Expected the selected dices to be %s and %s, got %s and %s instead\n",
-			CHECKED, CHECKED, p1.Dices[0].Name, p1.Dices[1].Name)
+	if (!(*dices)[0].IsSelected || (*dices)[0].PlayerId != p1.Id) ||
+		(!(*dices)[1].IsSelected || (*dices)[1].PlayerId != p1.Id) ||
+		(!(*dices)[3].IsSelected || (*dices)[3].PlayerId != p2.Id) ||
+		(!(*dices)[2].IsSelected || (*dices)[2].PlayerId != p2.Id) {
+		t.Error("The dice selection was incorrect")
 	}
 }

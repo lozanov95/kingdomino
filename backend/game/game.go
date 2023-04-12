@@ -58,15 +58,30 @@ func (g *Game) setupDice() {
 	}
 }
 
-func (g *Game) RollDice() *[]Dice {
-	d := make([]Dice, 4)
+func (g *Game) RollDice() *[]DiceResult {
+	d := []DiceResult{}
 	seed := time.Now().UnixNano()
 	source := rand.NewSource(seed)
 	r := rand.New(source)
 
 	for i, badge := range g.dices {
-		d[i] = badge[r.Intn(6)]
+		d[i] = *NewDiceResult(&badge[r.Intn(6)])
 	}
 
 	return &d
+}
+
+func NewDiceResult(d *Dice) *DiceResult {
+	return &DiceResult{
+		Dice: d,
+	}
+}
+
+func (g *Game) GetDieAllSides(dieNumber int) []DiceResult {
+	dice := make([]DiceResult, 6)
+	for i, d := range g.dices[dieNumber] {
+		dice[i] = *NewDiceResult(&d)
+	}
+
+	return dice
 }
