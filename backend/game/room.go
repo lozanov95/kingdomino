@@ -334,7 +334,7 @@ func (gr *GameRoom) IsFull() bool {
 
 func isDiceChoiceValid(availableDice *[]DiceResult, choice int) bool {
 	if choice < 0 ||
-		choice > len(*availableDice) ||
+		choice >= len(*availableDice) ||
 		(*availableDice)[choice].IsSelected {
 
 		return false

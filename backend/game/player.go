@@ -182,7 +182,7 @@ func (p *Player) ClearDice() {
 func (p *Player) PlaceDomino(d *[]DiceResult) {
 	p.SendGameState(d, "Select the dice that you want to place")
 	choice := p.getSelectedDominoChoice(d)
-	prevPos := p.placeOnBoard(choice, BoardPlacementInput{
+	prevPos := p.placeOnBoard(d, choice, BoardPlacementInput{
 		Board:                 p.Board,
 		IgnoreConnectionRules: p.handleIgnoreConnectionRulesPower(),
 	})
@@ -190,7 +190,7 @@ func (p *Player) PlaceDomino(d *[]DiceResult) {
 
 	p.SendMessage("Select the dice that you want to place")
 	choice = p.getSelectedDominoChoice(d)
-	p.placeOnBoard(choice, BoardPlacementInput{PrevPosition: prevPos, Board: p.Board})
+	p.placeOnBoard(d, choice, BoardPlacementInput{PrevPosition: prevPos, Board: p.Board})
 	p.SendGameState(d, "Waiting for all players to complete their turns.")
 }
 
@@ -198,12 +198,12 @@ func (p *Player) PlaceDomino(d *[]DiceResult) {
 func (p *Player) PlaceSeparatedDomino(d *[]DiceResult) {
 	p.SendGameState(d, "Select the dice that you want to place")
 	choice := p.getSelectedDominoChoice(d)
-	p.placeOnBoard(choice, BoardPlacementInput{Board: p.Board, SeparateDice: true})
+	p.placeOnBoard(d, choice, BoardPlacementInput{Board: p.Board, SeparateDice: true})
 	p.SendGameState(d, "")
 
 	p.SendMessage("Select the dice that you want to place")
 	choice = p.getSelectedDominoChoice(d)
-	p.placeOnBoard(choice, BoardPlacementInput{Board: p.Board, SeparateDice: true})
+	p.placeOnBoard(d, choice, BoardPlacementInput{Board: p.Board, SeparateDice: true})
 	p.SendGameState(d, "Waiting for all players to complete their turns.")
 }
 
@@ -223,16 +223,15 @@ func (p *Player) getSelectedDominoChoice(dr *[]DiceResult) int {
 	}
 }
 
-func (p *Player) placeOnBoard(choice int, b BoardPlacementInput) DiePos {
+func (p *Player) placeOnBoard(d *[]DiceResult, choice int, b BoardPlacementInput) DiePos {
 	pos, err := p.getBoardPlacementInput(b)
 	if err != nil {
 		return DiePos{}
 	}
 
-	p.Board[pos.Row][pos.Cell] = p.Dices[choice]
-	newDices := p.Dices[:choice]
-	newDices = append(newDices, p.Dices[choice+1:]...)
-	p.Dices = newDices
+	p.Board[pos.Row][pos.Cell] = *(*d)[choice].Dice
+	(*d)[choice].IsPlaced = true
+
 	return pos
 }
 
