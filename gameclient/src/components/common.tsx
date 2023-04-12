@@ -39,6 +39,7 @@ export type DiceResult = {
 }
 
 export type GameState = {
+  id: number;
   bonusCard: Bonus[];
   message: string;
   board: Domino[][];

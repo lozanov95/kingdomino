@@ -1,4 +1,4 @@
-import { useState, MouseEvent, memo } from "react";
+import { useState, MouseEvent, memo, useContext } from "react";
 import BonusBoard from "./bonusboard";
 import {
   Bonus,
@@ -24,13 +24,13 @@ function Game() {
   const [bonusCard, setBonusCard] = useState<Bonus[] | null>(null);
   const [scoreboards, setScoreboards] = useState<Scoreboard[] | null>(null);
   const [dices, setDices] = useState<DiceResult[] | null>(null);
-  const [selectedDice, setSelectedDice] = useState<Domino[] | null>(null);
   const [power, setPower] = useState<PlayerPower>({
     type: 0,
     description: "",
     use: false,
     confirmed: false,
   });
+  const [playerId, setPlayerId] = useState<number>(0)
 
   function SendServerData(payload: ServerPayload) {
     wsConn?.send(JSON.stringify(payload));
@@ -41,7 +41,7 @@ function Game() {
     setBonusCard(null);
     setGameBoard(null);
     setDices(null);
-    setSelectedDice(null);
+    setPlayerId(0)
   }
 
   function handleConnect(ev: SubmitEvent) {
@@ -81,14 +81,15 @@ function Game() {
           dices,
           playerPower,
           scoreboards,
+          id
         }: GameState = JSON.parse(d);
         board !== null && setGameBoard(board);
         bonusCard !== null && setBonusCard(bonusCard);
         message !== "" && setStatusMsg(message);
         dices !== null && setDices(dices);
-        setSelectedDice(selectedDice);
         setPower(playerPower);
         setScoreboards(scoreboards);
+        setPlayerId(id);
       }
     };
   }
@@ -132,9 +133,9 @@ function Game() {
             {gameState === WebSocket.OPEN && gameBoard !== undefined ? (
               <>
                 <DiceSection
-                  selectedDice={selectedDice}
                   dices={dices}
                   handleDiceSelect={handleDiceSelect}
+                  playerId={playerId}
                 />
                 {power.type !== 0 && !power.confirmed && (
                   <PowerPrompt
