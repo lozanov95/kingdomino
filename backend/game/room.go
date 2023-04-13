@@ -368,7 +368,7 @@ func handleQuestionmark(d *[]DiceResult, initialChoice int, p *Player) {
 			continue
 		}
 		(*d)[initialChoice] = (*newDice)[choice]
-		p.SelectDie(&(*d)[initialChoice])
+		p.SelectQuestionmarkDie(&(*d)[initialChoice])
 
 		return
 	}

@@ -420,3 +420,8 @@ func (p *Player) SelectDie(dr *DiceResult) {
 	dr.PlayerId = p.Id
 	p.AddBonus(*dr.Dice)
 }
+
+func (p *Player) SelectQuestionmarkDie(dr *DiceResult) {
+	dr.IsSelected = true
+	dr.PlayerId = p.Id
+}
