@@ -28,7 +28,6 @@ type Player struct {
 	GameState          chan GameState
 	ClientMsg          chan string
 	Dices              []DiceResult
-	mut                sync.RWMutex
 	SelectedCoatOfArms BadgeName
 }
 
@@ -62,7 +61,6 @@ func NewPlayer(conn Connectionable) *Player {
 		Connected: true,
 		GameState: make(chan GameState),
 		ClientMsg: make(chan string),
-		mut:       sync.RWMutex{},
 	}
 
 	return player
