@@ -49,7 +49,6 @@ export function Row({
             nobles={nobles}
             name={name}
             onClick={onClick}
-            className="mr-1"
           />
         );
       })}
