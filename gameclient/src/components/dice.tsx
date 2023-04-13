@@ -46,7 +46,7 @@ function DiceSelectCell({
       className={
         diceResult.isPlaced && diceResult.playerId === playerId
           ? "grayscale m-auto"
-          : "m-auto"
+          : "m-auto hover:scale-110 hover:bg-gray-700"
       }
       onClick={onClick}
       name={diceResult.dice.name}
