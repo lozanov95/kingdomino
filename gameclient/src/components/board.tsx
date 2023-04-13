@@ -1,12 +1,12 @@
 import { memo, MouseEventHandler } from "react";
-import { Domino, Badge, getBadgeIcon } from "./common";
+import { Dice, Badge, getBadgeIcon } from "./common";
 import { Nobles, Cell } from "./common";
 
 export const Board = memo(function Board({
   board,
   handleOnClick,
 }: {
-  board: Domino[][] | null;
+  board: Dice[][] | null;
   handleOnClick: MouseEventHandler;
 }) {
   return (
@@ -32,7 +32,7 @@ export function Row({
   className,
 }: {
   id?: string;
-  elements: Domino[] | null;
+  elements: Dice[] | null;
   onClick?: MouseEventHandler;
   className?: string;
 }) {

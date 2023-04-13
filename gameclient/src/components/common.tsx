@@ -9,7 +9,7 @@ import badgeDoubleLine from "../assets/doubleline.svg";
 import badgeQuestion from "../assets/question.svg";
 import { MouseEventHandler } from "react";
 
-export type Domino = {
+export type Dice = {
   name: Badge;
   nobles: number;
 };
@@ -33,7 +33,7 @@ export type Scoreboard = {
 };
 
 export type DiceResult = {
-  dice: Domino;
+  dice: Dice;
   isSelected: boolean;
   playerId: number;
   isPlaced: boolean;
@@ -43,7 +43,7 @@ export type GameState = {
   id: number;
   bonusCard: Bonus[];
   message: string;
-  board: Domino[][];
+  board: Dice[][];
   dices: DiceResult[];
   playerPower: PlayerPower;
   scoreboards: Scoreboard[];

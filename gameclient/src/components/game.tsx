@@ -2,7 +2,7 @@ import { useState, MouseEvent, memo } from "react";
 import BonusBoard from "./bonusboard";
 import {
   Bonus,
-  Domino,
+  Dice,
   GameState,
   ServerPayload,
   PlayerPower,
@@ -20,7 +20,7 @@ function Game() {
   const [wsConn, setWsConn] = useState<WebSocket | null>(null);
   const [statusMsg, setStatusMsg] = useState("");
   const [playerName, setPlayerName] = useState("");
-  const [gameBoard, setGameBoard] = useState<Domino[][] | null>(null);
+  const [gameBoard, setGameBoard] = useState<Dice[][] | null>(null);
   const [bonusCard, setBonusCard] = useState<Bonus[] | null>(null);
   const [scoreboards, setScoreboards] = useState<Scoreboard[] | null>(null);
   const [dices, setDices] = useState<DiceResult[] | null>(null);
