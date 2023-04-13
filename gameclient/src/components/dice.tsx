@@ -44,9 +44,7 @@ function DiceSelectCell({
   return (
     <BoardCell
       className={
-        diceResult.isPlaced && diceResult.playerId === playerId
-          ? "grayscale m-auto"
-          : "m-auto hover:scale-110 hover:bg-gray-700"
+        calculateClass(diceResult.isPlaced, diceResult.isSelected, diceResult.playerId === playerId)
       }
       onClick={onClick}
       name={diceResult.dice.name}
@@ -75,4 +73,16 @@ function GetNobleColor(
   }
 
   return "bg-red-700";
+}
+
+function calculateClass(isPlaced: boolean, isSelected: boolean, belongToCurrentPlayer: boolean) {
+  const baseClass = "m-auto"
+
+  if (!isSelected || (belongToCurrentPlayer && !isPlaced)) {
+    return `${baseClass} hover:scale-110 hover:bg-gray-700`
+  }
+
+  if (belongToCurrentPlayer && isPlaced) {
+    return `${baseClass} grayscale`
+  }
 }
