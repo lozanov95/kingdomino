@@ -160,6 +160,6 @@ export function Nobles({ amount, color }: { amount: number; color?: string }) {
 
 export function Noble() {
   return (
-    <div className="w-[14px] h-[14px] bg-black rounded-full m-0.5 lg:w-[18px] lg:h-[18px]"></div>
+    <div className="w-[14px] h-[14px] bg-black rounded-full mt-[2px] ml-[1px] lg:w-[18px] lg:h-[18px]"></div>
   );
 }
