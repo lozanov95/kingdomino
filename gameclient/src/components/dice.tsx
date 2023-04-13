@@ -20,7 +20,7 @@ export const DiceSection = memo(function DiceSection({
             <DiceSelectCell
               diceResult={diceResult}
               id={idx.toString()}
-              onClick={handleDiceSelect}
+              onClick={!diceResult.isSelected || playerId === diceResult.playerId ? handleDiceSelect : () => { }}
               playerId={playerId}
             />
           );
