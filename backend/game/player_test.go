@@ -64,7 +64,7 @@ func TestPlaceDomino(t *testing.T) {
 		{SelectedDie: 0}, {DiePos: DiePos{Cell: 3, Row: 3}},
 		{SelectedDie: 1}, {DiePos: DiePos{Cell: 4, Row: 3}},
 	})
-	dice := []DiceResult{*NewDiceResult(&Dice{Name: DOT}), *NewDiceResult(&Dice{Name: FILLED})}
+	dice := []DiceResult{{Dice: &Dice{Name: DOT}, PlayerId: player.Id}, {Dice: &Dice{Name: FILLED}, PlayerId: player.Id}}
 	player.PlaceDomino(&dice)
 
 	row, cell := 3, 3
@@ -83,7 +83,7 @@ func TestPlaceDominoInvalidInput(t *testing.T) {
 		{SelectedDie: 1}, {DiePos: DiePos{Cell: 3, Row: 3}},
 		{SelectedDie: 1}, {DiePos: DiePos{Cell: 4, Row: 3}},
 	})
-	dice := []DiceResult{*NewDiceResult(&Dice{Name: DOT}), *NewDiceResult(&Dice{Name: FILLED})}
+	dice := []DiceResult{{Dice: &Dice{Name: DOT}, PlayerId: player.Id}, {Dice: &Dice{Name: FILLED}, PlayerId: player.Id}}
 	player.PlaceDomino(&dice)
 
 	row, cell := 3, 3
@@ -108,7 +108,7 @@ func TestSeparatedDomino(t *testing.T) {
 		{{Name: DOT}, {Name: LINE}, {Name: LINE}, {Name: DOT}, {Name: DOT}, {Name: DOT}, {Name: DOT}},
 		{{Name: DOT}, {Name: LINE}, {Name: LINE}, {Name: DOT}, {Name: DOT}, {Name: DOT}, {Name: EMPTY}},
 	}
-	dice := []DiceResult{*NewDiceResult(&Dice{Name: DOT}), *NewDiceResult(&Dice{Name: FILLED})}
+	dice := []DiceResult{{Dice: &Dice{Name: DOT}, PlayerId: player.Id}, {Dice: &Dice{Name: FILLED}, PlayerId: player.Id}}
 	player.PlaceSeparatedDomino(&dice)
 	row, cell := 0, 0
 	if player.Board[row][cell].Name != DOT {
