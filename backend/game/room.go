@@ -335,10 +335,11 @@ func isDicePickChoiceValid(availableDice *[]DiceResult, choice int) bool {
 	return true
 }
 
-func isDicePlaceChoiceValid(availableDice *[]DiceResult, choice int) bool {
+func isDicePlaceChoiceValid(availableDice *[]DiceResult, choice int, playerId int64) bool {
 	if choice < 0 ||
 		choice >= len(*availableDice) ||
-		(*availableDice)[choice].IsPlaced {
+		(*availableDice)[choice].IsPlaced ||
+		(*availableDice)[choice].PlayerId != playerId {
 
 		return false
 	}

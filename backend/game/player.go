@@ -200,7 +200,7 @@ func (p *Player) getSelectedDominoChoice(dr *[]DiceResult) int {
 
 		choice = payload.SelectedDie
 
-		if !isDicePlaceChoiceValid(dr, choice) {
+		if !isDicePlaceChoiceValid(dr, choice, p.Id) {
 			p.SendMessage("Invalid choice!")
 			continue
 		}
