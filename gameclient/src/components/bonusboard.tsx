@@ -10,7 +10,7 @@ const BonusBoard = memo(function BonusBoard({
   return (
     <>
       {bonusCard !== null ? (
-        <div className="col-start-5 w-fit m-auto">
+        <div className="col-start-5 w-fit mx-auto">
           <h2 className="text-2xl font-bold text-center">Bonuses</h2>
           {bonusCard
             .sort((a: Bonus, b: Bonus) => (a.name > b.name ? 1 : -1))
@@ -86,7 +86,7 @@ function BonusCell({
   }, [currentChecks, eligible]);
 
   return (
-    <div className={[elClass, "flex w-full m-2"].join(" ")}>
+    <div className={[elClass, "flex w-full m-1  "].join(" ")}>
       <Cell imgSrc={imgSrc} id={imgSrc} />
       {elements}
     </div>
