@@ -1,5 +1,5 @@
 import { memo, MouseEventHandler } from "react";
-import { DiceResult } from "./common";
+import { Dice, DiceResult } from "./common";
 import { BoardCell } from "./board";
 
 export const DiceSection = memo(function DiceSection({
@@ -20,7 +20,7 @@ export const DiceSection = memo(function DiceSection({
             <DiceSelectCell
               diceResult={diceResult}
               id={idx.toString()}
-              onClick={!diceResult.isSelected || playerId === diceResult.playerId ? handleDiceSelect : () => { }}
+              onClick={shouldBeClickable(diceResult, playerId) ? handleDiceSelect : () => { }}
               playerId={playerId}
             />
           );
@@ -85,4 +85,8 @@ function calculateClass(isPlaced: boolean, isSelected: boolean, belongToCurrentP
   if (belongToCurrentPlayer && isPlaced) {
     return `${baseClass} grayscale`
   }
+}
+
+function shouldBeClickable(diceResult: DiceResult, playerId: number) {
+  return !diceResult.isSelected || playerId === diceResult.playerId
 }
