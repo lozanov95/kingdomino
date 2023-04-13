@@ -100,3 +100,18 @@ func TestHandleDiceSelection(t *testing.T) {
 		t.Error("The dice selection was incorrect")
 	}
 }
+
+func TestHandleQuestionmark(t *testing.T) {
+	p1 := NewMockPlayer([]ClientPayload{{SelectedDie: 0}})
+	dr := []DiceResult{
+		{Dice: &Dice{Name: DOT}, PlayerId: p1.Id},
+		{Dice: &Dice{Name: FILLED}, PlayerId: p1.Id}}
+	handleQuestionmark(&dr, 0, p1)
+
+	if (*p1.BonusCard)[DOT].CurrentChecks != 0 {
+		t.Errorf("Expected bonus to be %d, got %d instead.", 0, (*p1.BonusCard)[DOT].CurrentChecks)
+	}
+	if dr[0].PlayerId != p1.Id && !dr[0].IsSelected {
+		t.Errorf("Expected pID %d, got %d. Expected is selected %t, got %t", p1.Id, dr[0].PlayerId, true, dr[0].IsSelected)
+	}
+}
