@@ -79,7 +79,7 @@ function calculateClass(isPlaced: boolean, isSelected: boolean, belongToCurrentP
   const baseClass = "m-auto"
 
   if (!isSelected || (belongToCurrentPlayer && !isPlaced)) {
-    return `${baseClass} hover:scale-110 hover:bg-gray-700`
+    return `${baseClass} hover:scale-110 hover:bg-gray-700 duration-100`
   }
 
   if (belongToCurrentPlayer && isPlaced) {
