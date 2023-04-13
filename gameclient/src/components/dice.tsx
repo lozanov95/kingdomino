@@ -14,7 +14,7 @@ export const DiceSection = memo(function DiceSection({
   return (
     <div className="text-center mx-auto">
       <div className="text-lg text-center">
-        {dices && <h2 className="font-bold text-2xl">Available dice</h2>}
+        {dices && <h2 className="font-bold text-2xl">Dice</h2>}
         {dices?.map((diceResult, idx) => {
           return (
             <DiceSelectCell
@@ -45,8 +45,8 @@ function DiceSelectCell({
     <BoardCell
       className={
         diceResult.isPlaced && diceResult.playerId === playerId
-          ? "grayscale"
-          : ""
+          ? "grayscale m-auto"
+          : "m-auto"
       }
       onClick={onClick}
       name={diceResult.dice.name}
