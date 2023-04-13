@@ -36,7 +36,6 @@ export function Row({
   onClick?: MouseEventHandler;
   className?: string;
 }) {
-
   return (
     <div
       className={["flex flex-row max-w-fit m-auto", className].join(" ")}

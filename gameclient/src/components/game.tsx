@@ -30,7 +30,7 @@ function Game() {
     use: false,
     confirmed: false,
   });
-  const [playerId, setPlayerId] = useState<number>(0)
+  const [playerId, setPlayerId] = useState<number>(0);
 
   function SendServerData(payload: ServerPayload) {
     wsConn?.send(JSON.stringify(payload));
@@ -41,7 +41,7 @@ function Game() {
     setBonusCard(null);
     setGameBoard(null);
     setDices(null);
-    setPlayerId(0)
+    setPlayerId(0);
   }
 
   function handleConnect(ev: SubmitEvent) {
@@ -81,7 +81,7 @@ function Game() {
           dices,
           playerPower,
           scoreboards,
-          id
+          id,
         }: GameState = JSON.parse(d);
         board !== null && setGameBoard(board);
         bonusCard !== null && setBonusCard(bonusCard);
@@ -89,7 +89,7 @@ function Game() {
         dices !== null && setDices(dices);
         setPower(playerPower);
         setScoreboards(scoreboards);
-        id !== 0 ? setPlayerId(id) : ""
+        id !== 0 ? setPlayerId(id) : "";
       }
     };
   }

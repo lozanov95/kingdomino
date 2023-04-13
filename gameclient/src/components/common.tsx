@@ -37,7 +37,7 @@ export type DiceResult = {
   isSelected: boolean;
   playerId: number;
   isPlaced: boolean;
-}
+};
 
 export type GameState = {
   id: number;
@@ -128,7 +128,7 @@ export function Cell({
   );
 }
 
-export function Nobles({ amount, color }: { amount: number, color?: string }) {
+export function Nobles({ amount, color }: { amount: number; color?: string }) {
   function renderNobles() {
     switch (amount) {
       case 0:
@@ -147,7 +147,12 @@ export function Nobles({ amount, color }: { amount: number, color?: string }) {
     }
   }
   return (
-    <div className={["w-[16px] lg:w-[20px] text-center", color ?? "bg-gray-600"].join(" ")}>
+    <div
+      className={[
+        "w-[16px] lg:w-[20px] text-center",
+        color ?? "bg-gray-600",
+      ].join(" ")}
+    >
       {renderNobles()}
     </div>
   );
