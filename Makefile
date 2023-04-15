@@ -21,3 +21,12 @@ run-container:
 
 test:
 	go test -v --cover ./...
+
+install-fe:
+	cd gameclient && npm install
+
+install-be:
+	go mod download && go mod verify
+
+install:
+	make -j 2 install-fe install-be
