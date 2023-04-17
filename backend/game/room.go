@@ -227,16 +227,25 @@ func (gr *GameRoom) handleDiceChoice(d *[]DiceResult, p, p2 *Player) {
 
 				payload := p.GetInput()
 				selectedDie := gr.Game.dices[choice][payload.SelectedDie]
+				(*d)[choice] = *NewDiceResult(selectedDie)
 
 				if selectedDie.Name == QUESTIONMARK {
 					handleQuestionmark(d, choice, p)
 					return
 				}
 
-				p.SelectDie(&dice[choice])
+				p.SelectDie(&(*d)[choice])
 				if p.IsBonusCompleted(getBonusType(selectedDie.Name)) {
 					p2.SetBonusIneligible(selectedDie)
 				}
+
+				for _, player := range gr.Players {
+					if !player.Connected {
+						return
+					}
+					player.SendGameState(d, fmt.Sprintf("Player %s's turn to pick dice", p.GetName()))
+				}
+
 				return
 			}
 		}
