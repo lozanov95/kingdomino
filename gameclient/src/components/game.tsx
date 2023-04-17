@@ -16,6 +16,8 @@ import { RulesSection } from "./rules";
 import { ScoreSection } from "./scoreboard";
 
 function Game() {
+  const DOMAIN = "192.168.10.132"
+
   const [gameState, setGameState] = useState<number>(WebSocket.CLOSED);
   const [wsConn, setWsConn] = useState<WebSocket | null>(null);
   const [statusMsg, setStatusMsg] = useState("");
@@ -47,7 +49,7 @@ function Game() {
   function handleConnect(ev: SubmitEvent) {
     ev.preventDefault();
     setGameState(WebSocket.CONNECTING);
-    const ws = new WebSocket("ws://192.168.1.2:8080/join");
+    const ws = new WebSocket(`ws://${DOMAIN}:8080/join`);
     setStatusMsg("Connecting...");
 
     ws.onopen = () => {
@@ -72,8 +74,7 @@ function Game() {
     };
 
     ws.onmessage = ({ data }: { data: string }) => {
-      const d: string = data;
-      if (d.length > 0) {
+      if (data.length > 0) {
         const {
           board,
           bonusCard,
@@ -82,7 +83,7 @@ function Game() {
           playerPower,
           scoreboards,
           id,
-        }: GameState = JSON.parse(d);
+        }: GameState = JSON.parse(data);
         board !== null && setGameBoard(board);
         bonusCard !== null && setBonusCard(bonusCard);
         message !== "" && setStatusMsg(message);
