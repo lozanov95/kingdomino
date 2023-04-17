@@ -349,12 +349,12 @@ func isDicePlaceChoiceValid(availableDice *[]DiceResult, choice int, playerId in
 
 func handleQuestionmark(d *[]DiceResult, initialChoice int, p *Player) {
 	newDice := &[]DiceResult{
-		*NewDiceResult(&Dice{Name: DOT}),
-		*NewDiceResult(&Dice{Name: LINE}),
-		*NewDiceResult(&Dice{Name: DOUBLEDOT}),
-		*NewDiceResult(&Dice{Name: DOUBLELINE}),
-		*NewDiceResult(&Dice{Name: FILLED}),
-		*NewDiceResult(&Dice{Name: CHECKED}),
+		*NewDiceResult(Dice{Name: DOT}),
+		*NewDiceResult(Dice{Name: LINE}),
+		*NewDiceResult(Dice{Name: DOUBLEDOT}),
+		*NewDiceResult(Dice{Name: DOUBLELINE}),
+		*NewDiceResult(Dice{Name: FILLED}),
+		*NewDiceResult(Dice{Name: CHECKED}),
 	}
 
 	p.SendDice(newDice, "Please select the type of badge that you need")

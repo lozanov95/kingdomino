@@ -83,10 +83,10 @@ func TestHandleDiceSelection(t *testing.T) {
 	log.Println(p1.IsBonusCompleted(PWRPickTwoDice))
 	gr := GameRoom{Players: []*Player{p1, p2}}
 	dices := &[]DiceResult{
-		*NewDiceResult(&Dice{Name: CHECKED}),
-		*NewDiceResult(&Dice{Name: CHECKED}),
-		*NewDiceResult(&Dice{Name: DOT}),
-		*NewDiceResult(&Dice{Name: DOT})}
+		*NewDiceResult(Dice{Name: CHECKED}),
+		*NewDiceResult(Dice{Name: CHECKED}),
+		*NewDiceResult(Dice{Name: DOT}),
+		*NewDiceResult(Dice{Name: DOT})}
 	gr.handleDicesSelection(dices,
 		p1, p2)
 

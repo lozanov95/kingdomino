@@ -65,22 +65,22 @@ func (g *Game) RollDice() *[]DiceResult {
 	r := rand.New(source)
 
 	for i, badge := range g.dices {
-		d[i] = *NewDiceResult(&badge[r.Intn(6)])
+		d[i] = *NewDiceResult(badge[r.Intn(6)])
 	}
 
 	return &d
 }
 
-func NewDiceResult(d *Dice) *DiceResult {
+func NewDiceResult(d Dice) *DiceResult {
 	return &DiceResult{
-		Dice: d,
+		Dice: &d,
 	}
 }
 
 func (g *Game) GetDieAllSides(dieNumber int) []DiceResult {
 	dice := make([]DiceResult, 6)
 	for i, d := range g.dices[dieNumber] {
-		dice[i] = *NewDiceResult(&d)
+		dice[i] = *NewDiceResult(d)
 	}
 
 	return dice
