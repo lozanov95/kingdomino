@@ -139,25 +139,28 @@ func (gr *GameRoom) shouldLoopContinue() bool {
 // Handles the main game loop - selecting dice and placing dominos
 func (gr *GameRoom) gameLoop() {
 	var wg sync.WaitGroup
-	for gr.shouldLoopContinue() {
-		dice := gr.Game.RollDice()
-		gr.handleDicesSelection(dice, gr.Players[0], gr.Players[1])
-
-		for _, player := range gr.Players {
-			wg.Add(1)
-			go gr.handlePlaceDomino(&wg, player, dice)
+	for {
+		if !gr.shouldLoopContinue() {
+			break
 		}
+		gr.playGameRound(&wg, gr.Players[0], gr.Players[1])
 
-		wg.Wait()
-		dice = gr.Game.RollDice()
-		gr.handleDicesSelection(dice, gr.Players[1], gr.Players[0])
-		for _, player := range gr.Players {
-			wg.Add(1)
-			go gr.handlePlaceDomino(&wg, player, dice)
+		if !gr.shouldLoopContinue() {
+			break
 		}
-
-		wg.Wait()
+		gr.playGameRound(&wg, gr.Players[1], gr.Players[2])
 	}
+}
+
+// Handles a full round - roll dice, select dice, place domino
+func (gr *GameRoom) playGameRound(wg *sync.WaitGroup, p1, p2 *Player) {
+	dice := gr.Game.RollDice()
+	gr.handleDicesSelection(dice, gr.Players[0], gr.Players[1])
+	wg.Add(len(gr.Players))
+	for _, player := range gr.Players {
+		go gr.handlePlaceDomino(wg, player, dice)
+	}
+	wg.Wait()
 }
 
 // Handles the situation where two players take turns to choose a die
