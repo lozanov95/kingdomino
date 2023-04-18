@@ -1,10 +1,6 @@
 package game
 
-import (
-	"encoding/json"
-	"fmt"
-	"strings"
-)
+import "encoding/json"
 
 type Bonus struct {
 	RequiredChecks int  `json:"requiredChecks"`
@@ -29,6 +25,11 @@ type PlayerPower struct {
 
 type BonusMap map[BadgeName]Bonus
 type PowerType int64
+
+type BonusResult struct {
+	BadgeName `json:"name"`
+	Bonus
+}
 
 const (
 	// Grants no wizard power
@@ -98,27 +99,13 @@ func (bm *BonusMap) MarkUsed(pt PowerType) {
 }
 
 func (bm *BonusMap) MarshalJSON() ([]byte, error) {
-	var sb strings.Builder
-	sb.WriteString("[")
-	var idx int
-	for badge, bonus := range *bm {
-		sb.WriteString(fmt.Sprintf("{\"name\":%d,", badge))
-		jsonBonus, err := json.Marshal(bonus)
+	var bonuses []BonusResult
 
-		if err != nil {
-			return nil, err
-		}
-		jb := strings.Replace(string(jsonBonus), "{", "", 1)
-		sb.WriteString(jb)
-		if idx < len(*bm)-1 {
-			sb.WriteString(",")
-		}
-		idx++
+	for bn, b := range *bm {
+		bonuses = append(bonuses, BonusResult{BadgeName: bn, Bonus: b})
 	}
 
-	sb.WriteString("]")
-
-	return []byte(sb.String()), nil
+	return json.Marshal(bonuses)
 }
 
 func (bm *BonusMap) AddBonus(d Dice) {
