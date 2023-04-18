@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"runtime/debug"
 	"strconv"
 	"sync"
 	"time"
@@ -105,6 +106,7 @@ func (gr *GameRoom) roomLoop(closeChan chan<- string) {
 	defer func() {
 		if err := recover(); err != nil {
 			log.Println("panic in game loop", err)
+			debug.PrintStack()
 		}
 		for _, player := range gr.Players {
 			player.Conn.Close()
@@ -148,14 +150,14 @@ func (gr *GameRoom) gameLoop() {
 		if !gr.shouldLoopContinue() {
 			break
 		}
-		gr.playGameRound(&wg, gr.Players[1], gr.Players[2])
+		gr.playGameRound(&wg, gr.Players[1], gr.Players[0])
 	}
 }
 
 // Handles a full round - roll dice, select dice, place domino
 func (gr *GameRoom) playGameRound(wg *sync.WaitGroup, p1, p2 *Player) {
 	dice := gr.Game.RollDice()
-	gr.handleDicesSelection(dice, gr.Players[0], gr.Players[1])
+	gr.handleDicesSelection(dice, p1, p2)
 	wg.Add(len(gr.Players))
 	for _, player := range gr.Players {
 		go gr.handlePlaceDomino(wg, player, dice)
