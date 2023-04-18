@@ -77,24 +77,6 @@ func (p *Player) IncreaseBonus(b Dice) {
 	(*p.BonusCard)[b.Name] = tmp
 }
 
-func (p *Player) GetBoard() []byte {
-	board, err := p.Board.Json()
-	if err != nil {
-		log.Fatal(err)
-	}
-	return board
-}
-
-func (p *Player) GetBonusCard() []byte {
-	card, err := p.BonusCard.MarshalJSON()
-	if err != nil {
-		log.Println(err)
-		return nil
-	}
-
-	return card
-}
-
 func (p *Player) GameStateLoop() {
 	for send := range p.GameState {
 		msg, err := json.Marshal(send)
