@@ -18,6 +18,7 @@ export const DiceSection = memo(function DiceSection({
         {dices?.map((diceResult, idx) => {
           return (
             <DiceSelectCell
+              key={idx}
               diceResult={diceResult}
               id={idx.toString()}
               onClick={shouldBeClickable(diceResult, playerId) ? handleDiceSelect : () => { }}

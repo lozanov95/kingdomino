@@ -16,7 +16,7 @@ import { RulesSection } from "./rules";
 import { ScoreSection } from "./scoreboard";
 
 function Game() {
-  const DOMAIN = "192.168.10.132"
+  const DOMAIN = "192.168.1.2"
 
   const [gameState, setGameState] = useState<number>(WebSocket.CLOSED);
   const [wsConn, setWsConn] = useState<WebSocket | null>(null);
