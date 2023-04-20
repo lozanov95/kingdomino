@@ -1,4 +1,4 @@
-import { memo, MouseEventHandler, useState } from "react";
+import { memo, MouseEventHandler } from "react";
 import { DiceResult } from "./common";
 import { BoardCell } from "./board";
 
@@ -12,11 +12,15 @@ export const DiceSection = memo(function DiceSection({
   playerId: number;
 }) {
 
+  if (dices === null) {
+    return <></>
+  }
+
   return (
     <div className="text-center mx-auto">
       <div className="text-lg text-center">
-        {dices && <h2 className="font-bold text-2xl">Dice</h2>}
-        {dices?.map((diceResult, idx) => {
+        <h2 className="font-bold text-2xl">Dice</h2>
+        {dices.map((diceResult, idx) => {
           return (
             <DiceSelectCell
               key={idx}
