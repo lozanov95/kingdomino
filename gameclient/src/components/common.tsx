@@ -7,7 +7,7 @@ import badgeDoubleDot from "../assets/doubledot.svg";
 import badgeLine from "../assets/line.svg";
 import badgeDoubleLine from "../assets/doubleline.svg";
 import badgeQuestion from "../assets/question.svg";
-import { MouseEventHandler } from "react";
+import { MouseEventHandler, ReactElement } from "react";
 
 export type Dice = {
   name: Badge;
@@ -129,23 +129,7 @@ export function Cell({
 }
 
 export function Nobles({ amount, color }: { amount: number; color?: string }) {
-  function renderNobles() {
-    switch (amount) {
-      case 0:
-        return;
-      case 1:
-        return <Noble />;
-      case 2:
-        return (
-          <>
-            <Noble />
-            <Noble />
-          </>
-        );
-      default:
-        return null;
-    }
-  }
+
   return (
     <div
       className={[
@@ -153,7 +137,7 @@ export function Nobles({ amount, color }: { amount: number; color?: string }) {
         color ?? "bg-gray-600",
       ].join(" ")}
     >
-      {renderNobles()}
+      {renderNobles(amount)}
     </div>
   );
 }
@@ -162,4 +146,21 @@ export function Noble() {
   return (
     <div className="w-[14px] h-[14px] bg-black rounded-full mt-[2px] ml-[1px] lg:w-[18px] lg:h-[18px]"></div>
   );
+}
+
+function renderNobles(amount: number) {
+  if (amount === 0) {
+    return
+  }
+
+  let nobles: ReactElement[] = []
+  for (let i = 0; i < amount; i++) {
+    nobles.push(<Noble key={i} />)
+  }
+
+  return (
+    <>
+      {nobles}
+    </>
+  )
 }
