@@ -396,12 +396,12 @@ func (p *Player) handleAddDomainPointsPower() {
 }
 
 func (p *Player) SelectDie(dr *DiceResult) {
-	dr.IsSelected = true
+	dr.IsPicked = true
 	dr.PlayerId = p.Id
 	p.AddBonus(*dr.Dice)
 }
 
 func (p *Player) SelectQuestionmarkDie(dr *DiceResult) {
-	dr.IsSelected = true
+	dr.IsPicked = true
 	dr.PlayerId = p.Id
 }

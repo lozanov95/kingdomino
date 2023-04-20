@@ -56,10 +56,10 @@ type GameRoom struct {
 }
 
 type DiceResult struct {
-	*Dice      `json:"dice"`
-	IsSelected bool  `json:"isSelected"`
-	PlayerId   int64 `json:"playerId"`
-	IsPlaced   bool  `json:"isPlaced"`
+	*Dice    `json:"dice"`
+	IsPicked bool  `json:"isPicked"`
+	PlayerId int64 `json:"playerId"`
+	IsPlaced bool  `json:"isPlaced"`
 }
 
 var (
@@ -341,7 +341,7 @@ func (gr *GameRoom) IsFull() bool {
 func isDicePickChoiceValid(availableDice *[]DiceResult, choice int) bool {
 	if choice < 0 ||
 		choice >= len(*availableDice) ||
-		(*availableDice)[choice].IsSelected {
+		(*availableDice)[choice].IsPicked {
 
 		return false
 	}

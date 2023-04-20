@@ -93,10 +93,10 @@ func TestHandleDiceSelection(t *testing.T) {
 	if p1.IsBonusEligible(Dice{Name: DOUBLEDOT}) {
 		t.Error("Expected the bonus to be ineligible")
 	}
-	if (!(*dices)[0].IsSelected || (*dices)[0].PlayerId != p1.Id) ||
-		(!(*dices)[1].IsSelected || (*dices)[1].PlayerId != p1.Id) ||
-		(!(*dices)[3].IsSelected || (*dices)[3].PlayerId != p2.Id) ||
-		(!(*dices)[2].IsSelected || (*dices)[2].PlayerId != p2.Id) {
+	if (!(*dices)[0].IsPicked || (*dices)[0].PlayerId != p1.Id) ||
+		(!(*dices)[1].IsPicked || (*dices)[1].PlayerId != p1.Id) ||
+		(!(*dices)[3].IsPicked || (*dices)[3].PlayerId != p2.Id) ||
+		(!(*dices)[2].IsPicked || (*dices)[2].PlayerId != p2.Id) {
 		t.Error("The dice selection was incorrect")
 	}
 }
@@ -111,7 +111,7 @@ func TestHandleQuestionmark(t *testing.T) {
 	if (*p1.BonusCard)[DOT].CurrentChecks != 0 {
 		t.Errorf("Expected bonus to be %d, got %d instead.", 0, (*p1.BonusCard)[DOT].CurrentChecks)
 	}
-	if dr[0].PlayerId != p1.Id && !dr[0].IsSelected {
-		t.Errorf("Expected pID %d, got %d. Expected is selected %t, got %t", p1.Id, dr[0].PlayerId, true, dr[0].IsSelected)
+	if dr[0].PlayerId != p1.Id && !dr[0].IsPicked {
+		t.Errorf("Expected pID %d, got %d. Expected is selected %t, got %t", p1.Id, dr[0].PlayerId, true, dr[0].IsPicked)
 	}
 }

@@ -1,5 +1,5 @@
-import { memo, MouseEventHandler } from "react";
-import { Dice, DiceResult } from "./common";
+import { memo, MouseEventHandler, useState } from "react";
+import { DiceResult } from "./common";
 import { BoardCell } from "./board";
 
 export const DiceSection = memo(function DiceSection({
@@ -11,6 +11,7 @@ export const DiceSection = memo(function DiceSection({
   handleDiceSelect: MouseEventHandler;
   playerId: number;
 }) {
+
   return (
     <div className="text-center mx-auto">
       <div className="text-lg text-center">
@@ -23,6 +24,7 @@ export const DiceSection = memo(function DiceSection({
               id={idx.toString()}
               onClick={shouldBeClickable(diceResult, playerId) ? handleDiceSelect : () => { }}
               playerId={playerId}
+              isSelected={true}
             />
           );
         })}
@@ -41,11 +43,12 @@ function DiceSelectCell({
   id: string;
   onClick: MouseEventHandler;
   playerId: number;
+  isSelected: boolean;
 }) {
   return (
     <BoardCell
       className={
-        calculateClass(diceResult.isPlaced, diceResult.isSelected, diceResult.playerId === playerId)
+        calculateClass(diceResult.isPlaced, diceResult.isPicked, diceResult.playerId === playerId)
       }
       onClick={onClick}
       name={diceResult.dice.name}
@@ -54,7 +57,7 @@ function DiceSelectCell({
       nobleColor={GetNobleColor(
         playerId,
         diceResult.playerId,
-        diceResult.isSelected
+        diceResult.isPicked
       )}
     />
   );
@@ -63,9 +66,9 @@ function DiceSelectCell({
 function GetNobleColor(
   playerId: number,
   dicePlayerId: number,
-  isSelected: boolean
+  isPicked: boolean
 ) {
-  if (!isSelected) {
+  if (!isPicked) {
     return "bg-gray-600";
   }
 
@@ -76,10 +79,10 @@ function GetNobleColor(
   return "bg-red-700";
 }
 
-function calculateClass(isPlaced: boolean, isSelected: boolean, belongToCurrentPlayer: boolean) {
+function calculateClass(isPlaced: boolean, isPicked: boolean, belongToCurrentPlayer: boolean) {
   const baseClass = "m-auto"
 
-  if (!isSelected || (belongToCurrentPlayer && !isPlaced)) {
+  if (!isPicked || (belongToCurrentPlayer && !isPlaced)) {
     return `${baseClass} hover:scale-110 hover:bg-gray-700 duration-100`
   }
 
@@ -89,5 +92,5 @@ function calculateClass(isPlaced: boolean, isSelected: boolean, belongToCurrentP
 }
 
 function shouldBeClickable(diceResult: DiceResult, playerId: number) {
-  return !diceResult.isSelected || playerId === diceResult.playerId
+  return !diceResult.isPicked || playerId === diceResult.playerId
 }

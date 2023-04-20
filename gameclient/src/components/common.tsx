@@ -34,7 +34,7 @@ export type Scoreboard = {
 
 export type DiceResult = {
   dice: Dice;
-  isSelected: boolean;
+  isPicked: boolean;
   playerId: number;
   isPlaced: boolean;
 };
