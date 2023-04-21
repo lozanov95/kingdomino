@@ -129,7 +129,6 @@ export function Cell({
 }
 
 export function Nobles({ amount, color }: { amount: number; color?: string }) {
-
   return (
     <div
       className={[
@@ -150,17 +149,13 @@ export function Noble() {
 
 function renderNobles(amount: number) {
   if (amount === 0) {
-    return
+    return;
   }
 
-  let nobles: ReactElement[] = []
+  let nobles: ReactElement[] = [];
   for (let i = 0; i < amount; i++) {
-    nobles.push(<Noble key={i} />)
+    nobles.push(<Noble key={i} />);
   }
 
-  return (
-    <>
-      {nobles}
-    </>
-  )
+  return <>{nobles}</>;
 }
