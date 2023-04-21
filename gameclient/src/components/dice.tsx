@@ -6,10 +6,12 @@ export const DiceSection = memo(function DiceSection({
   dices,
   handleDiceSelect,
   playerId,
+  selectedDie,
 }: {
   dices: DiceResult[] | null;
   handleDiceSelect: MouseEventHandler;
   playerId: number;
+  selectedDie: number;
 }) {
   if (dices === null) {
     return <></>;
@@ -31,7 +33,7 @@ export const DiceSection = memo(function DiceSection({
                   : () => {}
               }
               playerId={playerId}
-              isSelected={true}
+              isSelected={selectedDie === idx}
             />
           );
         })}
@@ -99,7 +101,7 @@ function calculateClass(
   const classList = ["m-auto"];
 
   if (isSelected) {
-    classList.push("bg-green-300");
+    classList.push("bg-green-300 scale-105 ");
   }
 
   if (!isPicked || (belongToCurrentPlayer && !isPlaced)) {

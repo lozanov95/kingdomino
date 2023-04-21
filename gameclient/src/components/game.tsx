@@ -33,6 +33,7 @@ function Game() {
     confirmed: false,
   });
   const [playerId, setPlayerId] = useState<number>(0);
+  const [selectedDie, setSelectedDie] = useState<number>(-1);
 
   function SendServerData(payload: ServerPayload) {
     wsConn?.send(JSON.stringify(payload));
@@ -74,30 +75,41 @@ function Game() {
     };
 
     ws.onmessage = ({ data }: { data: string }) => {
-      if (data.length > 0) {
-        const {
-          board,
-          bonusCard,
-          message,
-          dices,
-          playerPower,
-          scoreboards,
-          id,
-        }: GameState = JSON.parse(data);
-        board !== null && setGameBoard(board);
-        bonusCard !== null && setBonusCard(bonusCard);
-        message !== "" && setStatusMsg(message);
-        dices !== null && setDices(dices);
-        setPower(playerPower);
-        setScoreboards(scoreboards);
-        id !== 0 ? setPlayerId(id) : "";
+      if (data.length === 0) {
+        return;
       }
+
+      const {
+        board,
+        bonusCard,
+        message,
+        dices,
+        playerPower,
+        scoreboards,
+        id,
+      }: GameState = JSON.parse(data);
+      board !== null && setGameBoard(board);
+      bonusCard !== null && setBonusCard(bonusCard);
+      message !== "" && setStatusMsg(message);
+      dices !== null && setDices(dices);
+      setPower(playerPower);
+      setScoreboards(scoreboards);
+      id !== 0 ? setPlayerId(id) : "";
+
+      setSelectedDie(-1);
     };
   }
 
   function handleDiceSelect(ev: MouseEvent<HTMLElement>) {
+    const id = Number(ev.currentTarget.id);
+    const die = dices?.at(id);
+    if (die?.isPicked && !die?.isPlaced && die?.playerId === playerId) {
+      setSelectedDie(id);
+      // return
+    }
+
     const payload: ServerPayload = {
-      selectedDie: Number(ev.currentTarget.id),
+      selectedDie: id,
     };
 
     SendServerData(payload);
@@ -137,6 +149,7 @@ function Game() {
                   dices={dices}
                   handleDiceSelect={handleDiceSelect}
                   playerId={playerId}
+                  selectedDie={selectedDie}
                 />
                 {power.type !== 0 && !power.confirmed && (
                   <PowerPrompt
