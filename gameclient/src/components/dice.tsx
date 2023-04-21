@@ -11,9 +11,8 @@ export const DiceSection = memo(function DiceSection({
   handleDiceSelect: MouseEventHandler;
   playerId: number;
 }) {
-
   if (dices === null) {
-    return <></>
+    return <></>;
   }
 
   return (
@@ -26,7 +25,11 @@ export const DiceSection = memo(function DiceSection({
               key={idx}
               diceResult={diceResult}
               id={idx.toString()}
-              onClick={shouldBeClickable(diceResult, playerId) ? handleDiceSelect : () => { }}
+              onClick={
+                shouldBeClickable(diceResult, playerId)
+                  ? handleDiceSelect
+                  : () => {}
+              }
               playerId={playerId}
               isSelected={true}
             />
@@ -42,6 +45,7 @@ function DiceSelectCell({
   id,
   onClick,
   playerId,
+  isSelected,
 }: {
   diceResult: DiceResult;
   id: string;
@@ -51,9 +55,12 @@ function DiceSelectCell({
 }) {
   return (
     <BoardCell
-      className={
-        calculateClass(diceResult.isPlaced, diceResult.isPicked, diceResult.playerId === playerId)
-      }
+      className={calculateClass(
+        diceResult.isPlaced,
+        diceResult.isPicked,
+        diceResult.playerId === playerId,
+        isSelected
+      )}
       onClick={onClick}
       name={diceResult.dice.name}
       nobles={diceResult.dice.nobles}
@@ -83,18 +90,29 @@ function GetNobleColor(
   return "bg-red-700";
 }
 
-function calculateClass(isPlaced: boolean, isPicked: boolean, belongToCurrentPlayer: boolean) {
-  const baseClass = "m-auto"
+function calculateClass(
+  isPlaced: boolean,
+  isPicked: boolean,
+  belongToCurrentPlayer: boolean,
+  isSelected: boolean
+) {
+  const classList = ["m-auto"];
+
+  if (isSelected) {
+    classList.push("bg-green-300");
+  }
 
   if (!isPicked || (belongToCurrentPlayer && !isPlaced)) {
-    return `${baseClass} hover:scale-110 hover:bg-gray-700 duration-100`
+    classList.push("hover:scale-110 hover:bg-gray-700 duration-100");
   }
 
   if (belongToCurrentPlayer && isPlaced) {
-    return `${baseClass} grayscale`
+    classList.push("grayscale");
   }
+
+  return classList.join(" ");
 }
 
 function shouldBeClickable(diceResult: DiceResult, playerId: number) {
-  return !diceResult.isPicked || playerId === diceResult.playerId
+  return !diceResult.isPicked || playerId === diceResult.playerId;
 }
