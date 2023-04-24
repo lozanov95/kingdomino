@@ -31,3 +31,5 @@ export function ModalPrompt({
     </div>
   );
 }
+
+export default ModalPrompt;
