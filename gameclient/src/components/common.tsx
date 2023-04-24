@@ -19,6 +19,13 @@ export type BoardPosition = {
   cell: number;
 };
 
+export enum GameTurn {
+  Disconnected = 0,
+  PickDice,
+  PlaceDice,
+  HandlePlayerPower,
+}
+
 export type Bonus = {
   name: number;
   requiredChecks: number;
@@ -46,6 +53,7 @@ export type DiceResult = {
 
 export type GameState = {
   id: number;
+  gameTurn: GameTurn;
   bonusCard: Bonus[];
   message: string;
   board: Dice[][];

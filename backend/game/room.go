@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+type GameTurn uint8
+
 // Represents the payload that the client sends to the server
 type ClientPayload struct {
 	// Name of the player
@@ -29,6 +31,8 @@ type ClientPayload struct {
 type GameState struct {
 	// The room ID
 	ID int64 `json:"id"`
+
+	GameTurn `json:"gameTurn"`
 
 	// Message to the player
 	Message string `json:"message"`
@@ -69,6 +73,14 @@ var (
 const (
 	// The duration after which the player will be kicked for inactivity.
 	TIMEOUT = 60 * time.Minute
+)
+
+const (
+	Disconnected GameTurn = iota
+	PickDice
+	PlaceDice
+	HandlePlayerPower
+	Scoring
 )
 
 // Returns a new game room instance.
@@ -121,7 +133,7 @@ func (gr *GameRoom) roomLoop(closeChan chan<- string) {
 	}
 
 	for _, p := range gr.Players {
-		p.SendGameState(nil, "Connected!")
+		p.SendGameState(nil, "Connected!", PickDice)
 	}
 	log.Println("started room with", gr.Players[0].Name, "and", gr.Players[1].Name)
 
@@ -174,7 +186,7 @@ func (gr *GameRoom) handleDicesSelection(dice *[]DiceResult, p1, p2 *Player) {
 
 	if p1.IsBonusUsable(PWRPickTwoDice) {
 		p1.SendPlayerPowerPrompt(dice, PlayerPower{Type: PWRPickTwoDice, Description: "Pick two dices immediately."})
-		p2.SendGameState(dice, "Waiting for your opponent to decide if they want to use a wizard power")
+		p2.SendGameState(dice, "Waiting for your opponent to decide if they want to use a wizard power", PlaceDice)
 		payload := p1.GetInput()
 
 		if payload.PlayerPower.Use {
@@ -201,7 +213,7 @@ func (gr *GameRoom) handleDiceChoice(d *[]DiceResult, p, p2 *Player) {
 			if !player.Connected {
 				return
 			}
-			player.SendGameState(d, fmt.Sprintf("Player %s's turn to pick dice", p.GetName()))
+			player.SendGameState(d, fmt.Sprintf("Player %s's turn to pick dice", p.GetName()), PickDice)
 		}
 
 		choice := -1
@@ -214,12 +226,12 @@ func (gr *GameRoom) handleDiceChoice(d *[]DiceResult, p, p2 *Player) {
 
 			if p.GetPlayerPowerChoice() {
 				p.UsePower(PWRSelectDieSideOfChoice)
-				p.SendMessage("Select which die you want to turn")
+				p.SendMessage("Select which die you want to turn", HandlePlayerPower)
 				choice = func(d *[]DiceResult) int {
 					for {
 						payload := p.GetInput()
 						if (*d)[payload.SelectedDie].Name == EMPTY {
-							p.SendMessage("Invalid selection! Please choose another die")
+							p.SendMessage("Invalid selection! Please choose another die", HandlePlayerPower)
 							continue
 						}
 
@@ -248,7 +260,7 @@ func (gr *GameRoom) handleDiceChoice(d *[]DiceResult, p, p2 *Player) {
 					if !player.Connected {
 						return
 					}
-					player.SendGameState(d, fmt.Sprintf("Player %s's turn to pick dice", p.GetName()))
+					player.SendGameState(d, fmt.Sprintf("Player %s's turn to pick dice", p.GetName()), PickDice)
 				}
 
 				return
@@ -261,7 +273,7 @@ func (gr *GameRoom) handleDiceChoice(d *[]DiceResult, p, p2 *Player) {
 		}
 
 		if !isDicePickChoiceValid(d, choice) {
-			p.SendMessage("Invalid choice!")
+			p.SendMessage("Invalid choice!", PickDice)
 			log.Println("Invalid choice")
 			continue
 		}
@@ -377,7 +389,7 @@ func handleQuestionmark(d *[]DiceResult, initialChoice int, p *Player) {
 		choice := payload.SelectedDie
 
 		if !isDicePickChoiceValid(newDice, choice) {
-			p.SendMessage("Invalid choice!")
+			p.SendMessage("Invalid choice!", PickDice)
 			log.Println("Invalid choice")
 			continue
 		}

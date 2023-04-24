@@ -120,54 +120,55 @@ func (p *Player) GetInput() ClientPayload {
 	}
 }
 
-func (p *Player) SendMessage(message string) {
-	p.GameState <- GameState{Message: message}
+func (p *Player) SendMessage(message string, gt GameTurn) {
+	p.GameState <- GameState{Message: message, GameTurn: gt}
 }
 
 func (p *Player) SendDice(d *[]DiceResult, m string) {
-	p.GameState <- GameState{Dices: d, Message: m}
+	p.GameState <- GameState{Dices: d, Message: m, GameTurn: PlaceDice}
 }
 
-func (p *Player) SendGameState(d *[]DiceResult, m string) {
+func (p *Player) SendGameState(d *[]DiceResult, m string, gt GameTurn) {
 	p.GameState <- GameState{
 		ID:        p.Id,
 		Message:   m,
 		Board:     p.Board,
 		BonusCard: p.BonusCard,
 		Dices:     d,
+		GameTurn:  gt,
 	}
 }
 
 func (p *Player) SendPlayerPowerPrompt(d *[]DiceResult, pp PlayerPower) {
-	p.GameState <- GameState{PlayerPower: pp, Dices: d}
+	p.GameState <- GameState{PlayerPower: pp, Dices: d, GameTurn: HandlePlayerPower}
 }
 
 func (p *Player) SendScoreboard(p1Score, p2Score *Scoreboard, m string) {
-	p.GameState <- GameState{Scoreboards: []Scoreboard{*p1Score, *p2Score}, Message: m}
+	p.GameState <- GameState{Scoreboards: []Scoreboard{*p1Score, *p2Score}, Message: m, GameTurn: Scoring}
 }
 
 // Places domino on the field, following the placement rules
 func (p *Player) PlaceDomino(dr *[]DiceResult) {
-	p.SendGameState(dr, "Place a die")
+	p.SendGameState(dr, "Place a die", PlaceDice)
 	dp, choice := p.getPlacementChoice(dr, BoardPlacementInput{
 		Board:                 p.Board,
 		IgnoreConnectionRules: p.handleIgnoreConnectionRulesPower(),
 	})
 	p.placeOnBoard(dr, choice, dp)
 
-	p.SendGameState(dr, "Place a die")
+	p.SendGameState(dr, "Place a die", PlaceDice)
 	dp, choice = p.getPlacementChoice(dr, BoardPlacementInput{
 		Board:                 p.Board,
 		IgnoreConnectionRules: p.handleIgnoreConnectionRulesPower(),
 		PrevPosition:          dp,
 	})
 	p.placeOnBoard(dr, choice, dp)
-	p.SendGameState(dr, "Waiting for all players to complete their turns.")
+	p.SendGameState(dr, "Waiting for all players to complete their turns.", PlaceDice)
 }
 
 // Allows the user to place 2 separate dominos
 func (p *Player) PlaceSeparatedDomino(dr *[]DiceResult) {
-	p.SendGameState(dr, "Place a die")
+	p.SendGameState(dr, "Place a die", PlaceDice)
 	dp, choice := p.getPlacementChoice(dr, BoardPlacementInput{
 		Board:                 p.Board,
 		IgnoreConnectionRules: p.handleIgnoreConnectionRulesPower(),
@@ -175,7 +176,7 @@ func (p *Player) PlaceSeparatedDomino(dr *[]DiceResult) {
 	})
 	p.placeOnBoard(dr, choice, dp)
 
-	p.SendGameState(dr, "Place a die")
+	p.SendGameState(dr, "Place a die", PlaceDice)
 	dp, choice = p.getPlacementChoice(dr, BoardPlacementInput{
 		Board:                 p.Board,
 		IgnoreConnectionRules: p.handleIgnoreConnectionRulesPower(),
@@ -183,7 +184,7 @@ func (p *Player) PlaceSeparatedDomino(dr *[]DiceResult) {
 		SeparateDice:          true,
 	})
 	p.placeOnBoard(dr, choice, dp)
-	p.SendGameState(dr, "Waiting for all players to complete their turns.")
+	p.SendGameState(dr, "Waiting for all players to complete their turns.", PlaceDice)
 }
 
 func (p *Player) getPlacementChoice(dr *[]DiceResult, bpi BoardPlacementInput) (DiePos, int) {
@@ -195,7 +196,7 @@ func (p *Player) getPlacementChoice(dr *[]DiceResult, bpi BoardPlacementInput) (
 			return payload.DiePos, payload.SelectedDie
 		}
 
-		p.SendMessage("Invalid placement!")
+		p.SendMessage("Invalid placement!", PlaceDice)
 	}
 }
 
@@ -323,7 +324,8 @@ func (p *Player) handleUseAddNoblePower() {
 		return
 	}
 
-	p.SendGameState(nil, "Select a badge on your board that you will add a noble to.")
+	// p.SendPlayerPowerPrompt(nil, PlayerPower{})
+	p.SendGameState(nil, "Select a badge on your board that you will add a noble to.", HandlePlayerPower)
 	payload := func() *ClientPayload {
 		for {
 			payload := p.GetInput()
@@ -332,7 +334,7 @@ func (p *Player) handleUseAddNoblePower() {
 				p.Board[payload.DiePos.Row][payload.DiePos.Cell].Name != CASTLE {
 				return &payload
 			}
-			p.SendGameState(nil, "Invalid choice! Select a badge on your board that you will add a noble to.")
+			p.SendGameState(nil, "Invalid choice! Select a badge on your board that you will add a noble to.", HandlePlayerPower)
 		}
 	}()
 	p.UsePower(PWRAddNoble)
@@ -375,7 +377,7 @@ func (p *Player) handleAddDomainPointsPower() {
 		return
 	}
 
-	p.SendGameState(nil, "Choose a coat of arms. Each different	DOMAIN with this coat of arms will earn you	3 prestige points at the end of the game.")
+	p.SendGameState(nil, "Choose a coat of arms. Each different	DOMAIN with this coat of arms will earn you	3 prestige points at the end of the game.", HandlePlayerPower)
 	payload := func() *ClientPayload {
 		for {
 			payload := p.GetInput()
@@ -384,7 +386,7 @@ func (p *Player) handleAddDomainPointsPower() {
 				p.Board[payload.DiePos.Row][payload.DiePos.Cell].Name != CASTLE {
 				return &payload
 			}
-			p.SendGameState(nil, "Invalid choice! Select a coat of arms that you want to get prestige points from.")
+			p.SendGameState(nil, "Invalid choice! Select a coat of arms that you want to get prestige points from.", HandlePlayerPower)
 		}
 	}()
 

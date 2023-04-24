@@ -9,6 +9,7 @@ import {
   Scoreboard,
   DiceResult,
   BoardPosition,
+  GameTurn,
 } from "./common";
 import { Board } from "./board";
 import { DiceSection } from "./dice";
@@ -24,6 +25,7 @@ function Game() {
   const [gameState, setGameState] = useState<number>(WebSocket.CLOSED);
   const [wsConn, setWsConn] = useState<WebSocket | null>(null);
   const [statusMsg, setStatusMsg] = useState("");
+  const [gameTurn, setGameTurn] = useState<GameTurn>(GameTurn.Disconnected)
   const [playerName, setPlayerName] = useState("");
   const [gameBoard, setGameBoard] = useState<Dice[][] | null>(null);
   const [bonusCard, setBonusCard] = useState<Bonus[] | null>(null);
@@ -90,6 +92,7 @@ function Game() {
         playerPower,
         scoreboards,
         id,
+        gameTurn
       }: GameState = JSON.parse(data);
       board !== null && setGameBoard(board);
       bonusCard !== null && setBonusCard(bonusCard);
@@ -98,6 +101,7 @@ function Game() {
       setPower(playerPower);
       setScoreboards(scoreboards);
       id !== 0 ? setPlayerId(id) : "";
+      gameTurn !== 0 && setGameTurn(gameTurn)
 
       setSelectedDie(-1);
     };
@@ -119,13 +123,23 @@ function Game() {
   }
 
   function handleBoardClick(ev: MouseEvent<HTMLElement>) {
-    if (selectedDie === -1) {
+    if (selectedDie === -1 && gameTurn !== GameTurn.HandlePlayerPower) {
       return;
     }
 
     const row = Number(ev.currentTarget.parentElement?.parentElement?.id);
     const cell = Number(ev.currentTarget.id);
-    setBoardPosition({ row, cell });
+    switch (gameTurn) {
+      case GameTurn.PlaceDice:
+        setBoardPosition({ row, cell });
+        break;
+      case GameTurn.HandlePlayerPower:
+        SendServerData(wsConn, { boardPosition: { cell, row } })
+        break;
+      default:
+        break;
+    }
+
   }
 
   function handlePowerChoice(use: boolean) {
