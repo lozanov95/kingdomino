@@ -24,7 +24,7 @@ type PlayerPower struct {
 }
 
 type BonusMap map[BadgeName]Bonus
-type PowerType int64
+type PowerType uint8
 
 type BonusResult struct {
 	BadgeName `json:"name"`

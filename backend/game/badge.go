@@ -1,6 +1,6 @@
 package game
 
-type BadgeName int
+type BadgeName uint8
 
 type Dice struct {
 	Name   BadgeName `json:"name"`
