@@ -147,76 +147,73 @@ func (p *Player) SendScoreboard(p1Score, p2Score *Scoreboard, m string) {
 }
 
 // Places domino on the field, following the placement rules
-func (p *Player) PlaceDomino(d *[]DiceResult) {
-	p.SendGameState(d, "Select the dice that you want to place")
-	choice := p.getSelectedDominoChoice(d)
-	prevPos := p.placeOnBoard(d, choice, BoardPlacementInput{
+func (p *Player) PlaceDomino(dr *[]DiceResult) {
+	p.SendGameState(dr, "Place a die")
+	dp, choice := p.getPlacementChoice(dr, BoardPlacementInput{
 		Board:                 p.Board,
 		IgnoreConnectionRules: p.handleIgnoreConnectionRulesPower(),
 	})
+	p.placeOnBoard(dr, choice, dp)
 
-	p.SendGameState(d, "Select the dice that you want to place")
-	choice = p.getSelectedDominoChoice(d)
-	p.placeOnBoard(d, choice, BoardPlacementInput{PrevPosition: prevPos, Board: p.Board})
-	p.SendGameState(d, "Waiting for all players to complete their turns.")
+	p.SendGameState(dr, "Place a die")
+	dp, choice = p.getPlacementChoice(dr, BoardPlacementInput{
+		Board:                 p.Board,
+		IgnoreConnectionRules: p.handleIgnoreConnectionRulesPower(),
+		PrevPosition:          dp,
+	})
+	p.placeOnBoard(dr, choice, dp)
+	p.SendGameState(dr, "Waiting for all players to complete their turns.")
 }
 
 // Allows the user to place 2 separate dominos
-func (p *Player) PlaceSeparatedDomino(d *[]DiceResult) {
-	p.SendGameState(d, "Select the dice that you want to place")
-	choice := p.getSelectedDominoChoice(d)
-	p.placeOnBoard(d, choice, BoardPlacementInput{Board: p.Board, SeparateDice: true})
+func (p *Player) PlaceSeparatedDomino(dr *[]DiceResult) {
+	p.SendGameState(dr, "Place a die")
+	dp, choice := p.getPlacementChoice(dr, BoardPlacementInput{
+		Board:                 p.Board,
+		IgnoreConnectionRules: p.handleIgnoreConnectionRulesPower(),
+		SeparateDice:          true,
+	})
+	p.placeOnBoard(dr, choice, dp)
 
-	p.SendGameState(d, "Select the dice that you want to place")
-	choice = p.getSelectedDominoChoice(d)
-	p.placeOnBoard(d, choice, BoardPlacementInput{Board: p.Board, SeparateDice: true})
-	p.SendGameState(d, "Waiting for all players to complete their turns.")
+	p.SendGameState(dr, "Place a die")
+	dp, choice = p.getPlacementChoice(dr, BoardPlacementInput{
+		Board:                 p.Board,
+		IgnoreConnectionRules: p.handleIgnoreConnectionRulesPower(),
+		PrevPosition:          dp,
+		SeparateDice:          true,
+	})
+	p.placeOnBoard(dr, choice, dp)
+	p.SendGameState(dr, "Waiting for all players to complete their turns.")
 }
 
-func (p *Player) getSelectedDominoChoice(dr *[]DiceResult) int {
+func (p *Player) getPlacementChoice(dr *[]DiceResult, bpi BoardPlacementInput) (DiePos, int) {
+	var payload ClientPayload
 	for {
-		var choice int
-		payload := p.GetInput()
-
-		choice = payload.SelectedDie
-
-		if !isDicePlaceChoiceValid(dr, choice, p.Id) {
-			p.SendMessage("Invalid choice!")
-			continue
+		payload = p.GetInput()
+		if IsBoardPlacementValid(bpi, payload.DiePos) &&
+			isDicePlaceChoiceValid(dr, payload.SelectedDie, p.Id) {
+			return payload.DiePos, payload.SelectedDie
 		}
 
-		return choice
+		p.SendMessage("Invalid placement!")
 	}
 }
 
-func (p *Player) placeOnBoard(d *[]DiceResult, choice int, b BoardPlacementInput) DiePos {
-	pos, err := p.getBoardPlacementInput(b)
-	if err != nil {
-		return DiePos{}
-	}
-
-	p.Board[pos.Row][pos.Cell] = *(*d)[choice].Dice
+func (p *Player) placeOnBoard(d *[]DiceResult, choice int, dp DiePos) {
+	p.Board[dp.Row][dp.Cell] = *(*d)[choice].Dice
 	(*d)[choice].IsPlaced = true
-
-	return pos
 }
 
-func (p *Player) getBoardPlacementInput(bpi BoardPlacementInput) (DiePos, error) {
-	p.SendMessage("Select the place on the board that you want to place it on")
-	for p.Connected {
-		payload := p.GetInput()
-
-		if bpi.IgnoreConnectionRules && bpi.IsValid(&payload.DiePos) {
-			return payload.DiePos, nil
-		}
-		if !p.Board.IsThereOccupiedNeighbourCell(payload.DiePos.Row, payload.DiePos.Cell) || !bpi.IsValid(&payload.DiePos) {
-			p.SendMessage("Invalid position. Please select a new position")
-			continue
-		}
-
-		return payload.DiePos, nil
+func IsBoardPlacementValid(bpi BoardPlacementInput, dp DiePos) bool {
+	if bpi.IgnoreConnectionRules && bpi.IsValid(&dp) {
+		return true
 	}
-	return DiePos{}, io.EOF
+
+	if !bpi.Board.IsThereOccupiedNeighbourCell(dp.Row, dp.Cell) || !bpi.IsValid(&dp) {
+		return false
+	}
+
+	return true
 }
 
 // Returns TRUE if there is a free spot

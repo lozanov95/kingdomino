@@ -146,6 +146,9 @@ function Game() {
       selectedDie,
     };
     SendServerData(wsConn, payload);
+
+    setSelectedDie(-1);
+    setBoardPosition({ cell: -1, row: -1 });
   }
 
   return (
