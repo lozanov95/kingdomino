@@ -1,13 +1,15 @@
 import { memo, MouseEventHandler } from "react";
-import { Dice, Badge, getBadgeIcon } from "./common";
+import { Dice, Badge, getBadgeIcon, BoardPosition } from "./common";
 import { Nobles, Cell } from "./common";
 
 export const Board = memo(function Board({
   board,
   handleOnClick,
+  boardPosition,
 }: {
   board: Dice[][] | null;
   handleOnClick: MouseEventHandler;
+  boardPosition: BoardPosition;
 }) {
   return (
     <div className="flex flex-col max-w-fit col-start-2 col-end-4 lg:col-end-5 m-auto bg-neutral-500 mt-9">
@@ -15,9 +17,10 @@ export const Board = memo(function Board({
         return (
           <Row
             key={idx}
-            id={idx.toString()}
+            id={idx}
             elements={el}
             onClick={handleOnClick}
+            boardPosition={boardPosition}
           />
         );
       })}
@@ -30,16 +33,18 @@ export function Row({
   id,
   onClick,
   className,
+  boardPosition,
 }: {
-  id?: string;
+  id?: number;
   elements: Dice[] | null;
   onClick?: MouseEventHandler;
   className?: string;
+  boardPosition: BoardPosition;
 }) {
   return (
     <div
       className={["flex flex-row max-w-fit m-auto", className].join(" ")}
-      id={id}
+      id={id?.toString()}
     >
       {elements?.map(({ name, nobles }, idx) => {
         return (
@@ -49,6 +54,7 @@ export function Row({
             nobles={nobles}
             name={name}
             onClick={onClick}
+            selected={id === boardPosition.row && idx === boardPosition.cell}
           />
         );
       })}
@@ -63,6 +69,7 @@ export function BoardCell({
   onClick,
   className,
   nobleColor,
+  selected,
 }: {
   id: string;
   name: Badge;
@@ -70,9 +77,16 @@ export function BoardCell({
   onClick?: MouseEventHandler;
   className?: string;
   nobleColor?: string;
+  selected: boolean;
 }) {
+  const classList = ["flex max-w-fit p-1", className];
+
+  if (selected) {
+    classList.push("bg-green-300");
+  }
+
   return (
-    <div className={["flex max-w-fit p-1", className].join(" ")}>
+    <div className={classList.join(" ")}>
       <Nobles amount={nobles} color={nobleColor} />
       <Cell id={id} imgSrc={getBadgeIcon(name)} onClick={onClick} />
     </div>

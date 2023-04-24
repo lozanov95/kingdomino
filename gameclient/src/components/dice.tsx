@@ -60,8 +60,7 @@ function DiceSelectCell({
       className={calculateClass(
         diceResult.isPlaced,
         diceResult.isPicked,
-        diceResult.playerId === playerId,
-        isSelected
+        diceResult.playerId === playerId
       )}
       onClick={onClick}
       name={diceResult.dice.name}
@@ -72,6 +71,7 @@ function DiceSelectCell({
         diceResult.playerId,
         diceResult.isPicked
       )}
+      selected={isSelected}
     />
   );
 }
@@ -95,14 +95,9 @@ function GetNobleColor(
 function calculateClass(
   isPlaced: boolean,
   isPicked: boolean,
-  belongToCurrentPlayer: boolean,
-  isSelected: boolean
+  belongToCurrentPlayer: boolean
 ) {
   const classList = ["m-auto"];
-
-  if (isSelected) {
-    classList.push("bg-green-300 scale-105 ");
-  }
 
   if (!isPicked || (belongToCurrentPlayer && !isPlaced)) {
     classList.push("hover:scale-110 hover:bg-gray-700 duration-100");

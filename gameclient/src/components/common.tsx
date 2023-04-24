@@ -14,6 +14,11 @@ export type Dice = {
   nobles: number;
 };
 
+export type BoardPosition = {
+  row: number;
+  cell: number;
+};
+
 export type Bonus = {
   name: number;
   requiredChecks: number;
@@ -51,10 +56,7 @@ export type GameState = {
 
 export type ServerPayload = {
   name?: string;
-  boardPosition?: {
-    row: number;
-    cell: number;
-  };
+  boardPosition?: BoardPosition;
   selectedDie?: number;
   playerPower?: PlayerPower;
 };

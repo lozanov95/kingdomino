@@ -8,6 +8,7 @@ import {
   PlayerPower,
   Scoreboard,
   DiceResult,
+  BoardPosition,
 } from "./common";
 import { Board } from "./board";
 import { DiceSection } from "./dice";
@@ -34,6 +35,10 @@ function Game() {
   });
   const [playerId, setPlayerId] = useState<number>(0);
   const [selectedDie, setSelectedDie] = useState<number>(-1);
+  const [boardPosition, setBoardPosition] = useState<BoardPosition>({
+    row: -1,
+    cell: -1,
+  });
 
   function SendServerData(payload: ServerPayload) {
     wsConn?.send(JSON.stringify(payload));
@@ -105,7 +110,7 @@ function Game() {
     const die = dices?.at(id);
     if (die?.isPicked && !die?.isPlaced && die?.playerId === playerId) {
       setSelectedDie(id);
-      // return
+      return;
     }
 
     const payload: ServerPayload = {
@@ -116,13 +121,20 @@ function Game() {
   }
 
   function handleBoardClick(ev: MouseEvent<HTMLElement>) {
-    const payload: ServerPayload = {
-      boardPosition: {
-        row: Number(ev.currentTarget.parentElement?.parentElement?.id),
-        cell: Number(ev.currentTarget.id),
-      },
-    };
-    SendServerData(payload);
+    if (selectedDie === -1) {
+      return;
+    }
+
+    const row = Number(ev.currentTarget.parentElement?.parentElement?.id);
+    const cell = Number(ev.currentTarget.id);
+    setBoardPosition({ row, cell });
+
+    // const payload: ServerPayload = {
+    //   boardPosition: {
+    //     row, cell
+    //   },
+    // };
+    // SendServerData(payload);
   }
 
   function handlePowerChoice(use: boolean) {
@@ -157,7 +169,11 @@ function Game() {
                     power={power}
                   />
                 )}
-                <Board board={gameBoard} handleOnClick={handleBoardClick} />
+                <Board
+                  board={gameBoard}
+                  handleOnClick={handleBoardClick}
+                  boardPosition={boardPosition}
+                />
                 <BonusBoard bonusCard={bonusCard} />
               </>
             ) : (
