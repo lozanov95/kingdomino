@@ -15,6 +15,8 @@ import { DiceSection } from "./dice";
 import { PowerPrompt } from "./powerprompt";
 import { RulesSection } from "./rules";
 import { ScoreSection } from "./scoreboard";
+import { ModalPrompt } from "./modal";
+import { isReadyToSubmit, SendServerData } from "../helpers/gamestate";
 
 function Game() {
   const DOMAIN = "192.168.1.2";
@@ -40,9 +42,9 @@ function Game() {
     cell: -1,
   });
 
-  function SendServerData(payload: ServerPayload) {
-    wsConn?.send(JSON.stringify(payload));
-  }
+  // function SendServerData(payload: ServerPayload) {
+  //   wsConn?.send(JSON.stringify(payload));
+  // }
 
   function clearGameState(ws: WebSocket) {
     setGameState(ws.readyState);
@@ -117,7 +119,7 @@ function Game() {
       selectedDie: id,
     };
 
-    SendServerData(payload);
+    SendServerData(wsConn, payload);
   }
 
   function handleBoardClick(ev: MouseEvent<HTMLElement>) {
@@ -128,19 +130,26 @@ function Game() {
     const row = Number(ev.currentTarget.parentElement?.parentElement?.id);
     const cell = Number(ev.currentTarget.id);
     setBoardPosition({ row, cell });
-
-    // const payload: ServerPayload = {
-    //   boardPosition: {
-    //     row, cell
-    //   },
-    // };
-    // SendServerData(payload);
   }
 
   function handlePowerChoice(use: boolean) {
     const pwr: PlayerPower = { ...power, use: use, confirmed: true };
     setPower(pwr);
-    SendServerData({ playerPower: pwr });
+    SendServerData(wsConn, { playerPower: pwr });
+  }
+
+  function handlePlaceDie(place: boolean) {
+    if (!place) {
+      setSelectedDie(-1);
+      setBoardPosition({ cell: -1, row: -1 });
+      return;
+    }
+
+    const payload: ServerPayload = {
+      boardPosition,
+      selectedDie,
+    };
+    SendServerData(wsConn, payload);
   }
 
   return (
@@ -167,6 +176,12 @@ function Game() {
                   <PowerPrompt
                     handlePowerChoice={handlePowerChoice}
                     power={power}
+                  />
+                )}
+                {isReadyToSubmit(boardPosition, selectedDie) && (
+                  <ModalPrompt
+                    prompt={"Do you want to place the die?"}
+                    onClick={handlePlaceDie}
                   />
                 )}
                 <Board
@@ -231,5 +246,7 @@ const StatusPane = memo(function StatusPane({ message }: { message: string }) {
     </div>
   );
 });
+
+function placeDie(boardPosition: BoardPosition, selectedDie: number) {}
 
 export default Game;
