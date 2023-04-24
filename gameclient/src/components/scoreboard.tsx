@@ -1,4 +1,5 @@
-import { Cell, getBadgeIcon, Scoreboard } from "./common";
+import { Cell, getBadgeIcon } from "./common";
+import { Scoreboard } from "../helpers/types";
 
 export function ScoreSection({ scoreboards }: { scoreboards: Scoreboard[] }) {
   return (

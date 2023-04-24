@@ -10,7 +10,7 @@ import {
   DiceResult,
   BoardPosition,
   GameTurn,
-} from "./common";
+} from "../helpers/types";
 import { Board } from "./board";
 import { DiceSection } from "./dice";
 import { PowerPrompt } from "./powerprompt";

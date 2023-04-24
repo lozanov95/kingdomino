@@ -1,4 +1,4 @@
-import { BoardPosition, ServerPayload } from "../components/common";
+import { BoardPosition, ServerPayload } from "../helpers/types";
 
 export function isReadyToSubmit(
   boardPosition: BoardPosition,

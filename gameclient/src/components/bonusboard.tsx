@@ -1,5 +1,6 @@
 import { Cell } from "./common";
-import { Bonus, getBadgeIcon } from "./common";
+import { getBadgeIcon } from "./common";
+import { Bonus } from "../helpers/types";
 import { useEffect, useState, memo } from "react";
 
 const BonusBoard = memo(function BonusBoard({

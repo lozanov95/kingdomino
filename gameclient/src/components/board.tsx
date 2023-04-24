@@ -1,5 +1,6 @@
 import { memo, MouseEventHandler } from "react";
-import { Dice, Badge, getBadgeIcon, BoardPosition } from "./common";
+import { getBadgeIcon } from "./common";
+import { Dice, Badge, BoardPosition } from "../helpers/types";
 import { Nobles, Cell } from "./common";
 
 export const Board = memo(function Board({

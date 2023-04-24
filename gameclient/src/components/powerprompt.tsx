@@ -1,4 +1,4 @@
-import { PlayerPower } from "./common";
+import { PlayerPower } from "../helpers/types";
 import Modal from "./modal";
 
 export function PowerPrompt({

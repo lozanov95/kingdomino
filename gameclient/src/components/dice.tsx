@@ -1,5 +1,5 @@
 import { memo, MouseEventHandler } from "react";
-import { DiceResult } from "./common";
+import { DiceResult } from "../helpers/types";
 import { BoardCell } from "./board";
 
 export const DiceSection = memo(function DiceSection({
