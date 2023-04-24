@@ -60,18 +60,6 @@ function BonusCell({
     setElClass(cs);
 
     const els = Array.from(Array(requiredChecks)).map((_, idx) => {
-      if (idx < currentChecks) {
-        return (
-          <input
-            key={idx}
-            value=""
-            type="checkbox"
-            className={checkboxClass}
-            disabled
-            checked
-          />
-        );
-      }
       return (
         <input
           key={idx}
@@ -79,6 +67,7 @@ function BonusCell({
           type="checkbox"
           className={checkboxClass}
           disabled
+          checked={idx < currentChecks}
         />
       );
     });
