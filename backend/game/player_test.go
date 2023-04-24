@@ -61,8 +61,8 @@ func TestCalculatePoints(t *testing.T) {
 
 func TestPlaceDomino(t *testing.T) {
 	player := NewMockPlayer([]ClientPayload{
-		{SelectedDie: 0}, {DiePos: DiePos{Cell: 3, Row: 3}},
-		{SelectedDie: 1}, {DiePos: DiePos{Cell: 4, Row: 3}},
+		{SelectedDie: 0, DiePos: DiePos{Cell: 3, Row: 3}},
+		{SelectedDie: 1, DiePos: DiePos{Cell: 4, Row: 3}},
 	})
 	dice := []DiceResult{{Dice: &Dice{Name: DOT}, PlayerId: player.Id}, {Dice: &Dice{Name: FILLED}, PlayerId: player.Id}}
 	player.PlaceDomino(&dice)
@@ -79,9 +79,9 @@ func TestPlaceDomino(t *testing.T) {
 
 func TestPlaceDominoInvalidInput(t *testing.T) {
 	player := NewMockPlayer([]ClientPayload{
-		{SelectedDie: 0}, {DiePos: DiePos{Cell: 0, Row: 0}},
-		{SelectedDie: 1}, {DiePos: DiePos{Cell: 3, Row: 3}},
-		{SelectedDie: 1}, {DiePos: DiePos{Cell: 4, Row: 3}},
+		{SelectedDie: 0, DiePos: DiePos{Cell: 0, Row: 0}},
+		{SelectedDie: 0, DiePos: DiePos{Cell: 3, Row: 3}},
+		{SelectedDie: 1, DiePos: DiePos{Cell: 4, Row: 3}},
 	})
 	dice := []DiceResult{{Dice: &Dice{Name: DOT}, PlayerId: player.Id}, {Dice: &Dice{Name: FILLED}, PlayerId: player.Id}}
 	player.PlaceDomino(&dice)
@@ -98,8 +98,8 @@ func TestPlaceDominoInvalidInput(t *testing.T) {
 
 func TestSeparatedDomino(t *testing.T) {
 	player := NewMockPlayer([]ClientPayload{
-		{SelectedDie: 0}, {DiePos: DiePos{Row: 0, Cell: 0}},
-		{SelectedDie: 1}, {DiePos: DiePos{Row: 4, Cell: 6}},
+		{SelectedDie: 0, DiePos: DiePos{Row: 0, Cell: 0}},
+		{SelectedDie: 1, DiePos: DiePos{Row: 4, Cell: 6}},
 	})
 	player.Board = &Board{
 		{{Name: EMPTY}, {Name: LINE}, {Name: LINE}, {Name: DOT}, {Name: DOT}, {Name: DOT}, {Name: DOT}},
