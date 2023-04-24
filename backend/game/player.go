@@ -243,7 +243,7 @@ func (p *Player) IsValidPlacementPossible() bool {
 
 // Checks if there is a way to place a domino, either with the separate bonus (if it is completed) or not
 func (p *Player) IsAnyPlacementPossible() bool {
-	if p.IsBonusCompleted(PWRSeparateDominos) && p.IsThereAFreeSpot() {
+	if p.IsBonusUsable(PWRSeparateDominos) && p.IsThereAFreeSpot() {
 		return true
 	}
 
