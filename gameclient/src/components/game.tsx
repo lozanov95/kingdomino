@@ -42,10 +42,6 @@ function Game() {
     cell: -1,
   });
 
-  // function SendServerData(payload: ServerPayload) {
-  //   wsConn?.send(JSON.stringify(payload));
-  // }
-
   function clearGameState(ws: WebSocket) {
     setGameState(ws.readyState);
     setBonusCard(null);
@@ -246,7 +242,5 @@ const StatusPane = memo(function StatusPane({ message }: { message: string }) {
     </div>
   );
 });
-
-function placeDie(boardPosition: BoardPosition, selectedDie: number) {}
 
 export default Game;
