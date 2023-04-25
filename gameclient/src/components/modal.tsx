@@ -30,7 +30,11 @@ export function ModalPrompt({
   );
 }
 
-export function ModalWithChildren({ children }: { children: React.ReactElement[] }) {
+export function ModalWithChildren({
+  children,
+}: {
+  children: React.ReactElement[] | React.ReactElement;
+}) {
   return (
     <div className="absolute w-full h-full bg-gray-800 opacity-90 top-0 left-0">
       <div className="bg-black h-fit p-3 rounded-lg m-auto fixed top-[50%] left-[50%] translate-y-[-50%] translate-x-[-50%]">
