@@ -8,12 +8,12 @@ export const DiceSection = memo(function DiceSection({
   playerId,
   selectedDie,
 }: {
-  dices: DiceResult[] | null;
+  dices: DiceResult[];
   handleDiceSelect: MouseEventHandler;
   playerId: number;
   selectedDie: number;
 }) {
-  if (dices === null) {
+  if (dices.length === 0) {
     return <></>;
   }
 
@@ -30,7 +30,7 @@ export const DiceSection = memo(function DiceSection({
               onClick={
                 shouldBeClickable(diceResult, playerId)
                   ? handleDiceSelect
-                  : () => {}
+                  : () => { }
               }
               playerId={playerId}
               isSelected={selectedDie === idx}

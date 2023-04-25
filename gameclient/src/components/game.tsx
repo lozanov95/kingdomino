@@ -27,10 +27,10 @@ function Game() {
   const [statusMsg, setStatusMsg] = useState("");
   const [gameTurn, setGameTurn] = useState<GameTurn>(GameTurn.Disconnected);
   const [playerName, setPlayerName] = useState("");
-  const [gameBoard, setGameBoard] = useState<Dice[][] | null>(null);
-  const [bonusCard, setBonusCard] = useState<Bonus[] | null>(null);
-  const [scoreboards, setScoreboards] = useState<Scoreboard[] | null>(null);
-  const [dices, setDices] = useState<DiceResult[] | null>(null);
+  const [gameBoard, setGameBoard] = useState<Dice[][]>([]);
+  const [bonusCard, setBonusCard] = useState<Bonus[]>([]);
+  const [scoreboards, setScoreboards] = useState<Scoreboard[]>([]);
+  const [dices, setDices] = useState<DiceResult[]>([]);
   const [power, setPower] = useState<PlayerPower>({
     type: 0,
     description: "",
@@ -41,9 +41,9 @@ function Game() {
 
   function clearGameState(ws: WebSocket) {
     setGameState(ws.readyState);
-    setBonusCard(null);
-    setGameBoard(null);
-    setDices(null);
+    setBonusCard([]);
+    setGameBoard([]);
+    setDices([]);
     setPlayerId(0);
   }
 
@@ -127,8 +127,8 @@ function Game() {
           gameTurn={gameTurn}
           handlePowerChoice={handlePowerChoice}
           statusMsg={statusMsg}
-          bonusCard={bonusCard ?? []}
-          gameBoard={gameBoard ?? []}
+          bonusCard={bonusCard}
+          gameBoard={gameBoard}
           power={power}
         />
       )}
@@ -187,7 +187,7 @@ function GameSection({
   handlePowerChoice,
 }: {
   display: boolean;
-  dices: DiceResult[] | null;
+  dices: DiceResult[];
   playerId: number;
   gameTurn: GameTurn;
   statusMsg: string;

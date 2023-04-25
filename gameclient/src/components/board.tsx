@@ -8,13 +8,13 @@ export const Board = memo(function Board({
   handleOnClick,
   boardPosition,
 }: {
-  board: Dice[][] | null;
+  board: Dice[][];
   handleOnClick: MouseEventHandler;
   boardPosition: BoardPosition;
 }) {
   return (
     <div className="flex flex-col max-w-fit col-start-2 col-end-4 lg:col-end-5 m-auto bg-neutral-500 mt-9">
-      {board?.map((el, idx) => {
+      {board.map((el, idx) => {
         return (
           <Row
             key={idx}
