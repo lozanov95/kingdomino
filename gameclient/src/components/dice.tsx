@@ -1,6 +1,7 @@
-import { memo, MouseEventHandler } from "react";
+import { memo, MouseEventHandler, useState } from "react";
 import { DiceResult } from "../helpers/types";
 import { BoardCell } from "./board";
+import { ModalWithChildren } from "./modal";
 
 export const DiceSection = memo(function DiceSection({
   dices,
@@ -17,11 +18,17 @@ export const DiceSection = memo(function DiceSection({
     return <></>;
   }
 
+  const [availableDice, setAvailableDice] = useState<DiceResult[]>([]);
+
+  if (dices.length === 4 && dices !== availableDice) {
+    setAvailableDice(dices);
+  }
+
   return (
     <div className="text-center mx-auto">
       <div className="text-lg text-center">
         <h2 className="font-bold text-2xl">Dice</h2>
-        {dices.map((diceResult, idx) => {
+        {availableDice.map((diceResult, idx) => {
           return (
             <DiceSelectCell
               key={idx}
@@ -37,6 +44,28 @@ export const DiceSection = memo(function DiceSection({
             />
           );
         })}
+        {dices.length > 4 && (
+          <ModalWithChildren>
+            <div className="flex">
+              {dices.map((diceResult, idx) => {
+                return (
+                  <DiceSelectCell
+                    key={idx}
+                    diceResult={diceResult}
+                    id={idx.toString()}
+                    onClick={
+                      shouldBeClickable(diceResult, playerId)
+                        ? handleDiceSelect
+                        : () => {}
+                    }
+                    playerId={playerId}
+                    isSelected={selectedDie === idx}
+                  />
+                );
+              })}
+            </div>
+          </ModalWithChildren>
+        )}
       </div>
     </div>
   );
