@@ -43,6 +43,7 @@ function Game() {
     setGameState(ws.readyState);
     setBonusCard([]);
     setGameBoard([]);
+    setScoreboards([])
     setDices([]);
     setPlayerId(0);
   }
@@ -94,7 +95,7 @@ function Game() {
       message !== "" && setStatusMsg(message);
       dices !== null && setDices(dices);
       setPower(playerPower);
-      setScoreboards(scoreboards);
+      scoreboards !== null && setScoreboards(scoreboards);
       id !== 0 ? setPlayerId(id) : "";
       gameTurn !== 0 && setGameTurn(gameTurn);
     };
@@ -132,7 +133,7 @@ function Game() {
           power={power}
         />
       )}
-      {scoreboards !== null && <ScoreSection scoreboards={scoreboards} />}
+      <ScoreSection scoreboards={scoreboards} />
     </>
   );
 }
