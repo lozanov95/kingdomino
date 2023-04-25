@@ -1,7 +1,6 @@
 import { Cell, getBadgeIcon } from "./common";
 import { Scoreboard } from "../helpers/types";
 import { ModalWithChildren } from "./modal";
-import { SetStateAction } from "react";
 
 export function ScoreSection({
   scoreboards,
