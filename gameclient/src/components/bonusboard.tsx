@@ -8,9 +8,8 @@ const BonusBoard = memo(function BonusBoard({
 }: {
   bonusCard: Bonus[];
 }) {
-
   if (bonusCard.length === 0) {
-    return <></>
+    return <></>;
   }
 
   return (

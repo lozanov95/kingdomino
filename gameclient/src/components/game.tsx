@@ -43,7 +43,7 @@ function Game() {
     setGameState(ws.readyState);
     setBonusCard([]);
     setGameBoard([]);
-    setScoreboards([])
+    setScoreboards([]);
     setDices([]);
     setPlayerId(0);
   }
