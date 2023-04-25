@@ -3,12 +3,16 @@ import { Scoreboard } from "../helpers/types";
 import { ModalWithChildren } from "./modal";
 import { SetStateAction } from "react";
 
-export function ScoreSection({ scoreboards, setScoreboards }: { scoreboards: Scoreboard[], setScoreboards: React.Dispatch<SetStateAction<Scoreboard[]>> }) {
+export function ScoreSection({
+  scoreboards,
+  clearGameState,
+}: {
+  scoreboards: Scoreboard[];
+  clearGameState: () => void;
+}) {
   if (scoreboards.length === 0) {
-    return <></>
+    return <></>;
   }
-
-
 
   return (
     <ModalWithChildren>
@@ -18,7 +22,12 @@ export function ScoreSection({ scoreboards, setScoreboards }: { scoreboards: Sco
             return <PlayerScoreboard scoreboard={scoreboard} key={idx} />;
           })}
         </div>
-        <button className="p-1 px-3 rounded-lg bg-gray-700 hover:bg-gray-600" onClick={() => setScoreboards([])}>Close</button>
+        <button
+          className="p-1 px-3 rounded-lg bg-gray-700 hover:bg-gray-600"
+          onClick={() => clearGameState()}
+        >
+          Close
+        </button>
       </div>
     </ModalWithChildren>
   );
@@ -26,8 +35,8 @@ export function ScoreSection({ scoreboards, setScoreboards }: { scoreboards: Sco
 
 export function PlayerScoreboard({ scoreboard }: { scoreboard: Scoreboard }) {
   return (
-    <div>
-      <p className="text-3xl">{scoreboard.name}</p>
+    <div className="m-2 text-center">
+      <p className="text-3xl font-bold">{scoreboard.name}</p>
       {scoreboard.scores.map((badgeScore, idx) => {
         return (
           <ScoreRow
@@ -46,7 +55,7 @@ export function PlayerScoreboard({ scoreboard }: { scoreboard: Scoreboard }) {
 
 function ScoreRow({ badgeId, score }: { badgeId: number; score: number }) {
   return (
-    <div className="flex">
+    <div className="flex justify-center">
       <Cell id="" imgSrc={getBadgeIcon(badgeId)} />
       <input
         className="text-2xl font-bold text-center w-[40px] lg:w-[90px]"

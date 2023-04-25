@@ -39,8 +39,8 @@ function Game() {
   });
   const [playerId, setPlayerId] = useState<number>(0);
 
-  function clearGameState(ws: WebSocket) {
-    setGameState(ws.readyState);
+  function clearGameState() {
+    setGameState(WebSocket.CLOSED);
     setBonusCard([]);
     setGameBoard([]);
     setScoreboards([]);
@@ -66,12 +66,11 @@ function Game() {
     };
 
     ws.onerror = () => {
-      clearGameState(ws);
+      clearGameState();
       setStatusMsg("Connection to the server failed.");
     };
 
     ws.onclose = () => {
-      clearGameState(ws);
       setStatusMsg("The connection was closed.");
     };
 
@@ -133,7 +132,7 @@ function Game() {
           power={power}
         />
       )}
-      <ScoreSection scoreboards={scoreboards} setScoreboards={setScoreboards} />
+      <ScoreSection scoreboards={scoreboards} clearGameState={clearGameState} />
     </>
   );
 }
