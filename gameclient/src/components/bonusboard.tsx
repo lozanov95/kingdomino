@@ -6,11 +6,11 @@ import { useEffect, useState, memo } from "react";
 const BonusBoard = memo(function BonusBoard({
   bonusCard,
 }: {
-  bonusCard: Bonus[] | null;
+  bonusCard: Bonus[];
 }) {
   return (
     <>
-      {bonusCard !== null ? (
+      {bonusCard?.length > 0 && (
         <div className="col-start-5 w-fit mx-auto">
           <h2 className="text-2xl font-bold text-center">Bonuses</h2>
           {bonusCard
@@ -27,8 +27,6 @@ const BonusBoard = memo(function BonusBoard({
               );
             })}
         </div>
-      ) : (
-        ""
       )}
     </>
   );

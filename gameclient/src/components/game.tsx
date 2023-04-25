@@ -38,11 +38,6 @@ function Game() {
     confirmed: false,
   });
   const [playerId, setPlayerId] = useState<number>(0);
-  const [selectedDie, setSelectedDie] = useState<number>(-1);
-  const [boardPosition, setBoardPosition] = useState<BoardPosition>({
-    row: -1,
-    cell: -1,
-  });
 
   function clearGameState(ws: WebSocket) {
     setGameState(ws.readyState);
@@ -102,66 +97,17 @@ function Game() {
       setScoreboards(scoreboards);
       id !== 0 ? setPlayerId(id) : "";
       gameTurn !== 0 && setGameTurn(gameTurn);
-
-      setSelectedDie(-1);
     };
   }
 
-  function handleDiceSelect(ev: MouseEvent<HTMLElement>) {
-    const id = Number(ev.currentTarget.id);
-    const die = dices?.at(id);
-    if (die?.isPicked && !die?.isPlaced && die?.playerId === playerId) {
-      setSelectedDie(id);
-      return;
-    }
-
-    const payload: ServerPayload = {
-      selectedDie: id,
-    };
-
+  function handleSendServerData(payload: ServerPayload) {
     SendServerData(wsConn, payload);
-  }
-
-  function handleBoardClick(ev: MouseEvent<HTMLElement>) {
-    if (selectedDie === -1 && gameTurn !== GameTurn.HandlePlayerPower) {
-      return;
-    }
-
-    const row = Number(ev.currentTarget.parentElement?.parentElement?.id);
-    const cell = Number(ev.currentTarget.id);
-    switch (gameTurn) {
-      case GameTurn.PlaceDice:
-        setBoardPosition({ row, cell });
-        break;
-      case GameTurn.HandlePlayerPower:
-        SendServerData(wsConn, { boardPosition: { cell, row } });
-        break;
-      default:
-        break;
-    }
   }
 
   function handlePowerChoice(use: boolean) {
     const pwr: PlayerPower = { ...power, use: use, confirmed: true };
     setPower(pwr);
     SendServerData(wsConn, { playerPower: pwr });
-  }
-
-  function handlePlaceDie(place: boolean) {
-    if (!place) {
-      setSelectedDie(-1);
-      setBoardPosition({ cell: -1, row: -1 });
-      return;
-    }
-
-    const payload: ServerPayload = {
-      boardPosition,
-      selectedDie,
-    };
-    SendServerData(wsConn, payload);
-
-    setSelectedDie(-1);
-    setBoardPosition({ cell: -1, row: -1 });
   }
 
   return (
@@ -173,41 +119,18 @@ function Game() {
           setPlayerName={setPlayerName}
         />
       ) : (
-        <div className="lg:text-3xl">
-          {statusMsg !== "" ? <StatusPane message={statusMsg} /> : ""}
-          <div className="grid grid-cols-5 grid-rows-1">
-            {gameState === WebSocket.OPEN && gameBoard !== undefined ? (
-              <>
-                <DiceSection
-                  dices={dices}
-                  handleDiceSelect={handleDiceSelect}
-                  playerId={playerId}
-                  selectedDie={selectedDie}
-                />
-                {power.type !== 0 && !power.confirmed && (
-                  <PowerPrompt
-                    handlePowerChoice={handlePowerChoice}
-                    power={power}
-                  />
-                )}
-                {isReadyToSubmit(boardPosition, selectedDie) && (
-                  <ModalPrompt
-                    prompt={"Do you want to place the die?"}
-                    onClick={handlePlaceDie}
-                  />
-                )}
-                <Board
-                  board={gameBoard}
-                  handleOnClick={handleBoardClick}
-                  boardPosition={boardPosition}
-                />
-                <BonusBoard bonusCard={bonusCard} />
-              </>
-            ) : (
-              ""
-            )}
-          </div>
-        </div>
+        <GameSection
+          display={gameState === WebSocket.OPEN && gameBoard !== undefined}
+          dices={dices}
+          handleSendServerData={handleSendServerData}
+          playerId={playerId}
+          gameTurn={gameTurn}
+          handlePowerChoice={handlePowerChoice}
+          statusMsg={statusMsg}
+          bonusCard={bonusCard ?? []}
+          gameBoard={gameBoard ?? []}
+          power={power}
+        />
       )}
       {scoreboards !== null && <ScoreSection scoreboards={scoreboards} />}
     </>
@@ -247,6 +170,120 @@ function Connect({
         </div>
       </form>
       <RulesSection />
+    </div>
+  );
+}
+
+function GameSection({
+  display,
+  dices,
+  playerId,
+  gameTurn,
+  statusMsg,
+  power,
+  gameBoard,
+  bonusCard,
+  handleSendServerData,
+  handlePowerChoice,
+}: {
+  display: boolean;
+  dices: DiceResult[] | null;
+  playerId: number;
+  gameTurn: GameTurn;
+  statusMsg: string;
+  power: PlayerPower;
+  gameBoard: Dice[][];
+  bonusCard: Bonus[];
+  handleSendServerData: (payload: ServerPayload) => void;
+  handlePowerChoice: (use: boolean) => void;
+}) {
+  const [selectedDie, setSelectedDie] = useState<number>(-1);
+  const [boardPosition, setBoardPosition] = useState<BoardPosition>({
+    row: -1,
+    cell: -1,
+  });
+
+  function handleDiceSelect(ev: MouseEvent<HTMLElement>) {
+    const id = Number(ev.currentTarget.id);
+    const die = dices?.at(id);
+    if (die?.isPicked && !die?.isPlaced && die?.playerId === playerId) {
+      setSelectedDie(id);
+      return;
+    }
+
+    handleSendServerData({
+      selectedDie: id,
+    });
+  }
+
+  function handleBoardClick(ev: MouseEvent<HTMLElement>) {
+    if (selectedDie === -1 && gameTurn !== GameTurn.HandlePlayerPower) {
+      return;
+    }
+
+    const row = Number(ev.currentTarget.parentElement?.parentElement?.id);
+    const cell = Number(ev.currentTarget.id);
+    switch (gameTurn) {
+      case GameTurn.PlaceDice:
+        setBoardPosition({ row, cell });
+        break;
+      case GameTurn.HandlePlayerPower:
+        handleSendServerData({ boardPosition: { cell, row } });
+        break;
+      default:
+        break;
+    }
+  }
+
+  function handlePlaceDie(place: boolean) {
+    if (!place) {
+      setSelectedDie(-1);
+      setBoardPosition({ cell: -1, row: -1 });
+      return;
+    }
+
+    handleSendServerData({
+      boardPosition,
+      selectedDie,
+    });
+
+    setSelectedDie(-1);
+    setBoardPosition({ cell: -1, row: -1 });
+  }
+
+  return (
+    <div className="lg:text-3xl">
+      {statusMsg !== "" && <StatusPane message={statusMsg} />}
+      <div className="grid grid-cols-5 grid-rows-1">
+        {display && (
+          <>
+            <DiceSection
+              dices={dices}
+              handleDiceSelect={handleDiceSelect}
+              playerId={playerId}
+              selectedDie={selectedDie}
+            />
+            {power.type !== 0 && !power.confirmed && (
+              <PowerPrompt
+                handlePowerChoice={handlePowerChoice}
+                power={power}
+              />
+            )}
+            {isReadyToSubmit(boardPosition, selectedDie) && (
+              <ModalPrompt
+                prompt={"Do you want to place the die?"}
+                onClick={handlePlaceDie}
+              />
+            )}
+            <Board
+              board={gameBoard}
+              handleOnClick={handleBoardClick}
+              boardPosition={boardPosition}
+            />
+            <BonusBoard bonusCard={bonusCard} />
+          </>
+        )}
+      </div>
     </div>
   );
 }
