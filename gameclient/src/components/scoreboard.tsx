@@ -1,13 +1,26 @@
 import { Cell, getBadgeIcon } from "./common";
 import { Scoreboard } from "../helpers/types";
+import { ModalWithChildren } from "./modal";
+import { SetStateAction } from "react";
 
-export function ScoreSection({ scoreboards }: { scoreboards: Scoreboard[] }) {
+export function ScoreSection({ scoreboards, setScoreboards }: { scoreboards: Scoreboard[], setScoreboards: React.Dispatch<SetStateAction<Scoreboard[]>> }) {
+  if (scoreboards.length === 0) {
+    return <></>
+  }
+
+
+
   return (
-    <div className="flex justify-evenly">
-      {scoreboards.map((scoreboard, idx) => {
-        return <PlayerScoreboard scoreboard={scoreboard} key={idx} />;
-      })}
-    </div>
+    <ModalWithChildren>
+      <div className="flex justify-evenly flex-col">
+        <div className="flex">
+          {scoreboards.map((scoreboard, idx) => {
+            return <PlayerScoreboard scoreboard={scoreboard} key={idx} />;
+          })}
+        </div>
+        <button className="p-1 px-3 rounded-lg bg-gray-700 hover:bg-gray-600" onClick={() => setScoreboards([])}>Close</button>
+      </div>
+    </ModalWithChildren>
   );
 }
 

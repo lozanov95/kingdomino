@@ -133,7 +133,7 @@ function Game() {
           power={power}
         />
       )}
-      <ScoreSection scoreboards={scoreboards} />
+      <ScoreSection scoreboards={scoreboards} setScoreboards={setScoreboards} />
     </>
   );
 }
