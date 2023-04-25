@@ -8,26 +8,29 @@ const BonusBoard = memo(function BonusBoard({
 }: {
   bonusCard: Bonus[];
 }) {
+
+  if (bonusCard.length === 0) {
+    return <></>
+  }
+
   return (
     <>
-      {bonusCard?.length > 0 && (
-        <div className="col-start-5 w-fit mx-auto">
-          <h2 className="text-2xl font-bold text-center">Bonuses</h2>
-          {bonusCard
-            .sort((a: Bonus, b: Bonus) => (a.name > b.name ? 1 : -1))
-            .map(({ name, currentChecks, requiredChecks, eligible }, idx) => {
-              return (
-                <BonusCell
-                  key={idx}
-                  imgSrc={getBadgeIcon(name)}
-                  currentChecks={currentChecks}
-                  requiredChecks={requiredChecks}
-                  eligible={eligible}
-                />
-              );
-            })}
-        </div>
-      )}
+      <div className="col-start-5 w-fit mx-auto">
+        <h2 className="text-2xl font-bold text-center">Bonuses</h2>
+        {bonusCard
+          .sort((a: Bonus, b: Bonus) => (a.name > b.name ? 1 : -1))
+          .map(({ name, currentChecks, requiredChecks, eligible }, idx) => {
+            return (
+              <BonusCell
+                key={idx}
+                imgSrc={getBadgeIcon(name)}
+                currentChecks={currentChecks}
+                requiredChecks={requiredChecks}
+                eligible={eligible}
+              />
+            );
+          })}
+      </div>
     </>
   );
 });
