@@ -91,6 +91,7 @@ func NewGameRoom(closeChan chan string) *GameRoom {
 		Players:     []*Player{},
 		PlayerLimit: 2,
 		mux:         sync.RWMutex{},
+		closeChan:   make(chan any),
 	}
 
 	go gr.roomLoop(closeChan)
