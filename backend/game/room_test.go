@@ -20,7 +20,7 @@ func NewMockConn(cp []ClientPayload) *MockConn {
 
 func NewMockPlayer(cp []ClientPayload) *Player {
 	player := NewPlayer(NewMockConn(cp))
-	go player.GameStateLoop()
+	go player.GameStateLoop(nil)
 	return player
 }
 

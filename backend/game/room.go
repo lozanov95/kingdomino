@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"runtime/debug"
 	"strconv"
 	"sync"
 	"time"
@@ -57,6 +56,7 @@ type GameRoom struct {
 	PlayerLimit int
 	mux         sync.RWMutex
 	Game        *Game
+	closeChan   chan any
 }
 
 type DiceResult struct {
@@ -117,12 +117,7 @@ func (gr *GameRoom) score() {
 func (gr *GameRoom) roomLoop(closeChan chan<- string) {
 	defer func() {
 		if err := recover(); err != nil {
-			log.Println("panic in game loop", err)
-			debug.PrintStack()
-		}
-		for _, player := range gr.Players {
-			player.Conn.Close()
-			player.Connected = false
+			log.Println("Exiting the game room", err)
 		}
 		closeChan <- gr.ID
 	}()

@@ -77,17 +77,26 @@ func (p *Player) IncreaseBonus(b Dice) {
 	(*p.BonusCard)[b.Name] = tmp
 }
 
-func (p *Player) GameStateLoop() {
-	for send := range p.GameState {
-		msg, err := json.Marshal(send)
-		if err != nil {
-			if err == io.EOF {
-				p.Connected = false
-				return
+func (p *Player) GameStateLoop(closeChan <-chan any) {
+	defer p.Conn.Close()
+
+	for {
+		select {
+		case <-closeChan:
+			p.Connected = false
+			return
+
+		case send := <-p.GameState:
+			msg, err := json.Marshal(send)
+			if err != nil {
+				if err == io.EOF {
+					p.Connected = false
+					return
+				}
+				log.Println(err)
 			}
-			log.Println(err)
+			p.Conn.Write(msg)
 		}
-		p.Conn.Write(msg)
 	}
 }
 

@@ -40,28 +40,30 @@ func (s *Server) HandleJoinRoom(ws *websocket.Conn) {
 	s.joinRoom(player)
 }
 
-func (s *Server) joinRoom(p *Player) {
-	s.mut.Lock()
-	joined := false
+func (s *Server) GetAvailableRoom() *GameRoom {
 	for _, room := range s.GameRooms {
 		if !room.IsFull() {
-			room.Join(p)
-			joined = true
-			break
+			return room
 		}
 	}
-	if !joined {
-		room := NewGameRoom(s.CloseChan)
-		room.Join(p)
-		s.GameRooms[room.ID] = room
-	}
+	new_room := NewGameRoom(s.CloseChan)
+	s.GameRooms[new_room.ID] = new_room
+
+	return new_room
+}
+
+func (s *Server) joinRoom(p *Player) {
+	s.mut.Lock()
+	room := s.GetAvailableRoom()
+	room.Join(p)
 	s.mut.Unlock()
-	p.GameStateLoop()
+	p.GameStateLoop(room.closeChan)
 }
 
 func (s *Server) CloseRoom(id string) {
 	s.mut.Lock()
 	defer s.mut.Unlock()
+	close(s.GameRooms[id].closeChan)
 	delete(s.GameRooms, id)
 	log.Println("closed room", id)
 	log.Println("active rooms", len(s.GameRooms))
