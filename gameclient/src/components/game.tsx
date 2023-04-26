@@ -40,7 +40,6 @@ function Game() {
   const [playerId, setPlayerId] = useState<number>(0);
 
   function clearGameState() {
-    setGameState(WebSocket.CLOSED);
     setBonusCard([]);
     setGameBoard([]);
     setScoreboards([]);
@@ -55,6 +54,7 @@ function Game() {
     setStatusMsg("Connecting...");
 
     ws.onopen = () => {
+      clearGameState()
       setGameState(ws.readyState);
       const payload: ServerPayload = {
         name: playerName,
@@ -66,12 +66,14 @@ function Game() {
     };
 
     ws.onerror = () => {
-      clearGameState();
       setStatusMsg("Connection to the server failed.");
+      setGameState(ws.readyState)
+      clearGameState()
     };
 
     ws.onclose = () => {
       setStatusMsg("The connection was closed.");
+      setGameState(ws.readyState)
     };
 
     ws.onmessage = ({ data }: { data: string }) => {
@@ -111,7 +113,9 @@ function Game() {
   }
 
   return (
-    <>
+
+    <div >
+      {statusMsg !== "" && <StatusPane message={statusMsg} />}
       {gameState !== WebSocket.OPEN ? (
         <Connect
           connectHandler={handleConnect}
@@ -126,14 +130,13 @@ function Game() {
           playerId={playerId}
           gameTurn={gameTurn}
           handlePowerChoice={handlePowerChoice}
-          statusMsg={statusMsg}
           bonusCard={bonusCard}
           gameBoard={gameBoard}
           power={power}
         />
       )}
       <ScoreSection scoreboards={scoreboards} clearGameState={clearGameState} />
-    </>
+    </div>
   );
 }
 
@@ -179,7 +182,6 @@ function GameSection({
   dices,
   playerId,
   gameTurn,
-  statusMsg,
   power,
   gameBoard,
   bonusCard,
@@ -190,7 +192,6 @@ function GameSection({
   dices: DiceResult[];
   playerId: number;
   gameTurn: GameTurn;
-  statusMsg: string;
   power: PlayerPower;
   gameBoard: Dice[][];
   bonusCard: Bonus[];
@@ -252,45 +253,43 @@ function GameSection({
   }
 
   return (
-    <div className="lg:text-3xl">
-      {statusMsg !== "" && <StatusPane message={statusMsg} />}
-      <div className="grid grid-cols-5 grid-rows-1">
-        {display && (
-          <>
-            <DiceSection
-              dices={dices}
-              handleDiceSelect={handleDiceSelect}
-              playerId={playerId}
-              selectedDie={selectedDie}
+    <div className="grid grid-cols-5 grid-rows-1 lg:text-3xl">
+      {display && (
+        <>
+          <DiceSection
+            dices={dices}
+            handleDiceSelect={handleDiceSelect}
+            playerId={playerId}
+            selectedDie={selectedDie}
+          />
+          {power.type !== 0 && !power.confirmed && (
+            <PowerPrompt
+              handlePowerChoice={handlePowerChoice}
+              power={power}
             />
-            {power.type !== 0 && !power.confirmed && (
-              <PowerPrompt
-                handlePowerChoice={handlePowerChoice}
-                power={power}
-              />
-            )}
-            {isReadyToSubmit(boardPosition, selectedDie) && (
-              <ModalPrompt
-                prompt={"Do you want to place the die?"}
-                onClick={handlePlaceDie}
-              />
-            )}
-            <Board
-              board={gameBoard}
-              handleOnClick={handleBoardClick}
-              boardPosition={boardPosition}
+          )}
+          {isReadyToSubmit(boardPosition, selectedDie) && (
+            <ModalPrompt
+              prompt={"Do you want to place the die?"}
+              onClick={handlePlaceDie}
             />
-            <BonusBoard bonusCard={bonusCard} />
-          </>
-        )}
-      </div>
+          )}
+          <Board
+            board={gameBoard}
+            handleOnClick={handleBoardClick}
+            boardPosition={boardPosition}
+          />
+          <BonusBoard bonusCard={bonusCard} />
+        </>
+      )}
     </div>
+
   );
 }
 
 const StatusPane = memo(function StatusPane({ message }: { message: string }) {
   return (
-    <div className="bg-blue-900 text-white text-center py-1 lg:py-2">
+    <div className="bg-blue-900 text-white text-center py-1 lg:py-2  lg:text-3xl">
       {message}
     </div>
   );
