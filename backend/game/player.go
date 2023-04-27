@@ -78,19 +78,17 @@ func (p *Player) IncreaseBonus(b Dice) {
 }
 
 func (p *Player) GameStateLoop(closeChan <-chan any) {
-	defer p.Conn.Close()
+	defer p.Disconnect()
 
 	for {
 		select {
 		case <-closeChan:
-			p.Connected = false
 			return
 
 		case send := <-p.GameState:
 			msg, err := json.Marshal(send)
 			if err != nil {
 				if err == io.EOF {
-					p.Connected = false
 					return
 				}
 				log.Println(err)
@@ -298,6 +296,7 @@ func (p *Player) UsePower(pt PowerType) {
 
 func (p *Player) Disconnect() {
 	p.Connected = false
+	p.Conn.Close()
 }
 
 // Returns true if the player have collected the required amount badges and haven't still used the bonus
