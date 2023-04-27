@@ -15,7 +15,6 @@ type ChatConn struct {
 }
 
 type Server struct {
-	conns     map[int64]*ChatConn
 	mut       sync.RWMutex
 	GameRooms map[string]*GameRoom
 	CloseChan chan string
@@ -23,9 +22,8 @@ type Server struct {
 
 func NewServer() *Server {
 	s := &Server{
-		conns:     make(map[int64]*ChatConn),
 		mut:       sync.RWMutex{},
-		GameRooms: map[string]*GameRoom{},
+		GameRooms: make(map[string]*GameRoom),
 		CloseChan: make(chan string, 10),
 	}
 
