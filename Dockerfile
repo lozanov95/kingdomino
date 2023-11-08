@@ -5,11 +5,15 @@ RUN npm install
 COPY gameclient ./
 RUN npm run build
 
-FROM golang:1.20
+FROM golang:1.20 as be
 WORKDIR /usr/src/kingdomino
 COPY ./go.mod ./go.sum ./main.go ./
 RUN go mod download && go mod verify
 COPY ./backend ./backend/
-RUN go build -v -o /usr/local/bin/ ./...
+RUN CGO_ENABLED=0 go build -v -o . ./...
+
+FROM scratch
+WORKDIR /app
+COPY --from=be /usr/src/kingdomino/kingdomino kingdomino
 COPY --from=fe /fe/dist/ ./ui/
-CMD ["kingdomino"]
+CMD ["./kingdomino"]
