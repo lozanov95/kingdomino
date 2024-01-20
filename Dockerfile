@@ -1,4 +1,4 @@
-FROM node as fe
+FROM node:21 as fe
 WORKDIR /fe
 COPY gameclient/package.json .
 RUN npm install
