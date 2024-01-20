@@ -5,7 +5,7 @@ RUN npm install
 COPY gameclient ./
 RUN npm run build
 
-FROM golang:1.20 as be
+FROM golang:1.21 as be
 WORKDIR /usr/src/kingdomino
 COPY ./go.mod ./go.sum ./main.go ./
 RUN go mod download && go mod verify
