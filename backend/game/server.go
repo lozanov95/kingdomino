@@ -75,7 +75,6 @@ func (s *Server) ListenAndServe(port int) error {
 	}()
 
 	http.Handle("/join", websocket.Handler(s.HandleJoinRoom))
-	http.Handle("/", http.FileServer(http.Dir("./ui")))
 
 	log.Println("Serving on", port)
 	return http.ListenAndServe(":"+strconv.Itoa(port), nil)

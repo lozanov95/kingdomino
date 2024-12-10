@@ -20,7 +20,8 @@ import { ModalPrompt } from "./modal";
 import { isReadyToSubmit, SendServerData } from "../helpers/gamestate";
 
 function Game() {
-  const DOMAIN = "192.168.1.2";
+  const DOMAIN = "192.168.1.109";
+  const PORT = "80";
 
   const [gameState, setGameState] = useState<number>(WebSocket.CLOSED);
   const [wsConn, setWsConn] = useState<WebSocket | null>(null);
@@ -50,7 +51,7 @@ function Game() {
   function handleConnect(ev: SubmitEvent) {
     ev.preventDefault();
     setGameState(WebSocket.CONNECTING);
-    const ws = new WebSocket(`ws://${DOMAIN}:8080/join`);
+    const ws = new WebSocket(`ws://${DOMAIN}:${PORT}/join`);
     setStatusMsg("Connecting...");
 
     ws.onopen = () => {

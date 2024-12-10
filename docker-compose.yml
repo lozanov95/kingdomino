@@ -1,0 +1,27 @@
+networks:
+  dev:
+    driver: bridge
+
+services:
+  backend:
+    container_name: backend
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+    expose:
+      - "80"
+      - "443"
+    restart: always
+    networks:
+      - dev
+  nginx:
+    build:
+      context: .
+      dockerfile: ./nginx/Dockerfile
+    ports:
+      - "80:80"
+    restart: always
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - dev

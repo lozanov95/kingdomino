@@ -4,7 +4,7 @@ import (
 	"flag"
 	"log"
 
-	"github.com/lozanov95/kingdomino/backend/game"
+	"github.com/lozanov95/kingdomino/game"
 )
 
 var (
